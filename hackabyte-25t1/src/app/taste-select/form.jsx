@@ -1,13 +1,14 @@
 "use client"
 
 import { useForm } from "react-hook-form"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Toggle } from "@/components/ui/toggle"
 import TagInput from "./tag-input.jsx"
-import { useAppContext } from "@/context/AppContext.jsx";
+import { useAppContext } from "@/context/AppContext.jsx"
 
 import { socket } from "@/socket.js";
 
@@ -25,7 +26,6 @@ export default function TasteSelectForm() {
 
   useEffect(() => {
     if (socket.connected) {
-      onConnect();
     }
 
     socket.on('connect', () => {
@@ -53,7 +53,7 @@ export default function TasteSelectForm() {
   })
 
   const onSubmit = (data) => {
-
+    console.log(data);
   }
 
   // Price options

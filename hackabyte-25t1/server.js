@@ -14,8 +14,16 @@ app.prepare().then(() => {
 
   const io = new Server(httpServer);
 
+  // ids contain a dictionary of objects with the following structure:
+  // [id]: {
+  //  isHost: boolean,
+  //  preferences
+  // }
+  const ids = {};
+  const restaurants = [];
+
   io.on("connection", (socket) => {
-    // ...
+
   });
 
   httpServer

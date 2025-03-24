@@ -6,9 +6,10 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [id, setId] = useState(0);
+  const [lobbyCode, setLobbyCode] = useState("");
 
   return (
-    <AppContext.Provider value={{ id, setId }}>
+    <AppContext.Provider value={{ id, setId, lobbyCode, setLobbyCode }}>
       {children}
     </AppContext.Provider>
   );
