@@ -2,6 +2,7 @@
   "name": "hackabyte-25t1",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
     "build": "next build",
