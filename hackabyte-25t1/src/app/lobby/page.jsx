@@ -59,9 +59,9 @@ export default function LobbyPage() {
     setUsers([...mockUsers, currentUser])
   }, [currentUser])
 
-  const handleSubmit = (data) => {
+  const handleSubmit = async (e) => {
     // Prevent the page from refreshing
-    data.preventDefault();
+    e.preventDefault();
 
     // Combine the strings of cuisines and locations into a single string
     let searchQuery = "";
@@ -75,7 +75,7 @@ export default function LobbyPage() {
       }
     })
     if (locationsProvided === true) {
-      searchQuery += " located in ";
+      searchQuery += "located in ";
       users.forEach((user) => {
         user.locations.forEach((location) => {
           searchQuery += location + " ";
@@ -83,7 +83,17 @@ export default function LobbyPage() {
       })
     }
 
-    console.log(searchQuery);
+    const response = await fetch("/api/places", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ textQuery: searchQuery }),
+    })
+
+    const searchApiResponse = await response.json()
+
+    console.log(searchApiResponse);
   }
 
   const shareGroup = () => {
