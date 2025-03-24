@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Toggle } from "@/components/ui/toggle"
 import TagInput from "./tag-input.jsx"
+import { useAppContext } from "@/context/AppContext.jsx";
+
+import { socket } from "@/socket.js";
 
 // Define the form schema with zod
 const formSchema = z.object({
@@ -17,6 +20,27 @@ const formSchema = z.object({
 })
 
 export default function TasteSelectForm() {
+  const [isConnected, setIsConnected] = useState(false);
+  const { id } = useAppContext();
+
+  useEffect(() => {
+    if (socket.connected) {
+      onConnect();
+    }
+
+    socket.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+    };
+  }, []);
   // Initialize the form with default values
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -29,7 +53,7 @@ export default function TasteSelectForm() {
   })
 
   const onSubmit = (data) => {
-    console.log(data)
+
   }
 
   // Price options
