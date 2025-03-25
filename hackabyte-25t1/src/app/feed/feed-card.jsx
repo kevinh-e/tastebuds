@@ -196,7 +196,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost, progress = null 
             style={{ padding: "2px" }}
           >
             <div
-              className="absolute bg-primary h-2"
+              className="absolute bg-primary h-2 shadow-md"
               style={{
                 width: `${progress * 100}%`,
                 top: 0,
