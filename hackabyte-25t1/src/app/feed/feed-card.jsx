@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button"
 import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAppContext } from "@/context/AppContext"
+import { ReactionSummary } from "./utils/reaction-summary"
 
-export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
+export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -94,7 +95,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
   const primaryType = place?.primaryTypeDisplayName.text || "Unknown Type";
   const minPrice = place?.priceRange?.startPrice.units;
   const maxPrice = place?.priceRange?.endPrice.units;
-  const openNow = place?.regularOpeningHours.openNow;
+  const openNow = place?.regularOpeningHours?.openNow;
   const mapsLink = place?.googleMapsUri;
   const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
 
@@ -294,6 +295,8 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
               </a>
             </div>
           </div>
+
+          <ReactionSummary reactions={reactions} />
 
           <div className="pt-2 border-t">
             <span className="text-sm font-medium">Price Range: </span>
