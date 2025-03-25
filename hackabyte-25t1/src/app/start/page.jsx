@@ -53,11 +53,14 @@ export default function PreLobbyPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-white to-gray-500 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-white to-orange-300 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Game Lobby</CardTitle>
-          <CardDescription>Host or join a game session</CardDescription>
+          <CardTitle className="text-2xl select-none">
+            <span className="font-light">taste/</span>
+            <span className="font-semibold text-orange-500">buds</span>
+          </CardTitle>
+          <CardDescription>Find the best taste for your buds.</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="host" className="w-full">
@@ -130,9 +133,6 @@ export default function PreLobbyPage() {
           </Tabs>
           {error && <p className="mt-4 text-center text-sm text-red-500">{error}</p>}
         </CardContent>
-        <CardFooter className="flex justify-center text-sm text-muted-foreground">
-          Connect with friends and play together
-        </CardFooter>
       </Card>
     </div>
   )
