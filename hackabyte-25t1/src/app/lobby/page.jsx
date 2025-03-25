@@ -62,7 +62,7 @@ export default function LobbyPage() {
 
     const maskedApiResponse = searchApiResponse.places;
 
-    socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify({ maskedApiResponse }));
+    socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify(maskedApiResponse));
   }
 
   const shareGroup = () => {
