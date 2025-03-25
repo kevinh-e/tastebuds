@@ -14,9 +14,9 @@ import CopyButton from "@/components/ui/copy-button"
 
 export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext();
-  
+
   const router = useRouter()
-  
+
   socket.on("reccomendationsRecieved", (data) => {
     setRoomData(JSON.parse(data));
     router.push("/feed");
@@ -62,7 +62,7 @@ export default function LobbyPage() {
 
     maskedApiResponse.forEach((placeObj) => {
       const obj = {}
-      obj["place"] = {...placeObj}
+      obj["place"] = { ...placeObj }
       obj["countDownStart"] = 0;
       obj["votes"] = {
         yes: [],
@@ -106,7 +106,7 @@ export default function LobbyPage() {
 
             <Card>
               <CardContent className="space-y-3">
-                <Utensils className="h-6 w-6"/>
+                <Utensils className="h-6 w-6" />
                 <h3 className="text-xl font-semibold">Cusines:</h3>
                 <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
               </CardContent>
@@ -114,7 +114,7 @@ export default function LobbyPage() {
 
             <Card>
               <CardContent className="space-y-3">
-                <MapPin className="h-6 w-6"/>
+                <MapPin className="h-6 w-6" />
                 <h3 className="text-xl font-semibold">Locations:</h3>
                 <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
               </CardContent>
@@ -139,4 +139,3 @@ export default function LobbyPage() {
     </form>
   )
 }
-
