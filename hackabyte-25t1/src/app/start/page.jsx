@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -14,6 +14,7 @@ import { socket } from "@/socket.js";
 
 export default function PreLobbyPage() {
   const { id, roomCode, setRoomCode, roomData, setRoomData } = useAppContext();
+  const router = useRouter();
 
   useEffect(() => {
     socket.on('syncData', (msg) => {
@@ -35,9 +36,9 @@ export default function PreLobbyPage() {
       return
     }
     socket.emit("createRoom", roundTime, id, hostName, (data) => {
-      console.log(roomData);
+      setRoomCode(data);
     });
-
+    router.push('/taste-select');
   }
 
   const handleJoinLobby = async () => {
@@ -46,8 +47,9 @@ export default function PreLobbyPage() {
       return
     }
     socket.emit("joinRoom", lobbyCode, id, joinName, (data) => {
-      console.log(roomData);
+      setRoomCode(data);
     });
+    router.push('/taste-select');
   }
 
   return (
