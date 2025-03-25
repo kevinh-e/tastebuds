@@ -1,143 +1,158 @@
-"use client"
-
-import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
+import { Star, MapPin, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Star, MapPin, Utensils, ExternalLink, ThumbsUp, ThumbsDown } from "lucide-react"
-import Image from "next/image"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-export default function RestaurantCard({ restaurant, rank, users = [], showVotes = false, isHighlighted = false }) {
-  // Find user objects for those who voted yes
+export default function RestaurantCard({ restaurant, rank, users, showVotes = false }) {
   const yesVoters = users.filter((user) => restaurant.votes.yes.includes(user.id))
   const noVoters = users.filter((user) => restaurant.votes.no.includes(user.id))
 
-  // Determine badge style based on rank
-  const getRankBadge = () => {
-    if (rank === 1) {
-      return <Badge className="absolute -top-2 -left-2 bg-yellow-500 border-0">🥇 #1</Badge>
-    } else if (rank === 2) {
-      return <Badge className="absolute -top-2 -left-2 bg-gray-400 border-0">🥈 #2</Badge>
-    } else if (rank === 3) {
-      return <Badge className="absolute -top-2 -left-2 bg-amber-700 border-0">🥉 #3</Badge>
-    } else {
-      return (
-        <Badge className="absolute -top-2 -left-2" variant="outline">
-          #{rank}
-        </Badge>
-      )
-    }
-  }
-
-  // Generate stars for rating
-  const renderStars = (rating) => {
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 >= 0.5
-
-    return (
-      <div className="flex items-center">
-        <span className="text-sm font-medium mr-1">{rating.toFixed(1)}</span>
-        <div className="flex text-yellow-500">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`h-3.5 w-3.5 ${i < fullStars
-                ? "fill-current"
-                : i === fullStars && hasHalfStar
-                  ? "fill-current opacity-50"
-                  : "stroke-current fill-none"
-                }`}
-            />
-          ))}
-        </div>
-      </div>
-    )
-  }
+  const currentUserVotedYes = restaurant.votes.yes.includes("current")
+  const currentUserVotedNo = restaurant.votes.no.includes("current")
 
   return (
-    <Card
-      className={`relative overflow-hidden transition-all ${isHighlighted ? "shadow-lg border-primary" : "hover:shadow-md"
-        }`}
+    <div
+      className={`rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden transition-all ${rank === 1 ? "border-orange-300" : ""}`}
     >
-      {getRankBadge()}
-      <CardContent className="p-4">
-        <div className="flex gap-3">
-          <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
-            <Image src={restaurant.image || "/placeholder.svg"} alt={restaurant.name} fill className="object-cover" />
+      <div className="flex p-4">
+        {rank && (
+          <div
+            className={`flex items-center justify-center h-8 w-8 rounded-full mr-3 flex-shrink-0 ${
+              rank === 1
+                ? "bg-orange-500 text-white"
+                : rank === 2
+                  ? "bg-gray-200 text-gray-700"
+                  : rank === 3
+                    ? "bg-amber-700 text-white"
+                    : "bg-gray-100 text-gray-500"
+            }`}
+          >
+            <span className="font-bold text-sm">{rank}</span>
           </div>
+        )}
 
-          <div className="flex-1">
-            <div className="flex justify-between items-start">
-              <h3 className="font-medium">{restaurant.name}</h3>
-              <span className="text-sm font-medium">{restaurant.price}</span>
-            </div>
+        <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+          <Image src={restaurant.image || "/placeholder.svg"} alt={restaurant.name} fill className="object-cover" />
+        </div>
 
-            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-              <Utensils className="h-3 w-3" />
-              <span>{restaurant.cuisine}</span>
-              <span className="mx-1">•</span>
-              <MapPin className="h-3 w-3" />
-              <span>{restaurant.location}</span>
-            </div>
-
-            <div className="mt-2">{renderStars(restaurant.rating)}</div>
-
-            {showVotes && (
-              <div className="mt-3 space-y-2">
-                {restaurant.reactions && restaurant.reactions.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {restaurant.reactions.map((reaction, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
-                        {reaction.emoji} {reaction.users.length}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex justify-between">
-                  <div className="flex items-center gap-1">
-                    <ThumbsUp className="h-3.5 w-3.5 text-green-500" />
-                    <span className="text-xs font-medium">{restaurant.votes.yes.length}</span>
-                    <div className="flex -space-x-2 ml-1">
-                      {yesVoters.map((user) => (
-                        <Avatar key={user.id} className="h-5 w-5 border border-background">
-                          <AvatarFallback className="text-[10px]">{user.avatar}</AvatarFallback>
-                        </Avatar>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <div className="flex -space-x-2 mr-1">
-                      {noVoters.map((user) => (
-                        <Avatar key={user.id} className="h-5 w-5 border border-background">
-                          <AvatarFallback className="text-[10px]">{user.avatar}</AvatarFallback>
-                        </Avatar>
-                      ))}
-                    </div>
-                    <span className="text-xs font-medium">{restaurant.votes.no.length}</span>
-                    <ThumbsDown className="h-3.5 w-3.5 text-red-500" />
-                  </div>
+        <div className="ml-3 flex-1">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-semibold">{restaurant.name}</h3>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Badge variant="outline" className="text-xs py-0 h-5 bg-orange-50 text-orange-600 hover:bg-orange-50">
+                  {restaurant.cuisine}
+                </Badge>
+                <span>•</span>
+                <div className="flex items-center">
+                  <MapPin className="h-3 w-3 mr-0.5" />
+                  {restaurant.location}
                 </div>
               </div>
-            )}
+            </div>
 
-            <div className="mt-3 flex justify-end">
-              <a
-                href="#"
-                className="text-xs text-primary flex items-center gap-1 hover:underline"
-                onClick={(e) => {
-                  e.preventDefault()
-                  // In a real app, this would navigate to restaurant details
-                  alert(`View details for ${restaurant.name}`)
-                }}
-              >
-                View Details <ExternalLink className="h-3 w-3" />
-              </a>
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center">
+                <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                <span className="ml-0.5 text-xs font-medium">{restaurant.rating}</span>
+              </div>
+              <span className="text-xs text-muted-foreground">•</span>
+              <div className="text-xs text-muted-foreground">{restaurant.price}</div>
             </div>
           </div>
+
+          {showVotes && (
+            <div className="mt-2 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center">
+                  <ThumbsUp
+                    className={`h-3.5 w-3.5 mr-1 ${currentUserVotedYes ? "fill-green-500 text-green-500" : "text-gray-400"}`}
+                  />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex -space-x-1.5">
+                          {yesVoters.slice(0, 3).map((user) => (
+                            <Avatar key={user.id} className="h-5 w-5 border border-background">
+                              <AvatarFallback
+                                className={`text-[10px] ${user.id === "current" ? "bg-orange-500 text-white" : "bg-gray-200"}`}
+                              >
+                                {user.avatar}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+                          {yesVoters.length > 3 && (
+                            <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] border border-background">
+                              +{yesVoters.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Liked by: {yesVoters.map((u) => u.name).join(", ")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
+                <div className="flex items-center">
+                  <ThumbsDown
+                    className={`h-3.5 w-3.5 mr-1 ${currentUserVotedNo ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+                  />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex -space-x-1.5">
+                          {noVoters.slice(0, 3).map((user) => (
+                            <Avatar key={user.id} className="h-5 w-5 border border-background">
+                              <AvatarFallback
+                                className={`text-[10px] ${user.id === "current" ? "bg-orange-500 text-white" : "bg-gray-200"}`}
+                              >
+                                {user.avatar}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+                          {noVoters.length > 3 && (
+                            <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] border border-background">
+                              +{noVoters.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Passed by: {noVoters.map((u) => u.name).join(", ")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+
+              {restaurant.reactions && restaurant.reactions.length > 0 && (
+                <div className="flex gap-1">
+                  {restaurant.reactions.map((reaction, index) => (
+                    <TooltipProvider key={index}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">
+                            {reaction.emoji} {reaction.users.length}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            {reaction.users.map((id) => users.find((u) => u.id === id)?.name).join(", ")}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
