@@ -67,6 +67,25 @@ app.prepare().then(() => {
     }
   }
 
+  function setReaction(roomCode, id, reaction, restIndex) {
+    // Get the restaurant based on restIndex
+    const restaurant = data[roomCode].restaurants[restIndex];
+    if (!restaurant) return;
+
+    // Ensure there's a place to store reactions
+    if (!restaurant.reactions) {
+      restaurant.reactions = {};
+    }
+
+    // If reaction is falsy or an empty string, we can remove the user's reaction
+    if (!reaction) {
+      delete restaurant.reactions[id];
+    } else {
+      // Otherwise, store or update the reaction
+      restaurant.reactions[id] = reaction;
+    }
+  }
+
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, hostname, cb) => {
       const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -124,6 +143,33 @@ app.prepare().then(() => {
         data[roomCode].restaurants[data[roomCode].roomSettings.restIndex].countDownStart = hostStartTime;
         io.in(roomCode).emit("startNextCard", JSON.stringify(data[roomCode]));
       }
+    });
+
+    socket.on("sendUserVote", (vote, id, roomCode, restaurantIndex, cb) => {
+      // add/replace vote to data
+      setVote(roomCode, id, vote, restaurantIndex);
+      // call back to confirm the data was sent
+      cb(data[roomCode].restaurants[restaurantIndex].votes);
+      // cb("sent data: \n" + vote + "\n\nwith id:\n" + id);
+      // cb(JSON.stringify(data));
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
+    });
+
+    socket.on("sendUserReaction", (reaction, id, roomCode, restIndex, cb) => {
+      // Store or remove the user's reaction in `data`
+      setReaction(roomCode, id, reaction, restIndex);
+
+      const userName = data[roomCode].roomMembers[id]?.name || "Unknown user";
+
+      // Broadcast a toast *only* to others in the same room — not back to the sender
+      // `socket.to(...)` ensures the event is *not* sent to the socket who emitted it
+      socket.to(roomCode).emit("reactionToast", { userName, reaction });
+
+      // Send back any updated data if needed
+      cb(data[roomCode].restaurants[restIndex].reactions);
+
+      // Then sync your updated room data with everyone
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
   });
 
