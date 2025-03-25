@@ -30,11 +30,10 @@ export default function TasteSelect() {
   }, [roomData]);
 
   return (
-    <div className="min-h-screen overflow-y-auto">
-      <div className="h-full flex flex-col justify-center items-center p-4 space-y-4">
-
+    <div className="min-h-screen flex justify-center items-center px-4 py-8">
+      <div className="w-full max-w-md space-y-4">
         {users.length > 0 && (
-          <Card className="mt-2 w-full max-w-md">
+          <Card className="w-full">
             <CardContent>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
