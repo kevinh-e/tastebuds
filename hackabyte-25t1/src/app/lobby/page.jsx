@@ -82,17 +82,17 @@ export default function LobbyPage() {
     let searchQuery = "";
     let locationsProvided = false;
     Object.values(roomData.roomMembers).forEach((user) => {
-      user.cuisines.forEach((cuisine) => {
+      user.preferences.cuisineTags.forEach((cuisine) => {
         searchQuery += cuisine + " ";
       });
-      if (user.locations.length > 0) {
+      if (user.preferences.locationTags.length > 0) {
         locationsProvided = true;
       }
     })
     if (locationsProvided === true) {
       searchQuery += "located in ";
       Object.values(roomData.roomMembers).forEach((user) => {
-        user.locations.forEach((location) => {
+        user.preferences.locationTags.forEach((location) => {
           searchQuery += location + " ";
         });
       })
@@ -136,7 +136,7 @@ export default function LobbyPage() {
     <form onSubmit={handleSubmit} className="container max-w-md mx-auto px-4 py-8">
       <div className="container max-w-md mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
-          <Link href="/" className="flex items-center text-sm">
+          <Link href="/start" className="flex items-center text-sm">
             <ChevronLeft className="h-4 w-4 mr-1" /> Exit
           </Link>
           <Button variant="outline" size="sm" onClick={shareGroup} className="flex items-center gap-1">
@@ -160,7 +160,7 @@ export default function LobbyPage() {
             <CardTitle className="text-lg">Cuisine Preferences</CardTitle>
           </CardHeader>
           <CardContent>
-            <PreferencesList users={roomData.roomMembers} preferenceType="cuisines" />
+            <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
           </CardContent>
         </Card>
 
@@ -169,7 +169,7 @@ export default function LobbyPage() {
             <CardTitle className="text-lg">Location Preferences</CardTitle>
           </CardHeader>
           <CardContent>
-            <PreferencesList users={roomData.roomMembers} preferenceType="locations" />
+            <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
           </CardContent>
         </Card>
 
