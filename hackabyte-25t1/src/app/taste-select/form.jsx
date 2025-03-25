@@ -14,6 +14,7 @@ import TagInput from "./tag-input.jsx"
 import { useAppContext } from "@/context/AppContext.jsx";
 
 import { socket } from "@/socket.js";
+import CopyButton from "@/components/ui/copy-button.jsx";
 
 // Define the form schema with zod
 const formSchema = z.object({
@@ -60,12 +61,6 @@ export default function TasteSelectForm() {
     navigator.clipboard.writeText(roomCode)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-
-    // toast({
-    //   title: "Room Code Copied!",
-    //   description: "Room code has been copied to clipboard",
-    //   duration: 2000,
-    // })
   }
 
   // Price options
@@ -76,19 +71,14 @@ export default function TasteSelectForm() {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <Card className="border border-border">
-        <CardContent className="">
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center gap-2">
-              <span className="text-3xl font-bold tracking-wider">{roomCode}</span>
-              <Button variant="ghost" size="icon" onClick={copyToClipboard} className="h-8 w-8">
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      <div className="p-6 border rounded-lg shadow-sm w-full max-w-md">
+      <div className="p-6 border rounded-lg w-full max-w-md">
+        <div className="flex justify-end">
+          <CopyButton
+            className="text-lg text-muted-foreground mb-4"
+            textToCopy={roomCode}
+            displayText={roomCode}
+          />
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Price Section */}
