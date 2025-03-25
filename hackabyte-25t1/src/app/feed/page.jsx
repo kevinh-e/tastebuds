@@ -95,12 +95,13 @@ export default function FeedPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen px-4 py-0 flex flex-col justify-center items-center">
-      <div
+      {/* <div
         className="bg-blue-600 rounded-full h-2 transition-all duration-100"
         style={{ width: `${progress * 100}%` }}
-      />
+      /> */}
       <FeedCard
         place={roomData.restaurants[roomData.roomSettings.restIndex].place}
+        progress={progress}
         onVoteChange={handleVoteChange}
         onSkip={skipRestaurant}
         isHost={isHost}
