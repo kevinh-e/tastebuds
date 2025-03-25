@@ -92,8 +92,8 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   const rating = place?.rating || 0
   const totalRatings = place?.userRatingCount || 0
   const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type"
-  const minPrice = place?.priceRange?.startPrice?.units || 0
-  const maxPrice = place?.priceRange?.endPrice?.units || 0
+  const minPrice = place?.priceRange?.startPrice?.units || 10
+  const maxPrice = place?.priceRange?.endPrice?.units || 40
   const openNow = place?.regularOpeningHours?.openNow || false
   const mapsLink = place?.googleMapsUri || ""
   const photoNames = place?.photos.map((obj) => obj.name).slice(0, 4)
