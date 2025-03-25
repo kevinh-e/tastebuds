@@ -36,6 +36,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.2.3",
+    "nodemon": "^3.1.9",
     "tailwindcss": "^4"
   }
 }
