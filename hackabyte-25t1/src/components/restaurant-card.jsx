@@ -32,7 +32,7 @@ export default function RestaurantCard({ restaurant, rank, users, showVotes = fa
           </div>
         )}
 
-        <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+        <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
           <Image src={restaurant.image || "/placeholder.svg"} alt={restaurant.name} fill className="object-cover" />
         </div>
 
