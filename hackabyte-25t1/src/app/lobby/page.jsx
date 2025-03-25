@@ -68,7 +68,7 @@ export default function LobbyPage() {
         yes: [],
         no: []
       };
-      obj["reactions"] = []
+      obj["reactions"] = {}
       restaurantArrayFinal.push(obj);
     })
 

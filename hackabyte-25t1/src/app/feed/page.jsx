@@ -4,17 +4,34 @@ import { useEffect, useState } from "react"
 import { useAppContext } from "@/context/AppContext"
 import { FeedCard } from "./feed-card"
 import { socket } from "@/socket.js";
+import { toast } from "sonner";
+import { RestaurantReactions } from "./restaurant-reactions";
 
 export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
+  const [userReaction, setUserReaction] = useState(null);
   const [isHost, setIsHost] = useState(false);
   const { id, roomData, roomCode, restIndex, setRoomData } = useAppContext();
+
+  useEffect(() => {
+    socket.on("reactionToast", ({ userName, reaction }) => {
+      if (reaction !== null) {
+        toast(`${userName} reacted with ${reaction}`);
+      }
+    })
+
+    return () => {
+      socket.off("reactionToast");
+    }
+  }, []);
 
   useEffect(() => {
     if (roomData) {
       setIsHost(roomData.roomMembers[id].isHost)
     }
     console.log(isHost);
+    console.log('jofwejoFJeowfjowfjeo')
+    console.log(roomData?.restaurants[0].reactions);
   }, [roomData]);
   const [msLeft, setMsLeft] = useState(0);
   const [hasEmitted, setHasEmitted] = useState(false);
@@ -25,6 +42,10 @@ export default function FeedPage() {
       socket.emit("nextRestaurant", roomCode, Date.now());
     }
   }
+
+  useEffect(() => {
+    console.log(`userReaction: ${userReaction}`);
+  }, [userReaction]);
 
   // Handle synchronization when new restaurant starts
   useEffect(() => {
@@ -86,6 +107,16 @@ export default function FeedPage() {
     }
   }
 
+  const handleReactionChange = (reaction) => {
+    setUserReaction(reaction)
+    if (socket.connected && roomCode !== "") {
+      socket.emit("sendUserReaction", reaction, id, roomCode, restIndex, res => {
+        console.log("reaction");
+        console.log(res);
+      });
+    }
+  }
+
   // Prevent rendering invalid restaurant index
   if (!roomData.restaurants ||
     roomData.roomSettings.restIndex === -1 ||
@@ -100,11 +131,19 @@ export default function FeedPage() {
         style={{ width: `${progress * 100}%` }}
       />
       <FeedCard
-        place={roomData.restaurants[roomData.roomSettings.restIndex].place}
+        reactions={
+          roomData.restaurants[roomData.roomSettings.restIndex].reactions
+        }
+        place={
+          roomData.restaurants[roomData.roomSettings.restIndex].place
+        }
         onVoteChange={handleVoteChange}
         onSkip={skipRestaurant}
         isHost={isHost}
       />
+      <div className="mt-6 w-full max-w-md">
+        <RestaurantReactions onReactionChange={handleReactionChange} currentReaction={userReaction} />
+      </div>
     </div>
   );
 };

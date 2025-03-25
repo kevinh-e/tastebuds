@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -10,6 +10,7 @@ import Link from "next/link"
 import RestaurantCard from "@/components/restaurant-card"
 import TopThreeRestaurants from "@/components/top-three-restaurants"
 import Confetti from "@/components/confetti"
+import { useAppContext } from "@/context/AppContext"
 
 // ────────────────────────[ NEW DATA STRUCTURE ]─────────────────────
 
@@ -191,6 +192,7 @@ export default function ResultsPage() {
   const groupId = searchParams.get("groupId") || "UNKNOWN"
   const [activeTab, setActiveTab] = useState("all")
   const [showConfetti, setShowConfetti] = useState(true)
+  const { roomData } = useAppContext();
 
   // --- Transform roomMembers object into the array of users you previously had ---
   const users = Object.entries(data[groupId].roomMembers).map(([id, member]) => ({
@@ -199,6 +201,11 @@ export default function ResultsPage() {
     // For a simple avatar, just take the first letter:
     avatar: member.name.charAt(0).toUpperCase(),
   }))
+
+  useEffect(() => {
+    console.log('emoji')
+    console.log(roomData);
+  }, [])
 
   // --- Extract restaurants from data[groupId].restaurants ---
   const restaurants = data[groupId].restaurants

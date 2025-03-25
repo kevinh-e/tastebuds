@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button"
 import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAppContext } from "@/context/AppContext"
+import { ReactionSummary } from "./utils/reaction-summary"
 
-export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
+export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -303,6 +304,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
             </span>
           </div>
 
+          <ReactionSummary reactions={reactions} />
           <div className="w-full flex flex-row gap-2">
             <Button className="grow-3" asChild>
               <a
