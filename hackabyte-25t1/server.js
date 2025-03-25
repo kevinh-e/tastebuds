@@ -89,7 +89,7 @@ app.prepare().then(() => {
       joinRoom(roomCode, id, name);
       cb(roomCode);
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
-      io.in(roomCode).emit("newUser", JSON.stringify({id, name}));
+      io.in(roomCode).emit("newUser", JSON.stringify({ id, name }));
     });
 
     socket.on("reccomendationsBroadcast", (roomCode, recommendations) => {
@@ -115,8 +115,9 @@ app.prepare().then(() => {
     });
 
     socket.on("nextRestaurant", (roomCode) => {
-      if (data[roomCode].roomSettings.restIndex >= length(data[roomCode].restaurants)) {
-        // podium time
+      if (data[roomCode].roomSettings.restIndex >= data[roomCode].restaurants.length) {
+        // goto results
+        io.in(roomCode).emit("gotoResults");
       } else {
         // go to the next restuarant for everyone
         data[roomCode].roomSettings.restIndex += 1;
