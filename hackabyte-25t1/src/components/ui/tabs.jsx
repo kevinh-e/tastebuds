@@ -36,7 +36,7 @@ function TabsTrigger({
   className,
   ...props
 }) {
-  return (
+  return2 (
     (<TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(

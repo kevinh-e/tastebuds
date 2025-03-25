@@ -10,26 +10,31 @@ import Link from "next/link"
 import PreferencesList from "@/components/lobby/preferences-list"
 import UsersList from "@/components/lobby/users-list"
 import AddPreferenceForm from "@/components/lobby/add-preference-form"
+import { trackFallbackParamAccessed } from "next/dist/server/app-render/dynamic-rendering"
 
 // Mock data for demonstration
 const mockUsers = [
   {
     id: "1",
-    name: "Alex",
+    name: "Marques",
+    // Price range: $, $$, $$$, $$$$
+    price: ["$$$", "$$$$"],
     cuisines: ["Italian", "Japanese"],
-    locations: ["Downtown", "Westside"],
+    locations: ["Kensington", "Kingsford"],
   },
   {
     id: "2",
-    name: "Sam",
+    name: "Drake",
+    price: ["$", "$$", "$$$"],
     cuisines: ["Mexican", "Thai"],
-    locations: ["Eastside"],
+    locations: ["Randwick"],
   },
   {
     id: "3",
-    name: "Jordan",
-    cuisines: ["Indian", "Chinese"],
-    locations: ["Midtown", "Uptown"],
+    name: "Lebron",
+    price: ["$", "$$", "$$$", "$$$$"],
+    cuisines: ["Chinese"],
+    locations: [],
   },
 ]
 
@@ -54,42 +59,41 @@ export default function LobbyPage() {
     setUsers([...mockUsers, currentUser])
   }, [currentUser])
 
-  const onSubmit = (data) => {
-    console.log("Button Pressed");
-  }
+  const handleSubmit = async (e) => {
+    // Prevent the page from refreshing
+    e.preventDefault();
 
-  const addCuisine = (cuisine) => {
-    if (!currentUser.cuisines.includes(cuisine)) {
-      setCurrentUser({
-        ...currentUser,
-        cuisines: [...currentUser.cuisines, cuisine],
+    // Combine the strings of cuisines and locations into a single string
+    let searchQuery = "";
+    let locationsProvided = false;
+    users.forEach((user) => {
+      user.cuisines.forEach((cuisine) => {
+        searchQuery += cuisine + " ";
+      });
+      if (user.locations.length > 0) {
+        locationsProvided = true;
+      }
+    })
+    if (locationsProvided === true) {
+      searchQuery += "located in ";
+      users.forEach((user) => {
+        user.locations.forEach((location) => {
+          searchQuery += location + " ";
+        });
       })
     }
-    setShowCuisineForm(false)
-  }
 
-  const removeCuisine = (cuisine) => {
-    setCurrentUser({
-      ...currentUser,
-      cuisines: currentUser.cuisines.filter((c) => c !== cuisine),
+    const response = await fetch("/api/places", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ textQuery: searchQuery }),
     })
-  }
 
-  const addLocation = (location) => {
-    if (!currentUser.locations.includes(location)) {
-      setCurrentUser({
-        ...currentUser,
-        locations: [...currentUser.locations, location],
-      })
-    }
-    setShowLocationForm(false)
-  }
+    const searchApiResponse = await response.json()
 
-  const removeLocation = (location) => {
-    setCurrentUser({
-      ...currentUser,
-      locations: currentUser.locations.filter((l) => l !== location),
-    })
+    console.log(searchApiResponse);
   }
 
   const shareGroup = () => {
@@ -107,49 +111,51 @@ export default function LobbyPage() {
   }
 
   return (
-    <div className="container max-w-md mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <Link href="/" className="flex items-center text-sm">
-          <ChevronLeft className="h-4 w-4 mr-1" /> Exit
-        </Link>
-        <Button variant="outline" size="sm" onClick={shareGroup} className="flex items-center gap-1">
-          <Share2 className="h-4 w-4" />
-          Share
+    <form onSubmit={handleSubmit} className="container max-w-md mx-auto px-4 py-8">
+      <div className="container max-w-md mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <Link href="/" className="flex items-center text-sm">
+            <ChevronLeft className="h-4 w-4 mr-1" /> Exit
+          </Link>
+          <Button variant="outline" size="sm" onClick={shareGroup} className="flex items-center gap-1">
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
+        </div>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-xl">Group Lobby</CardTitle>
+            <CardDescription>Group Code: {groupId}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UsersList users={users} currentUserId={currentUser.id} />
+          </CardContent>
+        </Card>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Cuisine Preferences</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PreferencesList users={users} preferenceType="cuisines" />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Location Preferences</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PreferencesList users={users} preferenceType="locations" />
+          </CardContent>
+        </Card>
+
+        <Button type="submit" className="w-full mt-6">
+          Start Matching
         </Button>
       </div>
-
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-xl">Group Lobby</CardTitle>
-          <CardDescription>Group Code: {groupId}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <UsersList users={users} currentUserId={currentUser.id} />
-        </CardContent>
-      </Card>
-
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Cuisine Preferences</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PreferencesList users={users} preferenceType="cuisines" />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Location Preferences</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PreferencesList users={users} preferenceType="locations" />
-        </CardContent>
-      </Card>
-
-      <Button type="submit" className="w-full mt-6">
-        Start Matching
-      </Button>
-    </div>
+    </form>
   )
 }
 

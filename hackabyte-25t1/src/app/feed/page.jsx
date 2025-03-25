@@ -1,49 +1,17 @@
-# Data structure design:
+"use client";
 
-### Main Data Object
-```
-data: {
-    roomCode: {
-        roomMembers: {
-            id: {
-                name: string,
-                isHost: boolean,
-                preferences: {
-                  cuisineTags: string[],
-                  locationTags: string[],
-                  prices: string[] (eg. [$, $$, $$$, $$$$], or [$, $$, $$$$]),
-                  rating: string,
-                }
-            }
-        },
-        restaurants: [ {
-            place: PLACE (refer to PLACE OBJECT heading),
-            countDownStart: datetime.datetime,
-            votes: {
-                yes: string[] (string of user Ids),
-                no: string[] (string of user Ids),
-            },
-            reactions: [
-                { 
-                    emoji: string (emoji), 
-                    users: string[] (string of user Ids)
-                }
-            ]
-        } ],
-        roomSettings: {
-          roomCode: string,
-          roundTime: number,
+import { useEffect } from "react"
+import FeedCard from "./feed-card"
+
+export default function FeedPage({ query }) {
+    useEffect(() => {
+        const fetchCards = async () => {
+            console.log("fetching place objects...")
         }
-    }
-}
 
-```
+        fetchCards()
+    }, []);
 
-### PLACE OBJECT
-
-Ew.
-
-```
     const EXAMPLE_PLACE = {
         "name": "places/ChIJl44XdACxEmsRq10vi-qbegA",
         "id": "ChIJl44XdACxEmsRq10vi-qbegA",
@@ -815,44 +783,9 @@ Ew.
             "id": "Australia/Sydney"
         }
     }
-```
 
+    return (
+        <FeedCard place={EXAMPLE_PLACE} />
+    )
+}
 
-# Default Instructions
-
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

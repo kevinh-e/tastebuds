@@ -1,14 +1,30 @@
 "use client"
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [id, setId] = useState(0);
+  const uid = Date.now().toString(36) + Math.random().toString(36).substr(2);
+  const [id, setId] = useState(uid);
+  const [roomCode, setRoomCode] = useState("");
+  const [roomData, setRoomData] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem("id", id);
+  }, [id]);
+
+  useEffect(() => {
+    localStorage.setItem("roomCode", roomCode);
+  }, [roomCode]);
+
+  useEffect(() => {
+    console.log(roomData);
+    localStorage.setItem("roomData", roomData);
+  }, [roomData]);
 
   return (
-    <AppContext.Provider value={{ id, setId }}>
+    <AppContext.Provider value={{ id, setId, roomCode, setRoomCode, roomData, setRoomData }}>
       {children}
     </AppContext.Provider>
   );

@@ -1,6 +1,7 @@
 "use client"
 
 import { useForm } from "react-hook-form"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
@@ -21,14 +22,11 @@ const formSchema = z.object({
 
 export default function TasteSelectForm() {
   const [isConnected, setIsConnected] = useState(false);
-  const { id } = useAppContext();
+  const { id, roomCode } = useAppContext();
 
   useEffect(() => {
-    if (socket.connected) {
-      onConnect();
-    }
-
     socket.on('connect', () => {
+      // socket.emit('preferences', id);
       setIsConnected(true);
     });
 
@@ -41,6 +39,7 @@ export default function TasteSelectForm() {
       socket.off('disconnect');
     };
   }, []);
+
   // Initialize the form with default values
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,7 +52,12 @@ export default function TasteSelectForm() {
   })
 
   const onSubmit = (data) => {
-
+    if (socket.connected && roomCode !== "") {
+      // sent the preferences to the server with that room code
+      socket.to(roomCode).emit('sendPreferences', JSON.stringify(data), id, message => {
+        console.log(message);
+      });
+    }
   }
 
   // Price options
@@ -79,7 +83,7 @@ export default function TasteSelectForm() {
                     <FormControl key={price}>
                       <Toggle
                         variant="outline"
-                        className="h-10 px-4 rounded-full"
+                        className="h-10 px-4 rounded-full hover:cursor-pointer"
                         pressed={field.value?.includes(price)}
                         onPressedChange={(pressed) => {
                           const updatedPrices = pressed
@@ -151,7 +155,7 @@ export default function TasteSelectForm() {
                     <FormControl key={rating}>
                       <Toggle
                         variant="outline"
-                        className={`h-10 px-3 rounded-full ${field.value === rating ? "bg-primary text-primary-foreground" : ""}`}
+                        className={`h-10 px-3 rounded-full hover:cursor-pointer ${field.value === rating ? "bg-primary text-primary-foreground" : ""}`}
                         pressed={field.value === rating}
                         onPressedChange={(pressed) => {
                           // If already selected and pressed again, deselect it
@@ -174,7 +178,7 @@ export default function TasteSelectForm() {
             )}
           />
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full hover:cursor-pointer">
             Find Restaurants
           </Button>
         </form>
