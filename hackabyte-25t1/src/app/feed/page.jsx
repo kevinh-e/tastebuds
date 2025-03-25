@@ -121,7 +121,12 @@ export default function FeedPage() {
   if (!roomData.restaurants ||
     roomData.roomSettings.restIndex === -1 ||
     roomData.roomSettings.restIndex >= roomData.restaurants.length) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-xl font-medium text-gray-600">
+        Loading...
+      </div>
+    );
+
   }
 
   return (
