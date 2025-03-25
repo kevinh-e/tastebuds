@@ -16,12 +16,10 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("roomCode", roomCode);
-    console.log(roomCode);
   }, [roomCode]);
 
   useEffect(() => {
     localStorage.setItem("roomData", roomData);
-    console.log(roomData);
   }, [roomData]);
 
   return (
