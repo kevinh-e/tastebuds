@@ -1,4 +1,12 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+// next.config.js
+export default {
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'www.google.com',
+        },
+      ],
+    },
+  };
+  

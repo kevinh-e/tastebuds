@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import UsersList from "@/components/lobby/users-list";
 import CopyButton from "@/components/ui/copy-button";
+import { Users } from "lucide-react";
 
 // socket.on('newUser', (msg) => {
 //   toast(`👋   ${JSON.parse(msg).name} has joined the room`);
@@ -29,14 +30,17 @@ export default function TasteSelect() {
   }, [roomData]);
 
   return (
-    <div className="h-screen">
+    <div className="min-h-screen overflow-y-auto">
       <div className="h-full flex flex-col justify-center items-center p-4 space-y-4">
 
         {users.length > 0 && (
           <Card className="mt-2 w-full max-w-md">
             <CardContent>
               <div className="flex items-center justify-between mb-3">
-                <div className="text-lg font-semibold">Buddies</div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-orange-500" />
+                  <div className="text-lg font-semibold">Buddies</div>
+                </div>
                 <CopyButton
                   className="text-muted-foreground"
                   textToCopy={roomCode}
