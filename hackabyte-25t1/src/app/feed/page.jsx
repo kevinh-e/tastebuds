@@ -5,6 +5,7 @@ import { useAppContext } from "@/context/AppContext"
 import { FeedCard } from "./feed-card"
 import { socket } from "@/socket.js";
 import { toast } from "sonner";
+import { CheckCircle, XCircle } from "lucide-react";
 import { RestaurantReactions } from "./restaurant-reactions";
 
 export default function FeedPage() {
@@ -35,14 +36,32 @@ export default function FeedPage() {
   }, []);
 
   useEffect(() => {
-    socket.on("reactionToast", ({ userName, reaction }) => {
-      if (reaction !== null) {
-        toast(`${userName} reacted with ${reaction}`);
+    socket.on("voteToast", ({ userName, vote }) => {
+      if (vote !== null) {
+        const noToast = () => {
+          toast(`${userName}`,
+          {
+            icon: <XCircle className="text-red-500" />, 
+            style: { backgroundColor: "#ffe2e2", color: "black", width: "128px" }
+          })
+        }
+        const yesToast = () => {
+          toast(`${userName}`, {
+            icon: <CheckCircle className="text-green-500" />, 
+            style: { backgroundColor: "#dcfce7", color: "black", width: "128px" }
+          })
+        }
+
+        if (vote === "yes") {
+          yesToast();
+        } else if (vote === "no") {
+          noToast();
+        }
       }
     })
 
     return () => {
-      socket.off("reactionToast");
+      socket.off("voteToast");
     }
   }, []);
 
@@ -50,23 +69,15 @@ export default function FeedPage() {
     if (roomData) {
       setIsHost(roomData.roomMembers[id].isHost)
     }
-    console.log(isHost);
-    console.log('jofwejoFJeowfjowfjeo')
-    console.log(roomData?.restaurants[0].reactions);
   }, [roomData]);
   const [msLeft, setMsLeft] = useState(0);
   const [hasEmitted, setHasEmitted] = useState(false);
 
   const skipRestaurant = () => {
     if (socket.connected && roomCode !== "") {
-      console.log("SKIPPING")
       socket.emit("nextRestaurant", roomCode, Date.now());
     }
   }
-
-  useEffect(() => {
-    console.log(`userReaction: ${userReaction}`);
-  }, [userReaction]);
 
   // Handle synchronization when new restaurant starts
   useEffect(() => {
@@ -102,8 +113,6 @@ export default function FeedPage() {
       const elapsed = Date.now() - restaurant.countDownStart;
       const remainingMs = roomData.roomSettings.roundTime * 1000 - elapsed;
 
-      // if (!roomData?.roomMembers?.[id]?.isHost) return;
-
       if (remainingMs <= 0 && roomData?.roomMembers?.[id]?.isHost) {
         if (!hasEmitted) {
           socket.emit("nextRestaurant", roomCode, Date.now());
@@ -137,7 +146,6 @@ export default function FeedPage() {
       });
     }
   }
-
   // Prevent rendering invalid restaurant index
   if (!roomData.restaurants ||
     roomData.roomSettings.restIndex === -1 ||
@@ -152,10 +160,6 @@ export default function FeedPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen px-4 py-0 flex flex-col justify-center items-center">
-      {/* <div
-        className="bg-blue-600 rounded-full h-2 transition-all duration-100"
-        style={{ width: `${progress * 100}%` }}
-      /> */}
       <FeedCard
         place={roomData.restaurants[roomData.roomSettings.restIndex].place}
         progress={progress}

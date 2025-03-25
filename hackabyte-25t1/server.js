@@ -123,16 +123,6 @@ app.prepare().then(() => {
       cb(JSON.stringify(data));
     });
 
-    socket.on("sendUserVote", (vote, id, roomCode, restaurantIndex, cb) => {
-      // add/replace vote to data
-      setVote(roomCode, id, vote, restaurantIndex);
-      // call back to confirm the data was sent
-      cb(data[roomCode].restaurants[restaurantIndex].votes);
-      // cb("sent data: \n" + vote + "\n\nwith id:\n" + id);
-      // cb(JSON.stringify(data));
-      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
-    });
-
     socket.on("nextRestaurant", (roomCode, hostStartTime) => {
       if (data[roomCode].roomSettings.restIndex >= data[roomCode].restaurants.length) {
         // podium time
@@ -145,19 +135,20 @@ app.prepare().then(() => {
       }
     });
 
-    socket.on("sendUserVote", (vote, id, roomCode, restaurantIndex, cb) => {
+    socket.on("sendUserVote", (vote, id, roomCode, restaurantIndex) => {
       // add/replace vote to data
       setVote(roomCode, id, vote, restaurantIndex);
       // call back to confirm the data was sent
-      cb(data[roomCode].restaurants[restaurantIndex].votes);
-      // cb("sent data: \n" + vote + "\n\nwith id:\n" + id);
-      // cb(JSON.stringify(data));
+      const userName = data[roomCode].roomMembers[id]?.name || "Unknown user";
+      socket.to(roomCode).emit("voteToast", { userName, vote });
+
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
     socket.on("sendUserReaction", (reaction, id, roomCode, restIndex, cb) => {
       // Store or remove the user's reaction in `data`
       setReaction(roomCode, id, reaction, restIndex);
+      console.log("EMITTING react TOAST")
 
       const userName = data[roomCode].roomMembers[id]?.name || "Unknown user";
 
