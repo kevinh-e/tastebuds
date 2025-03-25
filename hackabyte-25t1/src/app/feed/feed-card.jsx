@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button"
 import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAppContext } from "@/context/AppContext"
+import { ReactionSummary } from "./utils/reaction-summary"
 
-export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
+export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -38,7 +39,6 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
       onVoteChange(vote)
     }
   }, [vote])
-
 
   // Reset x position after vote
   useEffect(() => {
@@ -76,32 +76,32 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
   const backgroundColour = useTransform(
     x,
     [-150, 0, 150],
-    ["rgba(239, 68, 68, 0.2)", "#ffffff", "rgba(34, 197, 94, 0.2)"] // Red → White → Green
-  );
+    ["rgba(239, 68, 68, 0.2)", "#ffffff", "rgba(34, 197, 94, 0.2)"], // Red → White → Green
+  )
 
   // Border color should match background color
   const borderColour = useTransform(
     x,
     [-150, 0, 150],
-    ["rgba(239, 68, 68, 0.8)", "rgba(255, 255, 255, 0)", "rgba(34, 197, 94, 0.8)"] // Red → Transparent → Green
-  );
+    ["rgba(239, 68, 68, 0.8)", "rgba(255, 255, 255, 0)", "rgba(34, 197, 94, 0.8)"], // Red → Transparent → Green
+  )
 
-  const name = place?.displayName?.text || "Unnamed Place";
-  const address = place?.shortFormattedAddress || "No address available";
-  const phone = place?.nationalPhoneNumber || "No phone number available";
-  const rating = place?.rating || 0;
-  const totalRatings = place?.userRatingCount || 0;
-  const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type";
-  const minPrice = place?.priceRange?.startPrice?.units || 0;
-  const maxPrice = place?.priceRange?.endPrice?.units || 0;
-  const openNow = place?.regularOpeningHours?.openNow || false;
-  const mapsLink = place?.googleMapsUri || "";
-  const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
+  const name = place?.displayName?.text || "Unnamed Place"
+  const address = place?.shortFormattedAddress || "No address available"
+  const phone = place?.nationalPhoneNumber || "No phone number available"
+  const rating = place?.rating || 0
+  const totalRatings = place?.userRatingCount || 0
+  const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type"
+  const minPrice = place?.priceRange?.startPrice?.units || 0
+  const maxPrice = place?.priceRange?.endPrice?.units || 0
+  const openNow = place?.regularOpeningHours?.openNow || false
+  const mapsLink = place?.googleMapsUri || ""
+  const photoNames = place?.photos.map((obj) => obj.name).slice(0, 4)
 
-  const [imageUrls, setImageUrls] = useState([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageUrls, setImageUrls] = useState([])
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const { restIndex } = useAppContext();
+  const { restIndex } = useAppContext()
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1))
@@ -113,24 +113,39 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
 
   useEffect(() => {
     const fetchImages = async () => {
-      if (!photoNames || photoNames.length === 0) return;
+      if (!photoNames || photoNames.length === 0) return
 
       try {
         const imageUrls = await Promise.all(
           photoNames.map(async (photoName) => {
-            return await fetchRestaurantImage(photoName);
-          })
-        );
+            return await fetchRestaurantImage(photoName)
+          }),
+        )
 
-        setImageUrls(imageUrls); // Store images in order
+        setImageUrls(imageUrls) // Store images in order
       } catch (error) {
-        console.error("Failed to fetch images:", error);
+        console.error("Failed to fetch images:", error)
       }
-    };
+    }
 
-    fetchImages();
-    setVote(null);
-  }, [restIndex]);
+    fetchImages()
+    setVote(null)
+  }, [restIndex])
+
+  // Calculate progress indicator dimensions
+  const cardWidth = 100 // 100%
+  const cardHeight = 100 // 100%
+  const strokeWidth = 4 // Border width in pixels
+
+  // Calculate the perimeter of the card
+  const perimeter = 2 * (cardWidth + cardHeight)
+
+  // Calculate the length of the progress line based on the progress value
+  const progressLength = progress !== null ? perimeter * progress : 0
+
+  // Calculate the dash array and offset for the SVG stroke
+  const dashArray = `${perimeter}`
+  const dashOffset = perimeter - progressLength
 
   return (
     <div className="relative w-full max-w-md mx-auto">
@@ -162,7 +177,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
 
       {/* Card */}
       <motion.div
-        className="rounded-xl shadow-md overflow-hidden w-full transition-none border-2"
+        className="rounded-xl shadow-md overflow-hidden w-full transition-none border-2 relative"
         style={{
           x,
           rotate,
@@ -175,6 +190,24 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
+        {/* Progress indicator */}
+        {progress !== null && (
+          <div
+            className="absolute top-0 left-0 w-full h-full z-20 pointer-events-none overflow-hidden rounded-xl"
+            style={{ padding: "2px" }}
+          >
+            <div
+              className="absolute bg-primary h-2 shadow-md"
+              style={{
+                width: `${progress * 100}%`,
+                top: 0,
+                left: 0,
+                borderTopLeftRadius: "0.5rem",
+                borderTopRightRadius: progress === 1 ? "0.5rem" : 0,
+              }}
+            />
+          </div>
+        )}
 
         <div className="relative">
           {/* Image container */}
@@ -252,9 +285,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
             <h3 className="text-xl font-bold">{name}</h3>
             <Badge
               variant="outline"
-              className={
-                openNow ? "bg-white text-green-700 border-green-200" : "bg-white text-red-700 border-red-200"
-              }
+              className={openNow ? "bg-white text-green-700 border-green-200" : "bg-white text-red-700 border-red-200"}
             >
               {openNow ? "Open" : "Closed"}
             </Badge>
@@ -262,9 +293,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
 
           {/* Type / Rating */}
           <div className="flex items-center text-sm text-muted-foreground">
-            <Badge variant="secondary">
-              {primaryType}
-            </Badge>
+            <Badge variant="secondary">{primaryType}</Badge>
             <div className="flex items-center ml-auto">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
               <span className="font-medium">{rating}</span>
@@ -282,15 +311,13 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
                 rel="noopener noreferrer"
                 className="text-sm hover:underline"
                 draggable="false"
-              >{address}</a>
+              >
+                {address}
+              </a>
             </div>
             <div className="flex items-center">
               <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-              <a
-                href={`tel:${phone.replace(/[^\d]/g, "")}`}
-                className="text-sm hover:underline"
-                draggable="false"
-              >
+              <a href={`tel:${phone.replace(/[^\d]/g, "")}`} className="text-sm hover:underline" draggable="false">
                 {phone}
               </a>
             </div>
@@ -303,6 +330,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
             </span>
           </div>
 
+          <ReactionSummary reactions={reactions} />
           <div className="w-full flex flex-row gap-2">
             <Button className="grow-3" asChild>
               <a
@@ -315,12 +343,14 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
                 View on Maps
               </a>
             </Button>
-            {isHost ?
+            {isHost ? (
               <Button variant="secondary" className="grow-1" onClick={onSkip}>
                 Skip
                 <ChevronsRight />
-              </Button> : <></>
-            }
+              </Button>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </motion.div>

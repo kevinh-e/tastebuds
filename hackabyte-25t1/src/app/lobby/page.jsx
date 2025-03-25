@@ -68,10 +68,10 @@ export default function LobbyPage() {
       obj["countDownStart"] = 0
       obj["votes"] = {
         yes: [],
-        no: [],
-      }
-      obj["reactions"] = []
-      restaurantArrayFinal.push(obj)
+        no: []
+      };
+      obj["reactions"] = {}
+      restaurantArrayFinal.push(obj);
     })
 
     socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify(restaurantArrayFinal))
