@@ -37,7 +37,8 @@ export function FeedCard({ place, onVoteChange }) {
     if (onVoteChange) {
       onVoteChange(vote)
     }
-  }, [vote, onVoteChange])
+  }, [vote])
+
 
   // Reset x position after vote
   useEffect(() => {
