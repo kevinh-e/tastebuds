@@ -26,6 +26,7 @@ export default function PreLobbyPage() {
   const [lobbyCode, setLobbyCode] = useState("")
   const [hostName, setHostName] = useState("")
   const [roundTime, setRoundTime] = useState(10);
+
   const [joinName, setJoinName] = useState("")
   const [error, setError] = useState("")
 
