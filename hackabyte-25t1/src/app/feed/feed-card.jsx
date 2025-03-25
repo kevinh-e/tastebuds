@@ -1,20 +1,90 @@
 "use client"
 
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card"
-import { ChevronLeft, ChevronRight, MapPin, Phone, Star } from "lucide-react"
-import { useEffect, useState } from "react";
-import { fetchRestaurantImage } from "./utils/fetchRestaurantImage";
+import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
+import { MapPin, Star, X, Check, ChevronLeft, ChevronRight, Phone } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export default function FeedCard({ place }) {
+
+export function FeedCard({ place, onVoteChange }) {
+  const [vote, setVote] = useState(null)
+  const [isDragging, setIsDragging] = useState(false)
+
+  // Track the card's position
+  const x = useMotionValue(0)
+  const controls = useAnimation()
+
+  // Calculate rotation based on x position
+  // The card will pivot around its bottom middle point
+  const rotate = useTransform(x, [-150, 0, 150], [-15, 0, 15])
+
+  // Calculate opacity for the indicators
+  const yesOpacity = useTransform(x, [0, 100], [0, 1])
+  const noOpacity = useTransform(x, [-100, 0], [1, 0])
+
+  // Calculate scale for the indicators
+  const yesScale = useTransform(x, [0, 100], [0.8, 1])
+  const noScale = useTransform(x, [-100, 0], [1, 0.8])
+
+  // Threshold for triggering a vote
+  const THRESHOLD = 100
+
+  // Update the parent component when vote changes
+  useEffect(() => {
+    if (onVoteChange) {
+      onVoteChange(vote)
+    }
+  }, [vote, onVoteChange])
+
+  // Reset x position after vote
+  useEffect(() => {
+    controls.start({ x: 0, rotate: 0 })
+  }, [vote, controls])
+
+  const handleDragStart = () => {
+    setIsDragging(true)
+  }
+
+  const handleDragEnd = (event, info) => {
+    setIsDragging(false)
+
+    if (info.offset.x > THRESHOLD) {
+      // Swiped right - "Yes"
+      setVote("yes")
+    } else if (info.offset.x < -THRESHOLD) {
+      // Swiped left - "No"
+      setVote("no")
+    }
+
+    // Always return to upright position
+    controls.start({
+      x: 0,
+      rotate: 0,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+      },
+    })
+  }
+
+  // Map x position to a smooth color gradient
+  const backgroundColour = useTransform(
+    x,
+    [-150, 0, 150],
+    ["rgba(239, 68, 68, 0.2)", "#ffffff", "rgba(34, 197, 94, 0.2)"] // Red → White → Green
+  );
+
+  // Border color should match background color
+  const borderColour = useTransform(
+    x,
+    [-150, 0, 150],
+    ["rgba(239, 68, 68, 0.8)", "rgba(255, 255, 255, 0)", "rgba(34, 197, 94, 0.8)"] // Red → Transparent → Green
+  );
+
   const name = place.displayName?.text || "Unnamed Place";
   const address = place.shortFormattedAddress || "No address available";
   const phone = place?.nationalPhoneNumber || "No phone number available";
@@ -28,7 +98,6 @@ export default function FeedCard({ place }) {
 
   const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
   
-
   const [imageUrls, setImageUrls] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -61,110 +130,194 @@ export default function FeedCard({ place }) {
     fetchImages();
   }, []);
 
+
   return (
-    <Card className="w-full max-w-lg pt-0 overflow-hidden">
-      <div className="overflow-hidden relative h-128 w-full bg-muted aspect-[3/2]">
-        <img
-          src={imageUrls[currentImageIndex] || "/placeholder.svg"}
-          alt={`${name} - image ${currentImageIndex + 1}`}
-          referrerPolicy="no-referrer"
-          className="absolute top-0 left-0 w-full h-full object-cover"
-        />
-        {imageUrls.length > 1 && (
-          <>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full h-8 w-8 z-10"
-              onClick={prevImage}
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="h-5 w-5" />
-              <span className="sr-only">Previous image</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full h-8 w-8 z-10"
-              onClick={nextImage}
-              aria-label="Next image"
-            >
-              <ChevronRight className="h-5 w-5" />
-              <span className="sr-only">Next image</span>
-            </Button>
+    <div className="relative w-full max-w-md mx-auto">
+      {/* "Yes" indicator */}
+      <motion.div
+        className="absolute top-1/2 right-8 transform -translate-y-1/2 bg-green-500 text-white rounded-full p-4 z-10"
+        style={{ opacity: yesOpacity, scale: yesScale }}
+      >
+        <Check className="h-8 w-8" />
+      </motion.div>
 
-            <div
-              className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10"
-              role="tablist"
-              aria-label="Image navigation"
-            >
-              {imageUrls.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                    index === currentImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/70"
-                  }`}
-                  role="tab"
-                  aria-selected={index === currentImageIndex}
-                  aria-label={`View image ${index + 1}`}
+      {/* "No" indicator */}
+      <motion.div
+        className="absolute top-1/2 left-8 transform -translate-y-1/2 bg-red-500 text-white rounded-full p-4 z-10"
+        style={{ opacity: noOpacity, scale: noScale }}
+      >
+        <X className="h-8 w-8" />
+      </motion.div>
+
+      {/* Current vote indicator */}
+      {vote && !isDragging && (
+        <div
+          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white ${
+            vote === "yes" ? "bg-green-500" : "bg-red-500"
+          }`}
+        >
+          {vote === "yes" ? "YES" : "NO"}
+        </div>
+      )}
+
+      {/* Card */}
+      <motion.div
+        className="rounded-xl shadow-md overflow-hidden w-full transition-none border-2"
+        style={{
+          x,
+          rotate,
+          transformOrigin: "bottom center",
+          background: backgroundColour,
+          borderColor: borderColour,
+        }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+
+        <div className="relative">
+          {/* Image container */}
+          <div className="overflow-hidden relative h-128 w-full bg-muted aspect-[3/2]">
+            {imageUrls[currentImageIndex] ? (
+              <>
+                <img
+                  src={imageUrls[currentImageIndex] || "/placeholder.svg"}
+                  alt={`${name} - image ${currentImageIndex + 1}`}
+                  referrerPolicy="no-referrer"
+                  draggable="false"
+                  className="absolute top-0 left-0 w-full h-full object-cover"
                 />
-              ))}
+                {imageUrls.length > 1 && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full h-8 w-8 z-10 cursor-pointer"
+                      onClick={prevImage}
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                      <span className="sr-only">Previous image</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full h-8 w-8 z-10 cursor-pointer"
+                      onClick={nextImage}
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                      <span className="sr-only">Next image</span>
+                    </Button>
+    
+                    <div
+                      className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10"
+                      role="tablist"
+                      aria-label="Image navigation"
+                    >
+                      {imageUrls.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                            index === currentImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/70"
+                          }`}
+                          role="tab"
+                          aria-selected={index === currentImageIndex}
+                          aria-label={`View image ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <Skeleton className="absolute top-0 left-0 w-full h-full" />
+            )}
+          </div>
+
+          {/* Colored overlay based on swipe direction - only during active drag */}
+          <motion.div
+            className="absolute inset-0 bg-green-500 bg-opacity-30 rounded-t-xl pointer-events-none"
+            style={{ opacity: yesOpacity }}
+          />
+          <motion.div
+            className="absolute inset-0 bg-red-500 bg-opacity-30 rounded-t-xl pointer-events-none"
+            style={{ opacity: noOpacity }}
+          />
+        </div>
+        <div className="p-6 space-y-3">
+          {/* Title / Open status */}
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-bold">{name}</h3>
+            <Badge
+              variant="outline"
+              className={
+                openNow ? "bg-white text-green-700 border-green-200" : "bg-white text-red-700 border-red-200"
+              }
+            >
+              {openNow ? "Open" : "Closed"}
+            </Badge>
+          </div>
+
+          {/* Type / Rating */}
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Badge variant="secondary">
+              {primaryType}
+            </Badge>
+            <div className="flex items-center ml-auto">
+              <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
+              <span className="font-medium">{rating}</span>
+              <span className="text-xs ml-1">({totalRatings})</span>
             </div>
-          </>
-        )}
-      </div>
-
-      <CardContent className="space-y-4 p-5">
-        <div className="flex justify-between items-start">
-          <h3 className="text-xl font-bold">{name}</h3>
-          <Badge
-            variant="outline"
-            className={
-              openNow ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"
-            }
-          >
-            {openNow ? "Open" : "Closed"}
-          </Badge>
-        </div>
-
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Badge variant="secondary" className="mr-2">
-            {primaryType}
-          </Badge>
-          <div className="flex items-center ml-auto">
-            <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
-            <span className="font-medium">{rating}</span>
-            <span className="text-xs ml-1">({totalRatings})</span>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <div className="flex items-start">
-            <MapPin className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
-            <span className="text-sm">{address}</span>
+          {/* Address / Phone */}
+          <div className="space-y-2">
+            <div className="flex items-start">
+              <MapPin className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+              <a
+                href={mapsLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm hover:underline"
+                draggable="false"
+              >{address}</a>
+            </div>
+            <div className="flex items-center">
+              <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+              <a
+                href={`tel:${phone.replace(/[^\d]/g, "")}`}
+                className="text-sm hover:underline"
+                draggable="false"
+              >
+                {phone}
+              </a>
+            </div>
           </div>
-          <div className="flex items-center">
-            <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-            <a href={`tel:${phone.replace(/[^\d]/g, "")}`} className="text-sm hover:underline">
-              {phone}
+
+          <div className="pt-2 border-t">
+            <span className="text-sm font-medium">Price Range: </span>
+            <span className="text-sm text-muted-foreground">
+              ${minPrice}-${maxPrice}
+            </span>
+          </div>
+
+          <Button className="w-full" asChild>
+            <a
+              href={mapsLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`View ${name} on Maps`}
+              draggable="false"
+            >
+              View on Maps
             </a>
-          </div>
+          </Button>
         </div>
-
-        <div className="pt-2 border-t">
-          <span className="text-sm font-medium">Price Range: </span>
-          <span className="text-sm text-muted-foreground">
-            ${minPrice}-${maxPrice}
-          </span>
-        </div>
-
-        <Button variant="secondary" className="w-full" asChild>
-          <a href={mapsLink} target="_blank" rel="noopener noreferrer" aria-label={`View ${name} on Maps`}>
-            View on Maps
-          </a>
-        </Button>
-      </CardContent>
-    </Card>
+      </motion.div>
+    </div>
   )
 }
+
