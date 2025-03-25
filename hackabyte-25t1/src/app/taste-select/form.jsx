@@ -23,6 +23,7 @@ const formSchema = z.object({
 
 export default function TasteSelectForm() {
   const { id, roomData, setRoomData, roomCode } = useAppContext();
+  const router = useRouter();
 
   useEffect(() => {
     socket.on('syncData', (msg) => {
@@ -49,6 +50,7 @@ export default function TasteSelectForm() {
         console.log(res);
       });
     }
+    router.push('/lobby');
   }
 
   // Price options
