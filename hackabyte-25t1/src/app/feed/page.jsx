@@ -5,13 +5,18 @@ import { useAppContext } from "@/context/AppContext"
 import { FeedCard } from "./feed-card"
 
 import { socket } from "@/socket.js";
-import { Button } from "@/components/ui/button";
 
 export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
+  const [isHost, setIsHost] = useState(false);
   const { id, roomData, roomCode, restIndex } = useAppContext();
 
-  const isHost = roomData ? roomData.roomMembers[id].isHost : false;
+  useEffect(() => {
+    if (roomData) {
+      setIsHost(roomData.roomMembers[id].isHost)
+    }
+    console.log(isHost);
+  }, [roomData]);
 
   const handleVoteChange = (vote) => {
     setCurrentVote(vote)

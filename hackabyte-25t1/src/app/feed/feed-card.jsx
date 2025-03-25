@@ -92,10 +92,10 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
   const rating = place?.rating || 0;
   const totalRatings = place?.userRatingCount || 0;
   const primaryType = place?.primaryTypeDisplayName.text || "Unknown Type";
-  const minPrice = place?.priceRange?.startPrice.units || 0; 
-  const maxPrice = place?.priceRange?.endPrice.units || 0;
-  const openNow = place?.regularOpeningHours?.openNow || false;
-  const mapsLink = place?.googleMapsUri || "";
+  const minPrice = place?.priceRange?.startPrice.units;
+  const maxPrice = place?.priceRange?.endPrice.units;
+  const openNow = place?.regularOpeningHours.openNow;
+  const mapsLink = place?.googleMapsUri;
   const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
 
   const [imageUrls, setImageUrls] = useState([]);
@@ -129,9 +129,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
     };
 
     fetchImages();
-    setVote(null);
   }, [restIndex]);
-
 
   return (
     <div className="relative w-full max-w-md mx-auto">
@@ -316,11 +314,12 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
                 View on Maps
               </a>
             </Button>
-            {}
-            <Button variant="secondary" className="grow-1" onClick={onSkip}>
-              Skip
-              <ChevronsRight />
-            </Button>
+            {isHost ?
+              <Button variant="secondary" className="grow-1" onClick={onSkip}>
+                Skip
+                <ChevronsRight />
+              </Button> : <></>
+            }
           </div>
         </div>
       </motion.div>
