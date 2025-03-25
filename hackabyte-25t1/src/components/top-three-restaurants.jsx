@@ -43,7 +43,7 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
   const winnerImageUrl = winner.thumbnail;
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 to-white rounded-xl p-4 border border-orange-100 shadow-sm mb-6">
+    <div className="bg-gradient-to-br from-amber-300 to-white rounded-xl p-4 border border-orange-100 shadow-sm mb-6 ">
       <div className="flex items-start gap-3 mb-4">
         <div className="relative h-24 w-24 rounded-lg overflow-hidden flex-shrink-0">
           <div className="absolute top-0 left-0 bg-orange-500 text-white z-10 px-1.5 py-0.5 rounded-br-lg">
@@ -65,22 +65,19 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
               {winnerName}
             </a>
           </h3>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+          <div className="flex justify-between items-center gap-1 text-sm text-muted-foreground mb-1">
             <Badge variant="outline" className="bg-orange-50 text-orange-600 hover:bg-orange-50">
               {winnerCuisine}
             </Badge>
-            <div className="flex items-center">
-              <p className="overflow-hidden text-ellipsis max-w-30 line-clamp-3 text-right">
-                {winnerLocation}
-              </p>
-            </div>
+            <p className="overflow-hidden text-ellipsis max-w-42 line-clamp-3 text-right">
+              {winnerLocation}
+            </p>
           </div>
           <div className="flex items-center gap-2 mb-2">
             <div className="flex items-center">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               <span className="ml-1 text-sm font-medium">{winnerRating}</span>
             </div>
-            <span className="text-muted-foreground">•</span>
             <div className="text-sm text-muted-foreground">{winnerPrice}</div>
           </div>
           {/* <Button */}

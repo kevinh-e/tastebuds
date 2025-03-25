@@ -80,7 +80,7 @@ export default function ResultsPage() {
     <div className="min-h-screen bg-gradient-to-b from-orange-50/50 to-white">
       {showConfetti && <Confetti duration={5000} />}
 
-      <main className="container max-w-md mx-auto px-4 py-8">
+      <main className="container max-w-lg mx-auto px-4 py-8">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold">Results Are In!</h1>
         </div>
