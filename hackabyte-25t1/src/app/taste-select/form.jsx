@@ -55,7 +55,7 @@ export default function TasteSelectForm() {
                     <FormControl key={price}>
                       <Toggle
                         variant="outline"
-                        className="h-10 px-4 rounded-full"
+                        className="h-10 px-4 rounded-full hover:cursor-pointer"
                         pressed={field.value?.includes(price)}
                         onPressedChange={(pressed) => {
                           const updatedPrices = pressed
@@ -127,7 +127,7 @@ export default function TasteSelectForm() {
                     <FormControl key={rating}>
                       <Toggle
                         variant="outline"
-                        className={`h-10 px-3 rounded-full ${field.value === rating ? "bg-primary text-primary-foreground" : ""}`}
+                        className={`h-10 px-3 rounded-full hover:cursor-pointer ${field.value === rating ? "bg-primary text-primary-foreground" : ""}`}
                         pressed={field.value === rating}
                         onPressedChange={(pressed) => {
                           // If already selected and pressed again, deselect it
@@ -150,7 +150,7 @@ export default function TasteSelectForm() {
             )}
           />
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full hover:cursor-pointer">
             Find Restaurants
           </Button>
         </form>
