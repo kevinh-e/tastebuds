@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAppContext } from "@/context/AppContext"
+import { ReactionSummary } from "./utils/reaction-summary"
 
 export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
   const [vote, setVote] = useState(null)
@@ -38,7 +39,6 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
       onVoteChange(vote)
     }
   }, [vote])
-
 
   // Reset x position after vote
   useEffect(() => {
@@ -77,7 +77,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
     x,
     [-150, 0, 150],
     ["rgba(239, 68, 68, 0.2)", "#ffffff", "rgba(34, 197, 94, 0.2)"] // Red → White → Green
-  );
+  )
 
   // Border color should match background color
   const borderColour = useTransform(
@@ -86,20 +86,21 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
     ["rgba(239, 68, 68, 0.8)", "rgba(255, 255, 255, 0)", "rgba(34, 197, 94, 0.8)"] // Red → Transparent → Green
   );
 
-  const name = place.displayName?.text || "Unnamed Place";
-  const address = place.shortFormattedAddress || "No address available";
-  const phone = place?.nationalPhoneNumber || "No phone number available";
-  const rating = place?.rating || 0;
-  const totalRatings = place?.userRatingCount || 0;
-  const primaryType = place?.primaryTypeDisplayName.text || "Unknown Type";
-  const minPrice = place?.priceRange.startPrice.units;
-  const maxPrice = place?.priceRange.endPrice.units;
-  const openNow = place?.regularOpeningHours.openNow;
-  const mapsLink = place?.googleMapsUri;
-  const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
+  const name = place?.displayName?.text || "Unnamed Place"
+  const address = place?.shortFormattedAddress || "No address available"
+  const phone = place?.nationalPhoneNumber || "No phone number available"
+  const rating = place?.rating || 0
+  const totalRatings = place?.userRatingCount || 0
+  const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type"
+  const minPrice = place?.priceRange?.startPrice?.units || "10"
+  const maxPrice = place?.priceRange?.endPrice?.units || "40"
+  const openNow = place?.regularOpeningHours?.openNow || false
+  const mapsLink = place?.googleMapsUri
+  const photoNames = place?.photos?.map((obj) => obj.name).slice(0, 4)
 
-  const [imageUrls, setImageUrls] = useState([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageUrls, setImageUrls] = useState([])
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  )
 
   const { restIndex } = useAppContext();
 
@@ -113,24 +114,25 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
 
   useEffect(() => {
     const fetchImages = async () => {
-      if (!photoNames || photoNames.length === 0) return;
+      if (!photoNames || photoNames.length === 0) return
 
       try {
         const imageUrls = await Promise.all(
           photoNames.map(async (photoName) => {
-            return await fetchRestaurantImage(photoName);
+            return await fetchRestaurantImage(photoName)
           })
-        );
-
-        setImageUrls(imageUrls); // Store images in order
+        )
+        setImageUrls(imageUrls) // Store images in order
       } catch (error) {
-        console.error("Failed to fetch images:", error);
+        console.error("Failed to fetch images:", error)
       }
     };
 
     fetchImages();
   }, [restIndex]);
 
+    fetchImages()
+  }, [])
 
   return (
     <div className="relative w-full max-w-md mx-auto">
@@ -175,7 +177,6 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-
         <div className="relative">
           {/* Image container */}
           <div className="overflow-hidden relative h-128 w-full bg-muted aspect-[3/2]">
@@ -220,8 +221,9 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
                         <button
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
-                          className={`h-1.5 w-1.5 rounded-full transition-colors ${index === currentImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/70"
-                            }`}
+                          className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                            index === currentImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/70"
+                          }`}
                           role="tab"
                           aria-selected={index === currentImageIndex}
                           aria-label={`View image ${index + 1}`}
@@ -253,7 +255,9 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
             <Badge
               variant="outline"
               className={
-                openNow ? "bg-white text-green-700 border-green-200" : "bg-white text-red-700 border-red-200"
+                openNow
+                  ? "bg-white text-green-700 border-green-200"
+                  : "bg-white text-red-700 border-red-200"
               }
             >
               {openNow ? "Open" : "Closed"}
@@ -262,9 +266,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
 
           {/* Type / Rating */}
           <div className="flex items-center text-sm text-muted-foreground">
-            <Badge variant="secondary">
-              {primaryType}
-            </Badge>
+            <Badge variant="secondary">{primaryType}</Badge>
             <div className="flex items-center ml-auto">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
               <span className="font-medium">{rating}</span>
@@ -282,7 +284,9 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
                 rel="noopener noreferrer"
                 className="text-sm hover:underline"
                 draggable="false"
-              >{address}</a>
+              >
+                {address}
+              </a>
             </div>
             <div className="flex items-center">
               <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
@@ -326,4 +330,3 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
     </div>
   )
 }
-
