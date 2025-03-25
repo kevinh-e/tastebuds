@@ -1,11 +1,9 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, Plus, X, Share2 } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { ChevronLeft, MapPin, Utensils } from "lucide-react"
 import { useAppContext } from "@/context/AppContext.jsx";
 import Link from "next/link"
 import PreferencesList from "@/components/lobby/preferences-list"
@@ -17,7 +15,6 @@ import CopyButton from "@/components/ui/copy-button"
 export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext();
   
-  const searchParams = useSearchParams()
   const router = useRouter()
   
   socket.on("reccomendationsRecieved", (data) => {
@@ -78,32 +75,18 @@ export default function LobbyPage() {
     socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify(restaurantArrayFinal));
   }
 
-  const shareGroup = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "Join my FoodMates group!",
-        text: `Join my group with code: ${roomCode}`,
-        url: window.location.href,
-      })
-    } else {
-      // Fallback for browsers that don't support the Web Share API
-      navigator.clipboard.writeText(`Join my FoodMates group with code: ${roomCode}`)
-      alert("Group code copied to clipboard!")
-    }
-  }
-
   return (
     <form onSubmit={handleSubmit} className="container max-w-md mx-auto px-4 py-8 h-screen">
       <div className="container max-w-md mx-auto px-4 h-full flex flex-col justify-between">
         <div className="flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <Button asChild variant="outline">
+            <Button asChild className="bg-card text-muted-foreground border">
               <Link href="/start" className="flex items-center text-sm">
                 <ChevronLeft className="h-4 w-4 mr-1" /> Exit
               </Link>
             </Button>
             <CopyButton
-              className="text-lg text-muted-foreground"
+              className="text-muted-foreground"
               textToCopy={roomCode}
               displayText={roomCode}
             />
@@ -119,6 +102,7 @@ export default function LobbyPage() {
 
             <Card>
               <CardContent className="space-y-3">
+                <Utensils className="h-6 w-6"/>
                 <h3 className="text-xl font-semibold">Cusines:</h3>
                 <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
               </CardContent>
@@ -126,6 +110,7 @@ export default function LobbyPage() {
 
             <Card>
               <CardContent className="space-y-3">
+                <MapPin className="h-6 w-6"/>
                 <h3 className="text-xl font-semibold">Locations:</h3>
                 <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
               </CardContent>
