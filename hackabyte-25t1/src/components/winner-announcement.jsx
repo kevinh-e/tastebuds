@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
-export default function WinnerAnnouncement({ restaurant, users, onClose }) {
+export default function WinnerAnnouncement({ restaurant, users, currentUser, onClose }) {
   // Get users who voted yes
   const yesVoters = users.filter((user) => restaurant.votes.yes.includes(user.id))
 
@@ -38,7 +38,12 @@ export default function WinnerAnnouncement({ restaurant, users, onClose }) {
         <CardContent className="p-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="relative h-20 w-20 rounded-lg overflow-hidden flex-shrink-0">
-              <Image src={restaurant.image || "/placeholder.svg"} alt={restaurant.name} fill className="object-cover" />
+              <Image
+                src={restaurant.image || "/placeholder.svg?height=80&width=80"}
+                alt={restaurant.name}
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-bold">{restaurant.name}</h3>
@@ -58,7 +63,7 @@ export default function WinnerAnnouncement({ restaurant, users, onClose }) {
                   <span className="ml-1 text-sm font-medium">{restaurant.rating}</span>
                 </div>
                 <span className="text-muted-foreground">•</span>
-                <div className="text-sm text-muted-foreground">{Array(restaurant.price.length).fill("$").join("")}</div>
+                <div className="text-sm text-muted-foreground">{restaurant.price}</div>
               </div>
             </div>
           </div>
@@ -70,7 +75,7 @@ export default function WinnerAnnouncement({ restaurant, users, onClose }) {
             <div className="flex -space-x-2 overflow-hidden">
               {yesVoters.map((user) => (
                 <Avatar key={user.id} className="border-2 border-background">
-                  <AvatarFallback className={user.id === "current" ? "bg-orange-500 text-white" : "bg-gray-200"}>
+                  <AvatarFallback className={user.id === currentUser ? "bg-orange-500 text-white" : "bg-gray-200"}>
                     {user.avatar}
                   </AvatarFallback>
                 </Avatar>
@@ -99,5 +104,4 @@ export default function WinnerAnnouncement({ restaurant, users, onClose }) {
     </div>
   )
 }
-
 
