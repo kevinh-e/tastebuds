@@ -66,19 +66,21 @@ app.prepare().then(() => {
     }
   }
 
-  function joinRoom(roomCode, id) {
+  function joinRoom(roomCode, id, name) {
     data[roomCode].roomMembers[id] = {
+      name: name,
       isHost: false,
       preferences: {},
     };
   }
 
   io.on("connection", (socket) => {
-    socket.on("createRoom", (roundTime, id, cb) => {
+    socket.on("createRoom", (roundTime, id, hostname, cb) => {
       const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
       addRoom(roomCode, roundTime);
 
       const member = {
+        name: hostname,
         isHost: true,         // default value, adjust if necessary
         preferences: {},
       };
@@ -90,9 +92,9 @@ app.prepare().then(() => {
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
-    socket.on("joinRoom", (roomCode, id, cb) => {
+    socket.on("joinRoom", (roomCode, id, name, cb) => {
       socket.join(roomCode);
-      joinRoom(roomCode, id);
+      joinRoom(roomCode, id, name);
       cb(roomCode);
       // io.emit("syncData", JSON.stringify(data));
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
