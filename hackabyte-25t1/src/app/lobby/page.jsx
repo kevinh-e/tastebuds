@@ -98,7 +98,7 @@ export default function LobbyPage() {
           <Link href="/start" className="flex items-center text-sm">
             <ChevronLeft className="h-4 w-4 mr-1" /> Exit
           </Link>
-          <Button variant="outline" size="sm" onClick={shareGroup} className="flex items-center gap-1">
+          <Button variant="outline" size="sm" onClick={shareGroup} className="flex bg-white items-center gap-1">
             <Share2 className="h-4 w-4" />
             Share
           </Button>
