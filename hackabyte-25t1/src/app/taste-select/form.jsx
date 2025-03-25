@@ -1,15 +1,13 @@
 "use client"
 
 import { useForm } from "react-hook-form"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useRouter } from 'next/navigation';
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Toggle } from "@/components/ui/toggle"
-import { Card, CardContent } from "@/components/ui/card"
-import { Copy, Check } from "lucide-react"
 import TagInput from "./tag-input.jsx"
 import { useAppContext } from "@/context/AppContext.jsx";
 
@@ -27,7 +25,6 @@ const formSchema = z.object({
 export default function TasteSelectForm() {
   const { id, roomData, setRoomData, roomCode } = useAppContext();
   const router = useRouter();
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     socket.on('syncData', (msg) => {
@@ -53,12 +50,6 @@ export default function TasteSelectForm() {
       socket.emit("sendPreferences", roomCode, JSON.stringify(data), id);
     }
     router.push('/lobby');
-  }
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(roomCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   // Price options
