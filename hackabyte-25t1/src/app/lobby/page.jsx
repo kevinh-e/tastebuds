@@ -80,7 +80,11 @@ export default function LobbyPage() {
       <div className="container max-w-md mx-auto px-4 h-full flex flex-col justify-between">
         <div className="flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <Button asChild className="bg-card text-muted-foreground border">
+            <Button
+              asChild
+              className="bg-card text-muted-foreground border"
+              onClick={(e) => e.preventDefault()}
+            >
               <Link href="/start" className="flex items-center text-sm">
                 <ChevronLeft className="h-4 w-4 mr-1" /> Exit
               </Link>

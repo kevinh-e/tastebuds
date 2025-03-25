@@ -13,7 +13,8 @@ export default function CopyButton({
 }) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = async () => {
+  const handleCopy = async (e) => {
+    e.preventDefault();
     await navigator.clipboard.writeText(textToCopy)
     setCopied(true)
 
