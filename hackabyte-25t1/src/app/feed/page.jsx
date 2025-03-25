@@ -2,8 +2,14 @@
 
 import { useEffect } from "react"
 import FeedCard from "./feed-card"
+import { useAppContext } from "@/context/AppContext.jsx";
 
 export default function FeedPage({ query }) {
+    const { id, roomCode, roomData, setRoomCode } = useAppContext();
+
+    // console.log("Feed page");
+    // console.log(roomData);
+
     useEffect(() => {
         const fetchCards = async () => {
             console.log("fetching place objects...")
