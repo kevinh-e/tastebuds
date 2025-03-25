@@ -17,11 +17,17 @@ export default function PreLobbyPage() {
   const router = useRouter();
 
   useEffect(() => {
-    socket.on('syncData', (msg) => {
-      // setResponse(JSON.parse(msg));
-      setRoomData(JSON.parse(msg));
-    });
-  }, [roomData]);
+    const handleSyncData = (msg) => {
+      const data = JSON.parse(msg);
+      setRoomData(data);
+    };
+
+    socket.on('syncData', handleSyncData);
+
+    return () => {
+      socket.off('syncData', handleSyncData);
+    };
+  }, []);
 
   const [lobbyCode, setLobbyCode] = useState("")
   const [hostName, setHostName] = useState("")

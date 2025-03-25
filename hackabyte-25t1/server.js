@@ -30,7 +30,7 @@ app.prepare().then(() => {
       roomSettings: {
         roomCode: roomCode,
         roundTime: roundTime,
-        restIndex: 0,
+        restIndex: -1,
       }
     }
   }
@@ -114,14 +114,15 @@ app.prepare().then(() => {
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
-    socket.on("nextRestaurant", (roomCode) => {
-      if (data[roomCode].roomSettings.restIndex >= length(data[roomCode].restaurants)) {
+    socket.on("nextRestaurant", (roomCode, hostStartTime) => {
+      if (data[roomCode].roomSettings.restIndex >= data[roomCode].restaurants.length) {
         // podium time
       } else {
         // go to the next restuarant for everyone
         data[roomCode].roomSettings.restIndex += 1;
+        data[roomCode].restaurants[data[roomCode].roomSettings.restIndex].countDownStart = hostStartTime;
+        io.in(roomCode).emit("startNextCard", JSON.stringify(data[roomCode]));
       }
-      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
   });
 
