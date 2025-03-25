@@ -30,6 +30,7 @@ app.prepare().then(() => {
       roomSettings: {
         roomCode: roomCode,
         roundTime: roundTime,
+        restIndex: 0,
       }
     }
   }
@@ -44,6 +45,26 @@ app.prepare().then(() => {
 
   function setPreferences(roomCode, id, preferences) {
     data[roomCode].roomMembers[id].preferences = preferences;
+  }
+
+  function setVote(roomCode, id, vote, restIndex) {
+    const votes = data[roomCode].restaurants[restIndex].votes;
+
+    if (vote === "yes") {
+      // Remove id from the "no" votes
+      votes.no = votes.no.filter(v => v !== id);
+      // Toggle id in the "yes" votes
+      votes.yes = votes.yes.includes(id)
+        ? votes.yes.filter(v => v !== id)
+        : [...votes.yes, id];
+    } else if (vote === "no") {
+      // Remove id from the "yes" votes
+      votes.yes = votes.yes.filter(v => v !== id);
+      // Toggle id in the "no" votes
+      votes.no = votes.no.includes(id)
+        ? votes.no.filter(v => v !== id)
+        : [...votes.no, id];
+    }
   }
 
   io.on("connection", (socket) => {
@@ -83,13 +104,24 @@ app.prepare().then(() => {
       cb(JSON.stringify(data));
     });
 
-    socket.on("senderUserVote", (vote, id, cb) => {
+    socket.on("sendUserVote", (vote, id, roomCode, restaurantIndex, cb) => {
       // add/replace vote to data
-      data.roomMembers[id].vote = vote;
-
+      setVote(roomCode, id, vote, restaurantIndex);
       // call back to confirm the data was sent
+      cb(data[roomCode].restaurants[restaurantIndex].votes);
       // cb("sent data: \n" + vote + "\n\nwith id:\n" + id);
-      cb(JSON.stringify(data));
+      // cb(JSON.stringify(data));
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
+    });
+
+    socket.on("nextRestaurant", (roomCode) => {
+      if (data[roomCode].roomSettings.restIndex >= length(data[roomCode].restaurants)) {
+        // podium time
+      } else {
+        // go to the next restuarant for everyone
+        data[roomCode].roomSettings.restIndex += 1;
+      }
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
   });
 

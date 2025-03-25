@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 
 export default function PreferencesList({ users, preferenceType }) {
+
   // Get all preferences from the nested preferences object
   const allPreferences = Object.values(users).flatMap((user) => {
     const prefs = user.preferences?.[preferenceType];
