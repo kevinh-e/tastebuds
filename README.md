@@ -31,6 +31,7 @@ data: {
             ]
         } ],
         roomSettings: {
+          restIndex: number,
           roomCode: string,
           roundTime: number,
         }

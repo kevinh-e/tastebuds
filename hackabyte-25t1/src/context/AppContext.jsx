@@ -9,6 +9,7 @@ export const AppProvider = ({ children }) => {
   const [id, setId] = useState(uid);
   const [roomCode, setRoomCode] = useState("");
   const [roomData, setRoomData] = useState(null);
+  const [restIndex, setRestIndex] = useState(0);
 
   useEffect(() => {
     localStorage.setItem("id", id);
@@ -21,10 +22,12 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("roomData", roomData);
+    localStorage.setItem("restIndex", roomData.roomSettings.restIndex);
+    console.log(roomData);
   }, [roomData]);
 
   return (
-    <AppContext.Provider value={{ id, setId, roomCode, setRoomCode, roomData, setRoomData }}>
+    <AppContext.Provider value={{ id, setId, roomCode, setRoomCode, roomData, setRoomData, restIndex, setRestIndex }}>
       {children}
     </AppContext.Provider>
   );
