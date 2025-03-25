@@ -51,7 +51,7 @@ export default function LobbyPage() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ textQuery: searchQuery }),
+      body: JSON.stringify({ textQuery: searchQuery, pageSize: 10 }),
     })
 
     const searchApiResponse = await response.json()
