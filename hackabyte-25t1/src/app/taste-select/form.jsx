@@ -185,7 +185,7 @@ export default function TasteSelectForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <Coins className="h-5 w-5" />
+                    <Coins className="h-5 text-orange-500 w-5" />
                     Price
                   </FormLabel>
                   <FormDescription>How much do you want to spend?</FormDescription>
@@ -220,7 +220,7 @@ export default function TasteSelectForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <ChefHat className="h-5 w-5" />
+                    <ChefHat className="h-5 text-orange-500 w-5" />
                     Cuisine
                   </FormLabel>
                   <FormDescription>What type of food are you looking for?</FormDescription>
@@ -240,7 +240,7 @@ export default function TasteSelectForm() {
                         }}
                         className="h-full"
                       >
-                        <Dices />
+                        <Dices className="text-orange-500" />
                       </Button>
                     </div>
                   </FormControl>
@@ -256,7 +256,7 @@ export default function TasteSelectForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <MapPin className="h-5 w-5" />
+                    <MapPin className="h-5 text-orange-500 w-5" />
                     Location
                   </FormLabel>
                   <FormDescription>Where would you like to eat?</FormDescription>
@@ -276,7 +276,7 @@ export default function TasteSelectForm() {
                         }}
                         className="h-full"
                       >
-                        <Locate />
+                        <Locate className="text-orange-500" />
                       </Button>
                     </div>
                   </FormControl>
@@ -292,7 +292,7 @@ export default function TasteSelectForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <Star className="h-5 w-5" />
+                    <Star className="h-5 text-orange-500 w-5" />
                     Rating
                   </FormLabel>
                   <FormDescription>Minimum rating you're looking for</FormDescription>

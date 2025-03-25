@@ -13,8 +13,6 @@ const quickReactions = [
   { id: "👍", label: "Like" },
   { id: "❤️", label: "Love" },
   { id: "🔥", label: "Hot" },
-  { id: "☕", label: "Coffee" },
-  { id: "🍽️", label: "Food" },
   { id: "💰", label: "Pricey" },
   { id: "👎", label: "Dislike" },
 ]
@@ -73,8 +71,6 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-medium mb-3">How do you feel about this place?</h3>
-
       <div className="flex flex-wrap gap-2 justify-center mb-2">
         {quickReactions.map((reaction) => {
           const isSelected = selectedReaction === reaction.id
@@ -85,7 +81,7 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
                 variant="outline"
                 size="icon"
                 className={`relative h-12 w-12 rounded-full transition-all duration-200 ${
-                  isSelected ? `bg-primary text-white border-transparent` : "hover:bg-muted"
+                  isSelected ? `bg-primary/40 text-white border-transparent` : "hover:bg-muted"
                 }`}
                 onClick={() => handleReactionClick(reaction.id)}
                 onMouseEnter={() => setShowTooltip(reaction.id)}

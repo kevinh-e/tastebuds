@@ -13,6 +13,22 @@ import { ReactionSummary } from "./utils/reaction-summary"
 import { socket } from "@/socket"
 
 export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null }) {
+const toRadians = (degrees) => degrees * Math.PI / 180;
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+}
+
+export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null, location }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -94,11 +110,21 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   const rating = place?.rating || 0
   const totalRatings = place?.userRatingCount || 0
   const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type"
-  const minPrice = place?.priceRange?.startPrice?.units || 0
-  const maxPrice = place?.priceRange?.endPrice?.units || 0
+  const minPrice = place?.priceRange?.startPrice?.units || 10
+  const maxPrice = place?.priceRange?.endPrice?.units || 40
   const openNow = place?.regularOpeningHours?.openNow || false
   const mapsLink = place?.googleMapsUri || ""
   const photoNames = place?.photos.map((obj) => obj.name).slice(0, 4)
+
+  const placeCoordinates = place?.location;
+  const distance = location && placeCoordinates
+    ? getDistanceFromLatLonInKm(
+      location.latitude,
+      location.longitude,
+      placeCoordinates.latitude,
+      placeCoordinates.longitude
+    )
+    : null;
 
   const [imageUrls, setImageUrls] = useState([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -139,17 +165,12 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   // Calculate progress indicator dimensions
   const cardWidth = 100 // 100%
   const cardHeight = 100 // 100%
-  const strokeWidth = 4 // Border width in pixels
 
   // Calculate the perimeter of the card
   const perimeter = 2 * (cardWidth + cardHeight)
 
   // Calculate the length of the progress line based on the progress value
   const progressLength = progress !== null ? perimeter * progress : 0
-
-  // Calculate the dash array and offset for the SVG stroke
-  const dashArray = `${perimeter}`
-  const dashOffset = perimeter - progressLength
 
   return (
     <div className="relative w-full max-w-md mx-auto">
@@ -327,12 +348,27 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
             </div>
           </div>
 
-          <div className="pt-2 border-t">
-            <span className="text-sm font-medium">Price Range: </span>
-            <span className="text-sm text-muted-foreground">
-              ${minPrice}-${maxPrice}
-            </span>
+          <div className="pt-2 border-t flex justify-between">
+            <div>
+              <span className="text-sm font-medium">Price Range: </span>
+              <span className="text-sm text-muted-foreground">
+                ${minPrice}-${maxPrice}
+              </span>
+            </div>
+
+            <div>
+              {distance != null && (
+                <>
+                  {/* <span className="mx-2">•</span> */}
+                  <span className="text-sm font-medium">Distance: </span>
+                  <span className="text-sm text-muted-foreground">
+                    {distance.toFixed(2)} km
+                  </span>
+                </>
+              )}
+            </div>
           </div>
+
 
           <ReactionSummary reactions={reactions} />
           <div className="w-full flex flex-row gap-2">
