@@ -15,12 +15,6 @@ export default function FeedPage() {
   const { id, roomData, roomCode, restIndex, setRoomData } = useAppContext();
 
   useEffect(() => {
-    socket.on("reactionToast", ({ userName, reaction }) => {
-      if (reaction !== null) {
-        toast(`${userName} reacted with ${reaction}`);
-      }
-    })
-
     socket.on("voteToast", ({ userName, vote }) => {
       if (vote !== null) {
         const noToast = () => {
@@ -46,7 +40,6 @@ export default function FeedPage() {
     })
 
     return () => {
-      socket.off("reactionToast");
       socket.off("voteToast");
     }
   }, []);

@@ -81,7 +81,7 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
                 variant="outline"
                 size="icon"
                 className={`relative h-12 w-12 rounded-full transition-all duration-200 ${
-                  isSelected ? `bg-primary text-white border-transparent` : "hover:bg-muted"
+                  isSelected ? `bg-primary/40 text-white border-transparent` : "hover:bg-muted"
                 }`}
                 onClick={() => handleReactionClick(reaction.id)}
                 onMouseEnter={() => setShowTooltip(reaction.id)}
