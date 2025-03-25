@@ -6,15 +6,9 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const uid = Date.now().toString(36) + Math.random().toString(36).substr(2);
-  const [id, setId] = useState("1");
+  const [id, setId] = useState(uid);
   const [roomCode, setRoomCode] = useState("");
-
-  const defaultRoomData = {
-    roomMembers: {},
-    restaurants: [],
-    roomSettings: {}
-  }
-  const [roomData, setRoomData] = useState(defaultRoomData);
+  const [roomData, setRoomData] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("id", id);
@@ -27,6 +21,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("roomData", roomData);
+    console.log(roomData);
   }, [roomData]);
 
   return (

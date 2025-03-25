@@ -7,8 +7,8 @@ import { useAppContext } from "@/context/AppContext.jsx";
 export default function FeedPage({ query }) {
     const { id, roomCode, roomData } = useAppContext();
 
-    // console.log("Feed page");
-    // console.log(roomData);
+    console.log("Feed page");
+    console.log(roomData);
 
     useEffect(() => {
         const fetchCards = async () => {

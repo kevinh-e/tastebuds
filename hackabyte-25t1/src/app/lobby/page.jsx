@@ -45,19 +45,23 @@ const mockUsers = {
 };
 
 export default function LobbyPage() {
-
-  socket.on("reccomendationsRecieved", (data) => {
-    // console.log(data);
-    setRoomData(data);
-    // Move user to next page
-    router.push("/feed");
-  });
-
-  const { id, roomCode, roomData } = useAppContext();
+  const { id, roomCode, roomData, setRoomData } = useAppContext();
 
   const router = useRouter()
   const searchParams = useSearchParams()
   const userName = searchParams.get("name") || "Guest"
+
+  // socket.on("reccomendationsRecieved", (data) => {
+  //   setRoomData(JSON.parse(data));
+  //   router.push("/feed");
+  // });
+
+  useEffect(() => {
+    socket.on("reccomendationsRecieved", (data) => {
+      setRoomData(JSON.parse(data));
+      router.push("/feed");
+    });
+  }, [roomData]);
 
   const [users, setUsers] = useState(mockUsers)
   const [currentUser, setCurrentUser] = useState({
@@ -98,6 +102,8 @@ export default function LobbyPage() {
       })
     }
 
+    console.log("Search query: " + searchQuery);
+
     const response = await fetch("/api/places", {
       method: "POST",
       headers: {
@@ -108,14 +114,14 @@ export default function LobbyPage() {
 
     const searchApiResponse = await response.json()
 
-    roomData.restaurants = searchApiResponse;
+    // roomData.restaurants = searchApiResponse;
 
     console.log(searchApiResponse);
 
-    socket.emit("reccomendationsRecieved", JSON.stringify(roomData));
+    const maskedApiResponse = searchApiResponse.places;
+    console.log(maskedApiResponse)
 
-    // Move user to next page
-    router.push("/feed");
+    socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify({ maskedApiResponse }));
   }
 
   const shareGroup = () => {
@@ -131,6 +137,8 @@ export default function LobbyPage() {
       alert("Group code copied to clipboard!")
     }
   }
+
+  console.log(roomData)
 
   return (
     <form onSubmit={handleSubmit} className="container max-w-md mx-auto px-4 py-8">
@@ -174,6 +182,7 @@ export default function LobbyPage() {
         </Card>
 
         {
+
           (id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true) ? (
             <Button type="submit" className="w-full mt-6">
               Start Matching!

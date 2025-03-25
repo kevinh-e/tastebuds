@@ -70,6 +70,11 @@ app.prepare().then(() => {
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
+    socket.on("reccomendationsBroadcast", (roomCode, recommendations) => {
+      data[roomCode].restaurants = JSON.parse(recommendations);
+      io.in(roomCode).emit("reccomendationsRecieved", JSON.stringify(data[roomCode]));
+    });
+
     socket.on("sendPreferences", (roomCode, preferences, id, cb) => {
       // add/replace preferences to data
       setPreferences(roomCode, id, JSON.parse(preferences));
