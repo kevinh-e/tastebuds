@@ -10,51 +10,14 @@ import { useAppContext } from "@/context/AppContext.jsx";
 import Link from "next/link"
 import PreferencesList from "@/components/lobby/preferences-list"
 import UsersList from "@/components/lobby/users-list"
-import AddPreferenceForm from "@/components/lobby/add-preference-form"
-import { trackFallbackParamAccessed } from "next/dist/server/app-render/dynamic-rendering"
 import { socket } from "@/socket"
-import { io } from "socket.io-client"
 
-// Mock data for demonstration
-const mockUsers = {
-  "1":
-  {
-    name: "Marques",
-    isHost: true,
-    // Price range: $, $$, $$$, $$$$
-    price: ["$$$", "$$$$"],
-    cuisines: ["Italian", "Japanese"],
-    locations: ["Kensington", "Kingsford"],
-  },
-  "2":
-  {
-    name: "Drake",
-    isHost: false,
-    price: ["$", "$$", "$$$"],
-    cuisines: ["Mexican", "Thai"],
-    locations: ["Randwick"],
-  },
-  "3":
-  {
-    name: "Lebron",
-    isHost: false,
-    price: ["$", "$$", "$$$", "$$$$"],
-    cuisines: ["Chinese"],
-    locations: [],
-  },
-};
 
 export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext();
 
   const router = useRouter()
   const searchParams = useSearchParams()
-  const userName = searchParams.get("name") || "Guest"
-
-  // socket.on("reccomendationsRecieved", (data) => {
-  //   setRoomData(JSON.parse(data));
-  //   router.push("/feed");
-  // });
 
   useEffect(() => {
     socket.on("reccomendationsRecieved", (data) => {
@@ -62,21 +25,6 @@ export default function LobbyPage() {
       router.push("/feed");
     });
   }, [roomData]);
-
-  const [users, setUsers] = useState(mockUsers)
-  const [currentUser, setCurrentUser] = useState({
-    id: "current",
-    name: userName,
-    cuisines: [],
-    locations: [],
-  })
-  const [showCuisineForm, setShowCuisineForm] = useState(false)
-  const [showLocationForm, setShowLocationForm] = useState(false)
-
-  // Add current user to the list
-  // useEffect(() => {
-  //   setUsers([...mockUsers, currentUser])
-  // }, [currentUser])
 
   const handleSubmit = async (e) => {
     // Prevent the page from refreshing
@@ -102,8 +50,6 @@ export default function LobbyPage() {
       })
     }
 
-    console.log("Search query: " + searchQuery);
-
     const response = await fetch("/api/places", {
       method: "POST",
       headers: {
@@ -114,12 +60,7 @@ export default function LobbyPage() {
 
     const searchApiResponse = await response.json()
 
-    // roomData.restaurants = searchApiResponse;
-
-    console.log(searchApiResponse);
-
     const maskedApiResponse = searchApiResponse.places;
-    console.log(maskedApiResponse)
 
     socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify({ maskedApiResponse }));
   }
@@ -137,8 +78,6 @@ export default function LobbyPage() {
       alert("Group code copied to clipboard!")
     }
   }
-
-  console.log(roomData)
 
   return (
     <form onSubmit={handleSubmit} className="container max-w-md mx-auto px-4 py-8">
