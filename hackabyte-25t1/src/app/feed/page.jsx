@@ -8,11 +8,11 @@ import { RestaurantReactions } from "./restaurant-reactions"
 import { socket } from "@/socket.js"
 import { toast } from "sonner"
 
-
 export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
   const [userReaction, setUserReaction] = useState(null)
   const { id, setRoomData, roomData, roomCode, restIndex, setRestIndex } = useAppContext()
+  const isHost = roomData ? roomData.roomMembers[id].isHost : false;
 
   useEffect(() => {
     socket.on("reactionToast", ({ userName, reaction }) => {
@@ -47,6 +47,13 @@ export default function FeedPage() {
     }
   }
 
+  const skipRestaurant = () => {
+    if (socket.connected && roomCode !== "") {
+      console.log("SKIPPING")
+      socket.emit("nextRestaurant", roomCode);
+    }
+  }
+
   useEffect(() => {
     console.log(`currentVote: ${currentVote}`)
   }, [currentVote])
@@ -56,14 +63,18 @@ export default function FeedPage() {
   }, [userReaction])
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8 flex flex-col items-center justify-center">
+    <div className="bg-gray-100 min-h-screen px-4 py-0 flex flex-col justify-center items-center">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold mb-2">Swipe to Vote</h1>
         <p className="text-gray-600">Swipe right for Yes, left for No. You can change your vote anytime.</p>
       </div>
 
-      <FeedCard place={roomData.restaurants[restIndex]} onVoteChange={handleVoteChange} />
-
+      <FeedCard
+        place={roomData.restaurants[restIndex].place}
+        onVoteChange={handleVoteChange}
+        onSkip={skipRestaurant}
+        isHost={isHost}
+      />
       <div className="mt-6 w-full max-w-md">
         <RestaurantReactions onReactionChange={handleReactionChange} currentReaction={userReaction} />
       </div>

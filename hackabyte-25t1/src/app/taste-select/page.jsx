@@ -9,9 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import UsersList from "@/components/lobby/users-list";
 import CopyButton from "@/components/ui/copy-button";
 
-socket.on('newUser', (msg) => {
-  toast(`👋   ${JSON.parse(msg).name} has joined the room`);
-});
+// socket.on('newUser', (msg) => {
+//   toast(`👋   ${JSON.parse(msg).name} has joined the room`);
+// });
 
 export default function TasteSelect() {
   const { id, roomData, roomCode } = useAppContext();
@@ -29,18 +29,27 @@ export default function TasteSelect() {
   }, [roomData]);
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center px-4">
-      <TasteSelectForm />
-      {users.length > 0 && (
-        <Card className="mt-2 w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Buddies</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <UsersList users={users} currentUserId={id} />
-          </CardContent>
-        </Card>
-      )}
+    <div className="h-screen">
+      <div className="h-full flex flex-col justify-center items-center p-4 space-y-4">
+
+        {users.length > 0 && (
+          <Card className="mt-2 w-full max-w-md">
+            <CardContent>
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-lg font-semibold">Buddies</div>
+                <CopyButton
+                  className="text-muted-foreground"
+                  textToCopy={roomCode}
+                  displayText={roomCode}
+                />
+              </div>
+              <UsersList users={users} currentUserId={id} />
+            </CardContent>
+          </Card>
+        )}
+
+        <TasteSelectForm />
+      </div>
     </div>
   );
 }
