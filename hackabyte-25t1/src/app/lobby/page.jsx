@@ -115,7 +115,10 @@ export default function LobbyPage() {
 
     console.log(searchApiResponse);
 
-    io.send("reccomendationsRecieved", roomData);
+    socket.emit("reccomendationsRecieved", JSON.stringify(roomData));
+
+    // Move user to next page
+    router.push("/feed");
   }
 
   const shareGroup = () => {
