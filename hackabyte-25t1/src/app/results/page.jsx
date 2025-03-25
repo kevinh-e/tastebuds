@@ -34,9 +34,8 @@ const restaurantResults = [
             no: [],
         },
         reactions: [
-            { emoji: "😍", count: 3 },
-            { emoji: "👨‍🍳", count: 2 },
-            { emoji: "🍕", count: 1 },
+            { emoji: "😍", users: ["1", "2", "3"] },
+            { emoji: "👨‍🍳", users: ["current"] },
         ],
     },
     {
@@ -53,8 +52,8 @@ const restaurantResults = [
             no: ["2"],
         },
         reactions: [
-            { emoji: "🍣", count: 2 },
-            { emoji: "👍", count: 1 },
+            { emoji: "🍣", users: ["1", "3", "current"] },
+            { emoji: "👍", users: ["2"] },
         ],
     },
     {
@@ -71,8 +70,8 @@ const restaurantResults = [
             no: ["1"],
         },
         reactions: [
-            { emoji: "🌮", count: 2 },
-            { emoji: "🔥", count: 1 },
+            { emoji: "🌮", users: ["2", "current"] },
+            { emoji: "🔥", users: ["1"] },
         ],
     },
     {
@@ -88,7 +87,7 @@ const restaurantResults = [
             yes: ["3", "current"],
             no: ["1", "2"],
         },
-        reactions: [{ emoji: "🌶️", count: 2 }],
+        reactions: [{ emoji: "🌶️", users: ["1", "2"] }],
     },
     {
         id: "5",
@@ -103,7 +102,7 @@ const restaurantResults = [
             yes: ["1"],
             no: ["2", "3"],
         },
-        reactions: [{ emoji: "🥡", count: 1 }],
+        reactions: [{ emoji: "🥡", users: ["3"] }],
     },
     {
         id: "6",
@@ -118,7 +117,7 @@ const restaurantResults = [
             yes: ["2"],
             no: ["1", "3", "current"],
         },
-        reactions: [{ emoji: "🌶️", count: 1 }],
+        reactions: [{ emoji: "🌶️", users: ["1"] }],
     },
 ]
 

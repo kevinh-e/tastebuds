@@ -81,9 +81,25 @@ export default function TopThreeRestaurants({ restaurants, users }) {
                 <div className="flex gap-1">
                   {restaurant.reactions &&
                     restaurant.reactions.map((reaction, i) => (
-                      <span key={i} className="text-lg">
-                        {reaction.emoji}
-                      </span>
+                      <div key={i} className="flex items-center gap-2">
+                        <span className="text-lg">{reaction.emoji}</span>
+                        <div className="flex -space-x-2">
+                          {reaction.users &&
+                            reaction.users.map((userId) => {
+                              const user = users.find((u) => u.id === userId)
+                              return (
+                                user && (
+                                  <Avatar
+                                    key={user.id}
+                                    className="h-6 w-6 border-2 border-background"
+                                  >
+                                    <AvatarFallback className="text-xs">{user.avatar}</AvatarFallback>
+                                  </Avatar>
+                                )
+                              )
+                            })}
+                        </div>
+                      </div>
                     ))}
                 </div>
               </div>

@@ -87,7 +87,7 @@ export default function RestaurantCard({ restaurant, rank, users = [], showVotes
                   <div className="flex flex-wrap gap-1">
                     {restaurant.reactions.map((reaction, i) => (
                       <Badge key={i} variant="secondary" className="text-xs">
-                        {reaction.emoji} {reaction.count}
+                        {reaction.emoji} {reaction.users.length}
                       </Badge>
                     ))}
                   </div>
