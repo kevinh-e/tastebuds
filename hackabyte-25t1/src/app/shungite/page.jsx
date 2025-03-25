@@ -16,14 +16,16 @@ export default function PlacesSearch() {
 
     setLoading(true)
     setError("")
-
     try {
       const response = await fetch("/api/places", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ textQuery: query }),
+        body: JSON.stringify({ 
+        textQuery: query,
+        pageSize: 10,
+      }),
       })
 
       const data = await response.json()

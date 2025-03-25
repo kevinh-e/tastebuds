@@ -56,7 +56,7 @@ export default function TagInput({ onTagsChange, placeholder = "Add a tag...", i
             <button
               type="button"
               onClick={() => removeTag(index)}
-              className="text-secondary-foreground hover:text-primary-foreground focus:outline-none"
+              className="text-secondary-foreground hover:text-destructive focus:outline-none hover:cursor-pointer"
             >
               &times;
             </button>

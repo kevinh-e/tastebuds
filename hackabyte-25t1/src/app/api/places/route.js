@@ -5,13 +5,13 @@ export async function POST(request) {
     const body = await request.json()
 
     // Get API key from environment variable
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY
-
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    console.log('SHUNGITE')
+    console.log(apiKey)
     if (!apiKey) {
       return NextResponse.json({ error: "Google Maps API key is not configured" }, { status: 500 })
     }
 
-    // Make sure we're using the exact correct URL
     const apiUrl = "https://places.googleapis.com/v1/places:searchText"
 
     console.log("Making request to Google Places API:", apiUrl)
