@@ -85,7 +85,7 @@ export default function LobbyPage() {
       <main className="container max-w-md mx-auto px-4 py-8">
         <div className="mb-6 flex justify-between items-center">
           <Button asChild variant="ronaldo" size="sm" className="flex items-center text-sm">
-            <Link href="/start">
+            <Link href="/">
               <ChevronLeft className="h-4 w-4 mr-1" /> Exit
             </Link>
           </Button>

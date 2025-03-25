@@ -66,7 +66,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
     setIsDragging(true)
   }
 
-  const handleDragEnd = (event, info) => {
+  const handleDragEnd = (info) => {
     setIsDragging(false)
 
     if (info.offset.x > THRESHOLD) {
@@ -151,25 +151,16 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
 
         socket.emit("setThumbnail", roomCode, restIndex, imageUrls[0]);
 
-        setImageUrls(imageUrls) // Store images in order
+        setImageUrls(imageUrls); // Store images in order
       } catch (error) {
-        console.error("Failed to fetch images:", error)
+        console.error("Failed to fetch images:", error);
       }
     }
 
-    fetchImages()
-    setVote(null)
+    fetchImages();
+    setVote(null);
+    setCurrentImageIndex(0);
   }, [restIndex])
-
-  // Calculate progress indicator dimensions
-  const cardWidth = 100 // 100%
-  const cardHeight = 100 // 100%
-
-  // Calculate the perimeter of the card
-  const perimeter = 2 * (cardWidth + cardHeight)
-
-  // Calculate the length of the progress line based on the progress value
-  const progressLength = progress !== null ? perimeter * progress : 0
 
   return (
     <div className="relative w-full max-w-md mx-auto">
