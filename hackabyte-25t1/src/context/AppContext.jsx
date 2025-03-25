@@ -9,7 +9,7 @@ export const AppProvider = ({ children }) => {
   const [id, setId] = useState(uid);
   const [roomCode, setRoomCode] = useState("");
   const [roomData, setRoomData] = useState(null);
-  const [restIndex, setRestIndex] = useState(0);
+  const [restIndex, setRestIndex] = useState(-1);
 
   useEffect(() => {
     localStorage.setItem("id", id);
@@ -21,7 +21,9 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("roomData", roomData);
-    if (roomData) {
+    if (roomData && roomData.roomSettings != null && roomData.roomSettings.restIndex != restIndex) {
+      console.log("UPDATING RESTINDEX");
+      setRestIndex(roomData.roomSettings.restIndex);
       localStorage.setItem("restIndex", roomData.roomSettings.restIndex);
     }
     console.log("Updated Room Data");

@@ -23,6 +23,10 @@ export default function PreLobbyPage() {
     });
   }, [roomData]);
 
+  socket.on("gotoResults", () => {
+    router.push("/results");
+  });
+
   const [lobbyCode, setLobbyCode] = useState("")
   const [hostName, setHostName] = useState("")
   const [roundTime, setRoundTime] = useState(10);
