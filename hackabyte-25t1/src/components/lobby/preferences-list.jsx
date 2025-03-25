@@ -2,12 +2,12 @@ import { Badge } from "@/components/ui/badge"
 
 export default function PreferencesList({ users, preferenceType }) {
   // Get all unique preferences
-  const allPreferences = users.flatMap((user) => user[preferenceType])
+  const allPreferences = Object.values(users).flatMap((user) => user[preferenceType])
   const uniquePreferences = [...new Set(allPreferences)]
 
   // Count occurrences of each preference
   const preferenceCounts = uniquePreferences.map((pref) => {
-    const count = users.filter((user) => user[preferenceType].includes(pref)).length
+    const count = Object.values(users).filter((user) => user[preferenceType].includes(pref)).length
     return { preference: pref, count }
   })
 

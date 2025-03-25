@@ -6,39 +6,57 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ChevronLeft, Plus, X, Share2 } from "lucide-react"
+import { useAppContext } from "@/context/AppContext.jsx";
 import Link from "next/link"
 import PreferencesList from "@/components/lobby/preferences-list"
 import UsersList from "@/components/lobby/users-list"
 import AddPreferenceForm from "@/components/lobby/add-preference-form"
 import { trackFallbackParamAccessed } from "next/dist/server/app-render/dynamic-rendering"
+import { socket } from "@/socket"
+import { io } from "socket.io-client"
 
 // Mock data for demonstration
-const mockUsers = [
+const mockUsers = {
+  "1":
   {
-    id: "1",
     name: "Marques",
+    isHost: true,
     // Price range: $, $$, $$$, $$$$
     price: ["$$$", "$$$$"],
     cuisines: ["Italian", "Japanese"],
     locations: ["Kensington", "Kingsford"],
   },
+  "2":
   {
-    id: "2",
     name: "Drake",
+    isHost: false,
     price: ["$", "$$", "$$$"],
     cuisines: ["Mexican", "Thai"],
     locations: ["Randwick"],
   },
+  "3":
   {
-    id: "3",
     name: "Lebron",
+    isHost: false,
     price: ["$", "$$", "$$$", "$$$$"],
     cuisines: ["Chinese"],
     locations: [],
   },
-]
+};
 
 export default function LobbyPage() {
+
+  socket.on("reccomendationsRecieved", (data) => {
+    // console.log(data);
+    setRoomData(data);
+    // Move user to next page
+    router.push("/feed");
+  });
+
+  const { id, roomCode, roomData, setRoomCode } = useAppContext();
+
+  roomData.roomMembers = mockUsers; // Remove this later cuh
+
   const router = useRouter()
   const searchParams = useSearchParams()
   const userName = searchParams.get("name") || "Guest"
@@ -55,9 +73,9 @@ export default function LobbyPage() {
   const [showLocationForm, setShowLocationForm] = useState(false)
 
   // Add current user to the list
-  useEffect(() => {
-    setUsers([...mockUsers, currentUser])
-  }, [currentUser])
+  // useEffect(() => {
+  //   setUsers([...mockUsers, currentUser])
+  // }, [currentUser])
 
   const handleSubmit = async (e) => {
     // Prevent the page from refreshing
@@ -66,7 +84,7 @@ export default function LobbyPage() {
     // Combine the strings of cuisines and locations into a single string
     let searchQuery = "";
     let locationsProvided = false;
-    users.forEach((user) => {
+    Object.values(roomData.roomMembers).forEach((user) => {
       user.cuisines.forEach((cuisine) => {
         searchQuery += cuisine + " ";
       });
@@ -76,7 +94,7 @@ export default function LobbyPage() {
     })
     if (locationsProvided === true) {
       searchQuery += "located in ";
-      users.forEach((user) => {
+      Object.values(roomData.roomMembers).forEach((user) => {
         user.locations.forEach((location) => {
           searchQuery += location + " ";
         });
@@ -93,7 +111,11 @@ export default function LobbyPage() {
 
     const searchApiResponse = await response.json()
 
+    roomData.restaurants = searchApiResponse;
+
     console.log(searchApiResponse);
+
+    io.send("reccomendationsRecieved", roomData);
   }
 
   const shareGroup = () => {
@@ -129,7 +151,7 @@ export default function LobbyPage() {
             <CardDescription>Group Code: {groupId}</CardDescription>
           </CardHeader>
           <CardContent>
-            <UsersList users={users} currentUserId={currentUser.id} />
+            <UsersList users={roomData.roomMembers} currentUserId={id} />
           </CardContent>
         </Card>
 
@@ -138,7 +160,7 @@ export default function LobbyPage() {
             <CardTitle className="text-lg">Cuisine Preferences</CardTitle>
           </CardHeader>
           <CardContent>
-            <PreferencesList users={users} preferenceType="cuisines" />
+            <PreferencesList users={roomData.roomMembers} preferenceType="cuisines" />
           </CardContent>
         </Card>
 
@@ -147,13 +169,22 @@ export default function LobbyPage() {
             <CardTitle className="text-lg">Location Preferences</CardTitle>
           </CardHeader>
           <CardContent>
-            <PreferencesList users={users} preferenceType="locations" />
+            <PreferencesList users={roomData.roomMembers} preferenceType="locations" />
           </CardContent>
         </Card>
 
-        <Button type="submit" className="w-full mt-6">
-          Start Matching
-        </Button>
+        {
+          (id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true) ? (
+            <Button type="submit" className="w-full mt-6">
+              Start Matching!
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full mt-6" disabled>
+              Waiting for host to start matching...
+            </Button>
+          )
+        }
+
       </div>
     </form>
   )
