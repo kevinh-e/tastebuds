@@ -22,17 +22,12 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("roomCode", roomCode);
+    console.log(roomCode);
   }, [roomCode]);
 
   useEffect(() => {
-    const dataToStore =
-      roomData && Object.keys(roomData).length > 0
-        ? roomData
-        : defaultRoomData
-
-    localStorage.setItem("roomData", JSON.stringify(dataToStore))
-  }, [roomData])
-
+    localStorage.setItem("roomData", roomData);
+  }, [roomData]);
 
   return (
     <AppContext.Provider value={{ id, setId, roomCode, setRoomCode, roomData, setRoomData }}>
