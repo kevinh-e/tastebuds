@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -17,7 +18,13 @@ const handler = app.getRequestHandler();
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
-  const io = new Server(httpServer);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: ["http://localhost:3000", "https://admin.socket.io"],
+      methods: ["GET", "POST"],
+      credentials: true,
+    }
+  });
   /** data follows the following structure:
    *  {
    *    - dictionary of room members
@@ -76,4 +83,8 @@ app.prepare().then(() => {
     .listen(port, () => {
       console.log(`> Ready on http://${hostname}:${port}`);
     });
+
+  instrument(io, {
+    auth: false,
+  });
 });
