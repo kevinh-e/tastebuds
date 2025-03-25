@@ -60,7 +60,7 @@ export default function TasteSelectForm() {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <div className="p-6 border rounded-lg w-full max-w-md">
+      <div className="p-6 bg-white border rounded-lg w-full max-w-md">
         <div className="flex justify-end">
           <CopyButton
             className="text-lg text-muted-foreground mb-4"
