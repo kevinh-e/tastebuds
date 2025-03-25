@@ -38,7 +38,7 @@ export default function FeedPage() {
       </div>
 
       <FeedCard
-        place={roomData.restaurants[restIndex]}
+        place={roomData.restaurants[restIndex].place}
         onVoteChange={handleVoteChange}
       />
       {
