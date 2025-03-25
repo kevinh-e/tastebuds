@@ -17,12 +17,14 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("roomCode", roomCode);
-    console.log(roomCode);
   }, [roomCode]);
 
   useEffect(() => {
     localStorage.setItem("roomData", roomData);
-    localStorage.setItem("restIndex", roomData.roomSettings.restIndex);
+    if (roomData) {
+      localStorage.setItem("restIndex", roomData.roomSettings.restIndex);
+    }
+    console.log("Updated Room Data");
     console.log(roomData);
   }, [roomData]);
 
@@ -33,3 +35,4 @@ export const AppProvider = ({ children }) => {
   );
 };
 
+export const useAppContext = () => useContext(AppContext);

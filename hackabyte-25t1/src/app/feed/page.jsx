@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAppContext } from "@/context/AppContext"
 import { FeedCard } from "./feed-card"
 import { EXAMPLE_PLACE } from "./example-place"
