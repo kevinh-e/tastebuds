@@ -10,11 +10,6 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-// const views = {
-//   LOBBY: "LOBBY",
-//   PREFERENCES: "PREFERENCES",
-// };
-
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
@@ -25,33 +20,6 @@ app.prepare().then(() => {
       credentials: true,
     }
   });
-  /** data follows the following structure:
-   *  {
-   *    - dictionary of room members
-   *    room members: {
-   *      id: {
-   *        isHost: boolean,
-   *        preferences: {
-   *          cuisineTags: string[],
-   *          locationTags: string[],
-   *          prices: string[],
-   *          rating: string,
-   *        },
-   *        currentView: 
-   *      }
-   *    },
-   *
-   *    - array of retaurants
-   *    restaurants: [
-   *
-   *    ],
-   *
-   *    roomSettings: {
-   *      roomCode: string,
-   *      roundTime: number,
-   *    },
-   *  }
-   */
 
   const data = {};
 
@@ -74,6 +42,10 @@ app.prepare().then(() => {
     };
   }
 
+  function setPreferences(roomCode, id, preferences) {
+    data[roomCode].roomMembers[id].preferences = preferences;
+  }
+
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, hostname, cb) => {
       const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -86,7 +58,6 @@ app.prepare().then(() => {
       };
       data[roomCode].roomMembers[id] = member;
 
-      // send back data
       cb(roomCode);
       socket.join(roomCode);
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
@@ -96,16 +67,13 @@ app.prepare().then(() => {
       socket.join(roomCode);
       joinRoom(roomCode, id, name);
       cb(roomCode);
-      // io.emit("syncData", JSON.stringify(data));
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
-    socket.on("sendPreferences", (preferences, id, cb) => {
+    socket.on("sendPreferences", (roomCode, preferences, id, cb) => {
       // add/replace preferences to data
-      data.roomMembers[id].preferences = preferences;
-
-      // call back to confirm the data was sent
-      // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+      setPreferences(roomCode, id, JSON.parse(preferences));
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
       cb(JSON.stringify(data));
     });
 
