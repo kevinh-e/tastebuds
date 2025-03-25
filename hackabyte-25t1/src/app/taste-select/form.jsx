@@ -1,6 +1,7 @@
 "use client"
 
 import { useForm } from "react-hook-form"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
@@ -24,11 +25,9 @@ export default function TasteSelectForm() {
   const { id } = useAppContext();
 
   useEffect(() => {
-    if (socket.connected) {
-      onConnect();
-    }
-
+    console.log(localStorage.getItem("id"));
     socket.on('connect', () => {
+      // socket.emit('preferences', id);
       setIsConnected(true);
     });
 
@@ -41,6 +40,7 @@ export default function TasteSelectForm() {
       socket.off('disconnect');
     };
   }, []);
+
   // Initialize the form with default values
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,7 +53,11 @@ export default function TasteSelectForm() {
   })
 
   const onSubmit = (data) => {
-
+    if (socket.connected) {
+      socket.emit('preferences', JSON.stringify(data), id, message => {
+        console.log(message);
+      });
+    }
   }
 
   // Price options

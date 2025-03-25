@@ -9,13 +9,50 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
+// const views = {
+//   LOBBY: "LOBBY",
+//   PREFERENCES: "PREFERENCES",
+// };
+
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer);
+  /** data follows the following structure:
+   *  {
+   *    - dictionary of room members
+   *    room members: {
+   *      id: {
+   *        isHost: boolean,
+   *        preferences: {
+   *          cuisineTags: string[],
+   *          locationTags: string[],
+   *          prices: string[],
+   *          rating: string,
+   *        },
+   *        currentView: 
+   *      }
+   *    },
+   *
+   *    - array of retaurants
+   *    restaurants: [
+   *
+   *    ],
+   *
+   *    roomSettings: {
+   *      roomCode: string,
+   *      roundTime: number,
+   *    },
+   *  }
+   */
+  const data = {};
 
   io.on("connection", (socket) => {
-    // ...
+    socket.on("preferences", (preferences, id, cb) => {
+      // add/replace preferences to data
+
+      cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+    })
   });
 
   httpServer
