@@ -53,38 +53,57 @@ app.prepare().then(() => {
    *  }
    */
   const data = {};
+  data.roomMembers = data.roomMembers || {};
 
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, cb) => {
       // create room code
       // set round time
       // add user as host
-    });
-
-    socket.on("joinRoom", (roomCode, id, cb) => {
-      // socket.join
-    });
-
-    socket.on("sendPreferences", (preferences, id, cb) => {
-      // add/replace preferences to data
-      data.roomMembers[id].preferences = JSON.parse(preferences);
-
-      // call back to confirm the data was sent
-      // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+      data.roomMembers[id] = data.roomMembers[id] || {
+        isHost: true,         // default value, adjust if necessary
+        preferences: {},
+        currentView: null      // or another default value
+      };
+      data.roomSettings = data.roomSettings || {
+        roomCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+        roundTime: roundTime,
+      };
+      // send back data
       cb(JSON.stringify(data));
     });
-  });
 
-  httpServer
-    .once("error", (err) => {
-      console.error(err);
-      process.exit(1);
-    })
-    .listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
+    socket.on("joinRoom", (id, cb) => {
+      data.roomMembers[id] = data.roomMembers[id] || {
+        isHost: false,
+        preferences: {},
+        currentView: null      // or another default value
+      };
+      cb(JSON.stringify(data));
     });
-
-  instrument(io, {
-    auth: false,
+    // send data to the clients to sync them
   });
+
+  socket.on("sendPreferences", (preferences, id, cb) => {
+    // add/replace preferences to data
+    data.roomMembers[id].preferences = preferences;
+
+    // call back to confirm the data was sent
+    // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+    cb(JSON.stringify(data));
+  });
+});
+
+httpServer
+  .once("error", (err) => {
+    console.error(err);
+    process.exit(1);
+  })
+  .listen(port, () => {
+    console.log(`> Ready on http://${hostname}:${port}`);
+  });
+
+instrument(io, {
+  auth: false,
+});
 });
