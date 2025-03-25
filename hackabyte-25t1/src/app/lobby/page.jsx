@@ -60,7 +60,21 @@ export default function LobbyPage() {
 
     const maskedApiResponse = searchApiResponse.places;
 
-    socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify(maskedApiResponse));
+    const restaurantArrayFinal = [];
+
+    maskedApiResponse.forEach((placeObj) => {
+      const obj = {}
+      obj["place"] = {...placeObj}
+      obj["countDownStart"] = 0;
+      obj["votes"] = {
+        yes: [],
+        no: []
+      };
+      obj["reactions"] = []
+      restaurantArrayFinal.push(obj);
+    })
+
+    socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify(restaurantArrayFinal));
   }
 
   const shareGroup = () => {
