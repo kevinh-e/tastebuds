@@ -85,17 +85,17 @@ export function FeedCard({ place, onVoteChange }) {
     ["rgba(239, 68, 68, 0.8)", "rgba(255, 255, 255, 0)", "rgba(34, 197, 94, 0.8)"] // Red → Transparent → Green
   );
 
-  const name = place?.displayName?.text || "Unnamed Place";
-  const address = place?.shortFormattedAddress || "No address available";
+  const name = place.displayName?.text || "Unnamed Place";
+  const address = place.shortFormattedAddress || "No address available";
   const phone = place?.nationalPhoneNumber || "No phone number available";
   const rating = place?.rating || 0;
   const totalRatings = place?.userRatingCount || 0;
-  const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type";
-  const minPrice = place?.priceRange?.startPrice?.units || "10";
-  const maxPrice = place?.priceRange?.endPrice?.units || "40";
-  const openNow = place?.regularOpeningHours?.openNow || false;
+  const primaryType = place?.primaryTypeDisplayName.text || "Unknown Type";
+  const minPrice = place?.priceRange.startPrice.units;
+  const maxPrice = place?.priceRange.endPrice.units;
+  const openNow = place?.regularOpeningHours.openNow;
   const mapsLink = place?.googleMapsUri;
-  const photoNames = place?.photos?.map(obj => obj.name).slice(0, 4);
+  const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
 
   const [imageUrls, setImageUrls] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -148,12 +148,12 @@ export function FeedCard({ place, onVoteChange }) {
       </motion.div>
 
       {/* Current vote indicator */}
-      {vote && !isDragging && (
+      {!isDragging && (
         <div
-          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white ${vote === "yes" ? "bg-green-500" : "bg-red-500"
-            }`}
+          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white
+          ${!vote ? "bg-black/50" : vote === "yes" ? "bg-green-500/75" : "bg-red-500/75"}`}
         >
-          {vote === "yes" ? "YES" : "NO"}
+          {!vote ? "Swipe to vote" : vote === "yes" ? "YES" : "NO"}
         </div>
       )}
 
