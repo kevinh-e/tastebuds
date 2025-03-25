@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
 import { Skeleton } from "@/components/ui/skeleton"
 
-
 export function FeedCard({ place, onVoteChange }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
