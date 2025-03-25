@@ -79,7 +79,17 @@ export default function WinnerAnnouncement({ restaurant, users, onClose }) {
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Button className="flex-1 bg-orange-500 hover:bg-orange-600">Get Directions</Button>
+            <Button className="flex-1 bg-orange-500 hover:bg-orange-600">
+              <a
+                href={restaurant.place.googleMapsUri}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`View on Maps`}
+                draggable="false"
+              >
+                Get Directions
+              </a>
+            </Button>
             <Button variant="outline" className="flex-1">
               Make Reservation
             </Button>
