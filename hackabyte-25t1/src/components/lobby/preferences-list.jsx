@@ -1,21 +1,29 @@
 import { Badge } from "@/components/ui/badge"
 
 export default function PreferencesList({ users, preferenceType }) {
-  // Get all unique preferences
-  const allPreferences = users.flatMap((user) => user[preferenceType])
-  const uniquePreferences = [...new Set(allPreferences)]
+  console.log("users:");
+  console.log(users);
 
-  // Count occurrences of each preference
+  // Get all preferences from the nested preferences object
+  const allPreferences = Object.values(users).flatMap((user) => {
+    const prefs = user.preferences?.[preferenceType];
+    return Array.isArray(prefs) ? prefs : prefs ? [prefs] : [];
+  });
+
+  const uniquePreferences = [...new Set(allPreferences)];
+
   const preferenceCounts = uniquePreferences.map((pref) => {
-    const count = users.filter((user) => user[preferenceType].includes(pref)).length
-    return { preference: pref, count }
-  })
+    const count = Object.values(users).filter((user) => {
+      const prefs = user.preferences?.[preferenceType];
+      return Array.isArray(prefs) ? prefs.includes(pref) : prefs === pref;
+    }).length;
+    return { preference: pref, count };
+  });
 
-  // Sort by count (descending)
-  preferenceCounts.sort((a, b) => b.count - a.count)
+  preferenceCounts.sort((a, b) => b.count - a.count);
 
   if (preferenceCounts.length === 0) {
-    return <p className="text-sm text-muted-foreground">No preferences added yet</p>
+    return <p className="text-sm text-muted-foreground">No preferences added yet</p>;
   }
 
   return (
@@ -23,10 +31,11 @@ export default function PreferencesList({ users, preferenceType }) {
       {preferenceCounts.map(({ preference, count }) => (
         <Badge key={preference} variant="outline" className="flex items-center gap-1">
           {preference}
-          <span className="ml-1 bg-muted text-muted-foreground rounded-full text-xs px-1.5">{count}</span>
+          <span className="ml-1 bg-muted text-muted-foreground rounded-full text-xs px-1.5">
+            {count}
+          </span>
         </Badge>
       ))}
     </div>
-  )
+  );
 }
-
