@@ -52,34 +52,52 @@ app.prepare().then(() => {
    *    },
    *  }
    */
+
   const data = {};
-  data.roomMembers = data.roomMembers || {};
+
+  function addRoom(roomCode, roundTime) {
+    data[roomCode] = {
+      roomMembers: {},
+      restaurants: [],
+      roomSettings: {
+        roomCode: roomCode,
+        roundTime: roundTime,
+      }
+    }
+  }
+
+  function joinRoom(roomCode, id, name) {
+    data[roomCode].roomMembers[id] = {
+      name: name,
+      isHost: false,
+      preferences: {},
+    };
+  }
 
   io.on("connection", (socket) => {
-    socket.on("createRoom", (roundTime, id, cb) => {
-      // create room code
-      // set round time
-      // add user as host
-      data.roomMembers[id] = data.roomMembers[id] || {
+    socket.on("createRoom", (roundTime, id, hostname, cb) => {
+      const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      addRoom(roomCode, roundTime);
+
+      const member = {
+        name: hostname,
         isHost: true,         // default value, adjust if necessary
         preferences: {},
-        currentView: null      // or another default value
       };
-      data.roomSettings = data.roomSettings || {
-        roomCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
-        roundTime: roundTime,
-      };
+      data[roomCode].roomMembers[id] = member;
+
       // send back data
-      cb(JSON.stringify(data));
+      cb(roomCode);
+      socket.join(roomCode);
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
-    socket.on("joinRoom", (id, cb) => {
-      data.roomMembers[id] = data.roomMembers[id] || {
-        isHost: false,
-        preferences: {},
-        currentView: null      // or another default value
-      };
-      cb(JSON.stringify(data));
+    socket.on("joinRoom", (roomCode, id, name, cb) => {
+      socket.join(roomCode);
+      joinRoom(roomCode, id, name);
+      cb(roomCode);
+      // io.emit("syncData", JSON.stringify(data));
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
     socket.on("sendPreferences", (preferences, id, cb) => {
@@ -88,6 +106,15 @@ app.prepare().then(() => {
 
       // call back to confirm the data was sent
       // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+      cb(JSON.stringify(data));
+    });
+
+    socket.on("senderUserVote", (vote, id, cb) => {
+      // add/replace vote to data
+      data.roomMembers[id].vote = vote;
+
+      // call back to confirm the data was sent
+      // cb("sent data: \n" + vote + "\n\nwith id:\n" + id);
       cb(JSON.stringify(data));
     });
   });
