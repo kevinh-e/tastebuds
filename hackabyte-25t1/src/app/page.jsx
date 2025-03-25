@@ -22,6 +22,7 @@ export default function PreLobbyPage() {
   const [roundTime, setRoundTime] = useState(10);
   const [joinName, setJoinName] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     socket.on("syncData", (msg) => {
@@ -33,13 +34,16 @@ export default function PreLobbyPage() {
   }, []);
 
   const handleCreateLobby = () => {
+    setLoading(true);
     if (!hostName.trim() || !roundTime) {
+      setLoading(false);
       setError("Please fill in all required fields");
       return;
     }
     socket.emit("createRoom", roundTime, id, hostName, (data) => {
       setRoomCode(data);
     });
+    setLoading(false);
     router.push("/taste-select");
   };
 
@@ -93,7 +97,15 @@ export default function PreLobbyPage() {
                   <span>60s</span>
                 </div>
               </div>
-              <Button onClick={handleCreateLobby} className="w-full">Create a New Lobby</Button>
+              <Button 
+              type="submit" 
+              onClick={handleCreateLobby}
+              size="lg" 
+              className={`w-full ${loading ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'}`} 
+              disabled={loading}
+            >
+              {loading ? "Creating..." : "Create a New Lobby"}
+            </Button>
             </TabsContent>
             <TabsContent value="join" className="space-y-4 pt-4">
               <div className="space-y-2">
