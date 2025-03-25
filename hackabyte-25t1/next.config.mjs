@@ -1,12 +1,13 @@
 // next.config.js
 export default {
-    images: {
-      remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: 'www.google.com',
-        },
-      ],
-    },
-  };
-  
+  devIndicators: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
+      },
+    ],
+  },
+};
+
