@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useAppContext } from "@/context/AppContext"
 import { ReactionSummary } from "./utils/reaction-summary"
 
+import { socket } from "@/socket"
+
 export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -101,7 +103,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   const [imageUrls, setImageUrls] = useState([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const { restIndex } = useAppContext()
+  const { restIndex, roomCode } = useAppContext()
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1))
@@ -121,6 +123,8 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
             return await fetchRestaurantImage(photoName)
           }),
         )
+
+        socket.emit("setThumbnail", roomCode, restIndex, imageUrls[0]);
 
         setImageUrls(imageUrls) // Store images in order
       } catch (error) {

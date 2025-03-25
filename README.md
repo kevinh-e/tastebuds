@@ -25,7 +25,8 @@ data: {
             },
             reactions: {
               id: string,
-            }
+            },
+            thumbnail: string,
         } ],
         roomSettings: {
           restIndex: number,

@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Star, MapPin, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useEffect } from "react"
 
 export default function RestaurantCard({ restaurant, rank, users, currentUser, showVotes = false }) {
   if (!restaurant || !restaurant.place) return null
@@ -16,18 +17,49 @@ export default function RestaurantCard({ restaurant, rank, users, currentUser, s
   const name = place.displayName?.text || place.name
   const cuisine = place.primaryTypeDisplayName?.text || place.primaryType || "Restaurant"
   const location = place.shortFormattedAddress || place.formattedAddress
+  // const addressComponents = place.addressComponents;
+  // const suburb = addressComponents.find(component =>
+  //   component.types.includes("locality")
+  // );
+
   const rating = place.rating || 0
-  const price = place.priceLevel || "$$"
+  let price;
+  switch (place.priceLevel) {
+    case "PRICE_LEVEL_UNSPECIFIED":
+      price = "$$"
+      break;
+    case "PRICE_LEVEL_FREE":
+      price = "$"
+      break;
+    case "PRICE_LEVEL_INEXPENSIVE":
+      price = "$"
+      break;
+    case "PRICE_LEVEL_MODERATE":
+      price = "$$"
+      break;
+    case "PRICE_LEVEL_EXPENSIVE":
+      price = "$$$"
+      break;
+    case "PRICE_LEVEL_VERY_EXPENSIVE":
+      price = "$$$$"
+      break;
+    default:
+      price = "$$"
+      break;
+  }
 
   // Get image URL
-  const imageUrl =
-    place.photos && place.photos.length > 0 ? place.photos[0].googleMapsUri : "/placeholder.svg?height=80&width=80"
+  const imageUrl = restaurant.thumbnail;
 
   // Format reactions for display
-  const formattedReactions = Object.entries(reactions).map(([emoji, userIds]) => ({
-    emoji,
+  const formattedReactions = Object.entries(reactions).map(([userIds, emoji]) => ({
     users: Array.isArray(userIds) ? userIds : [userIds],
+    emoji,
   }))
+
+  useEffect(() => {
+    console.log(formattedReactions);
+  }, [formattedReactions])
 
   return (
     <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
@@ -38,19 +70,28 @@ export default function RestaurantCard({ restaurant, rank, users, currentUser, s
               <span className="text-xs font-bold">{rank}</span>
             </div>
           )}
-          <Image src={imageUrl || "/placeholder.svg"} alt={name} fill className="object-cover" />
+          <img
+            src={imageUrl || "/placeholder.svg"}
+            referrerPolicy="no-referrer"
+            draggable="false"
+            className="absolute top-0 left-0 w-full h-full object-cover"
+          />
         </div>
 
         <div className="flex-1">
-          <h3 className="font-bold">{name}</h3>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+          <h3 className="font-bold text-ellipsis overflow-hidden hover:underline">
+            <a href={place.googleMapsUri} target="_blank" rel="noreferrer">
+              {name}
+            </a>
+          </h3>
+          <div className="flex justify-between items-center gap-1 text-xs text-muted-foreground mb-1">
             <Badge variant="outline" className="bg-orange-50 text-orange-600 hover:bg-orange-50 text-xs py-0">
               {cuisine}
             </Badge>
-            <span>•</span>
             <div className="flex items-center">
-              <MapPin className="h-3 w-3 mr-0.5" />
-              {location}
+              <p className="overflow-hidden text-ellipsis max-w-30 line-clamp-2 text-right">
+                {location}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">

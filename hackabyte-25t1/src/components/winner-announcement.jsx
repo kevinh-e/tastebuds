@@ -42,7 +42,7 @@ export default function WinnerAnnouncement({ restaurant, users, currentUser, onC
                 src={restaurant.image || "/placeholder.svg?height=80&width=80"}
                 alt={restaurant.name}
                 fill
-                className="object-cover"
+                className="absolute top-0 left-0 w-full h-full object-cover"
               />
             </div>
             <div className="flex-1">
