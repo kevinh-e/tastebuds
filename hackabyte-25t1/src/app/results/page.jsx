@@ -1,222 +1,58 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Share2, Trophy, Utensils } from "lucide-react"
-import Link from "next/link"
+import { Share2, Trophy } from "lucide-react"
 import RestaurantCard from "@/components/restaurant-card"
 import TopThreeRestaurants from "@/components/top-three-restaurants"
 import Confetti from "@/components/confetti"
 import { useAppContext } from "@/context/AppContext"
 
-// ────────────────────────[ NEW DATA STRUCTURE ]─────────────────────
-
-const data = {
-  UNKNOWN: {
-    roomMembers: {
-      "1": {
-        name: "Alex",
-        isHost: false,
-        preferences: {
-          cuisineTags: ["Italian", "Pizza"],
-          locationTags: ["Downtown"],
-          prices: ["$"],
-          rating: "4",
-        },
-      },
-      "2": {
-        name: "Sam",
-        isHost: false,
-        preferences: {
-          cuisineTags: ["Japanese"],
-          locationTags: ["Westside"],
-          prices: ["$$", "$$$"],
-          rating: "4",
-        },
-      },
-      "3": {
-        name: "Jordan",
-        isHost: false,
-        preferences: {
-          cuisineTags: ["Mexican", "Chinese"],
-          locationTags: ["Midtown", "Uptown"],
-          prices: ["$", "$$"],
-          rating: "4",
-        },
-      },
-      "current": {
-        name: "You",
-        isHost: true,
-        preferences: {
-          cuisineTags: ["Thai"],
-          locationTags: ["Downtown"],
-          prices: ["$"],
-          rating: "5",
-        },
-      },
-    },
-    restaurants: [
-      {
-        place: {
-          id: "1",
-          name: "Bella Italia",
-          cuisine: "Italian",
-          location: "Downtown",
-          rating: 4.8,
-          price: "$$",
-          image: "/placeholder.svg?height=80&width=80",
-          description: "Authentic Italian cuisine with homemade pasta and wood-fired pizzas.",
-        },
-        countDownStart: new Date("2025-03-01T12:00:00"),
-        votes: {
-          yes: ["1", "2", "3", "current"],
-          no: [],
-        },
-        reactions: [
-          { emoji: "😍", users: ["1", "2", "3"] },
-          { emoji: "👨‍🍳", users: ["current"] },
-        ],
-      },
-      {
-        place: {
-          id: "2",
-          name: "Sakura Sushi",
-          cuisine: "Japanese",
-          location: "Westside",
-          rating: 4.6,
-          price: "$$$",
-          image: "/placeholder.svg?height=80&width=80",
-          description: "Fresh sushi and sashimi prepared by master chefs.",
-        },
-        countDownStart: new Date("2025-03-01T12:00:00"),
-        votes: {
-          yes: ["1", "3", "current"],
-          no: ["2"],
-        },
-        reactions: [
-          { emoji: "🍣", users: ["1", "3", "current"] },
-          { emoji: "👍", users: ["2"] },
-        ],
-      },
-      {
-        place: {
-          id: "3",
-          name: "Taco Fiesta",
-          cuisine: "Mexican",
-          location: "Midtown",
-          rating: 4.5,
-          price: "$",
-          image: "/placeholder.svg?height=80&width=80",
-          description: "Vibrant Mexican street food with handmade tortillas.",
-        },
-        countDownStart: new Date("2025-03-01T12:00:00"),
-        votes: {
-          yes: ["2", "current"],
-          no: ["1"],
-        },
-        reactions: [
-          { emoji: "🌮", users: ["2", "current"] },
-          { emoji: "🔥", users: ["1"] },
-        ],
-      },
-      {
-        place: {
-          id: "4",
-          name: "Spice Garden",
-          cuisine: "Indian",
-          location: "Eastside",
-          rating: 4.3,
-          price: "$$",
-          image: "/placeholder.svg?height=80&width=80",
-          description: "Aromatic Indian dishes with authentic spices and flavors.",
-        },
-        countDownStart: new Date("2025-03-01T12:00:00"),
-        votes: {
-          yes: ["3", "current"],
-          no: ["1", "2"],
-        },
-        reactions: [{ emoji: "🌶️", users: ["1", "2"] }],
-      },
-      {
-        place: {
-          id: "5",
-          name: "Golden Dragon",
-          cuisine: "Chinese",
-          location: "Uptown",
-          rating: 4.2,
-          price: "$$",
-          image: "/placeholder.svg?height=80&width=80",
-          description: "Traditional Chinese cuisine with a modern twist.",
-        },
-        countDownStart: new Date("2025-03-01T12:00:00"),
-        votes: {
-          yes: ["1"],
-          no: ["2", "3"],
-        },
-        reactions: [{ emoji: "🥡", users: ["3"] }],
-      },
-      {
-        place: {
-          id: "6",
-          name: "Thai Orchid",
-          cuisine: "Thai",
-          location: "Downtown",
-          rating: 4.0,
-          price: "$$",
-          image: "/placeholder.svg?height=80&width=80",
-          description: "Flavorful Thai dishes with fresh ingredients and bold spices.",
-        },
-        countDownStart: new Date("2025-03-01T12:00:00"),
-        votes: {
-          yes: ["2"],
-          no: ["1", "3", "current"],
-        },
-        reactions: [{ emoji: "🌶️", users: ["1"] }],
-      },
-    ],
-    roomSettings: {
-      roomCode: "UNKNOWN",
-      roundTime: 60,
-    },
-  },
-}
-
-// ───────────────────────────[ Page Content ]────────────────────────
-
 export default function ResultsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const groupId = searchParams.get("groupId") || "UNKNOWN"
   const [activeTab, setActiveTab] = useState("all")
   const [showConfetti, setShowConfetti] = useState(true)
-  const { roomData } = useAppContext();
+  const { id, roomCode, roomData, restIndex } = useAppContext()
 
-  // --- Transform roomMembers object into the array of users you previously had ---
-  const users = Object.entries(data[groupId].roomMembers).map(([id, member]) => ({
-    id,
+  // Early return if roomData is not loaded yet
+  if (!roomData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  // Extract users from roomMembers
+  const users = Object.entries(roomData.roomMembers).map(([userId, member]) => ({
+    id: userId,
     name: member.name,
-    // For a simple avatar, just take the first letter:
     avatar: member.name.charAt(0).toUpperCase(),
+    isHost: member.isHost,
   }))
 
-  useEffect(() => {
-    console.log('emoji')
-    console.log(roomData);
-  }, [])
+  // Get current user
+  const currentUser = id
 
-  // --- Extract restaurants from data[groupId].restaurants ---
-  const restaurants = data[groupId].restaurants
+  // Extract restaurants from roomData
+  const restaurants = roomData.restaurants || []
 
   // Sort restaurants by "most yes votes" descending, then by "fewest no votes"
   const sortedRestaurants = [...restaurants].sort((a, b) => {
-    const yesDiff = b.votes.yes.length - a.votes.yes.length
+    const aYesLength = a.votes.yes.length
+    const bYesLength = b.votes.yes.length
+    const yesDiff = bYesLength - aYesLength
+
     if (yesDiff !== 0) return yesDiff
 
-    // if # of "yes" is the same, sort by fewer "no"
-    return a.votes.no.length - b.votes.no.length
+    // If # of "yes" is the same, sort by fewer "no"
+    const aNoLength = a.votes.no.length
+    const bNoLength = b.votes.no.length
+    return aNoLength - bNoLength
   })
 
   // Top 3
@@ -228,12 +64,12 @@ export default function ResultsPage() {
     if (navigator.share) {
       navigator.share({
         title: "Our TasteBuds Results",
-        text: `Check out our restaurant recommendations! Top pick: ${sortedRestaurants[0].place.name}`,
+        text: `Check out our restaurant recommendations! Top pick: ${sortedRestaurants[0]?.place?.displayName?.text || sortedRestaurants[0]?.place?.name || "Our restaurant"}`,
         url: window.location.href,
       })
     } else {
       navigator.clipboard.writeText(
-        `Check out our restaurant recommendations! Top pick: ${sortedRestaurants[0].place.name} - ${window.location.href}`,
+        `Check out our restaurant recommendations! Top pick: ${sortedRestaurants[0]?.place?.displayName?.text || sortedRestaurants[0]?.place?.name || "Our restaurant"} - ${window.location.href}`,
       )
       alert("Results link copied to clipboard!")
     }
@@ -257,14 +93,7 @@ export default function ResultsPage() {
             <Trophy className="h-5 w-5 text-orange-500" />
             <h2 className="text-xl font-bold">Top Pick</h2>
           </div>
-          <TopThreeRestaurants
-            restaurants={topThree.map((r) => ({
-              ...r.place,
-              votes: r.votes,
-              reactions: r.reactions,
-            }))}
-            users={users}
-          />
+          <TopThreeRestaurants restaurants={topThree} users={users} currentUser={currentUser} />
         </div>
 
         <Card>
@@ -291,26 +120,20 @@ export default function ResultsPage() {
               {sortedRestaurants
                 .filter((restaurant) => {
                   if (activeTab === "all") return true
-                  if (activeTab === "liked") return restaurant.votes.yes.includes("current")
-                  if (activeTab === "passed") return restaurant.votes.no.includes("current")
+                  if (activeTab === "liked") return restaurant.votes.yes.includes(currentUser)
+                  if (activeTab === "passed") return restaurant.votes.no.includes(currentUser)
                   return true
                 })
-                .map((restaurant, index) => {
-                  const mergedData = {
-                    ...restaurant.place,
-                    votes: restaurant.votes,
-                    reactions: restaurant.reactions,
-                  }
-                  return (
-                    <RestaurantCard
-                      key={restaurant.place.id}
-                      restaurant={mergedData}
-                      rank={index + 1}
-                      users={users}
-                      showVotes={true}
-                    />
-                  )
-                })}
+                .map((restaurant, index) => (
+                  <RestaurantCard
+                    key={restaurant.place.id}
+                    restaurant={restaurant}
+                    rank={index + 1}
+                    users={users}
+                    currentUser={currentUser}
+                    showVotes={true}
+                  />
+                ))}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-3 border-t pt-4">
@@ -328,3 +151,4 @@ export default function ResultsPage() {
     </div>
   )
 }
+
