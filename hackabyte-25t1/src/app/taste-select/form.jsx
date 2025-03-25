@@ -22,10 +22,9 @@ const formSchema = z.object({
 
 export default function TasteSelectForm() {
   const [isConnected, setIsConnected] = useState(false);
-  const { id } = useAppContext();
+  const { id, roomCode } = useAppContext();
 
   useEffect(() => {
-    console.log(localStorage.getItem("id"));
     socket.on('connect', () => {
       // socket.emit('preferences', id);
       setIsConnected(true);
@@ -53,8 +52,9 @@ export default function TasteSelectForm() {
   })
 
   const onSubmit = (data) => {
-    if (socket.connected) {
-      socket.emit('preferences', JSON.stringify(data), id, message => {
+    if (socket.connected && roomCode !== "") {
+      // sent the preferences to the server with that room code
+      socket.to(roomCode).emit('sendPreferences', JSON.stringify(data), id, message => {
         console.log(message);
       });
     }

@@ -48,11 +48,24 @@ app.prepare().then(() => {
   const data = {};
 
   io.on("connection", (socket) => {
-    socket.on("preferences", (preferences, id, cb) => {
-      // add/replace preferences to data
+    socket.on("createRoom", (roundTime, id, cb) => {
+      // create room code
+      // set round time
+      // add user as host
+    });
 
-      cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
-    })
+    socket.on("joinRoom", (roomCode, id, cb) => {
+      // socket.join
+    });
+
+    socket.on("sendPreferences", (preferences, id, cb) => {
+      // add/replace preferences to data
+      data.roomMembers[id].preferences = JSON.parse(preferences);
+
+      // call back to confirm the data was sent
+      // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+      cb(JSON.stringify(data));
+    });
   });
 
   httpServer
