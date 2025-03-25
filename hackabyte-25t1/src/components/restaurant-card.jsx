@@ -71,11 +71,15 @@ export default function RestaurantCard({ restaurant, rank, users, currentUser, s
             </div>
           )}
           <img
-            src={imageUrl || "/placeholder.svg"}
-            referrerPolicy="no-referrer"
-            draggable="false"
-            className="absolute top-0 left-0 w-full h-full object-cover"
           />
+          <a href={place.googleMapsUri}>
+            <img
+              src={imageUrl || "/placeholder.svg"}
+              referrerPolicy="no-referrer"
+              draggable="false"
+              className="absolute top-0 left-0 w-full h-full object-cover hover:opacity-80"
+            />
+          </a>
         </div>
 
         <div className="flex-1">

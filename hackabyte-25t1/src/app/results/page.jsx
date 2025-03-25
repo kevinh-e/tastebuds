@@ -10,6 +10,7 @@ import RestaurantCard from "@/components/restaurant-card"
 import TopThreeRestaurants from "@/components/top-three-restaurants"
 import Confetti from "@/components/confetti"
 import { useAppContext } from "@/context/AppContext"
+import Link from "next/link"
 
 export default function ResultsPage() {
   const router = useRouter()
@@ -80,11 +81,8 @@ export default function ResultsPage() {
       {showConfetti && <Confetti duration={5000} />}
 
       <main className="container max-w-md mx-auto px-4 py-8">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold mb-2">Results Are In!</h1>
-          <p className="text-muted-foreground">
-            Based on everyone&apos;s preferences, we&apos;ve found the perfect spot for your group.
-          </p>
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold">Results Are In!</h1>
         </div>
 
         {/* Top pick section */}
@@ -97,11 +95,8 @@ export default function ResultsPage() {
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">All Results</CardTitle>
-            <CardDescription>See how everyone voted on each restaurant suggestion</CardDescription>
-          </CardHeader>
           <CardContent>
+            <span className="text-xl font-bold mb-3">All Results</span>
             <Tabs defaultValue="all" className="mb-4">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="all" onClick={() => setActiveTab("all")}>
@@ -137,9 +132,10 @@ export default function ResultsPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-3 border-t pt-4">
-            <Button className="w-full bg-orange-500 hover:bg-orange-600">Make Reservation</Button>
-            <Button variant="outline" className="w-full">
-              Start New Search
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/">
+                Start New Search
+              </Link>
             </Button>
             <Button onClick={shareResults} className="w-full flex gap-2" variant="secondary">
               <Share2 size={16} />

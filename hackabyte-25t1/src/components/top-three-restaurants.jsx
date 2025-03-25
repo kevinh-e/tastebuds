@@ -49,12 +49,14 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
           <div className="absolute top-0 left-0 bg-orange-500 text-white z-10 px-1.5 py-0.5 rounded-br-lg">
             <Trophy className="h-3.5 w-3.5" />
           </div>
-          <img
-            src={winnerImageUrl || "/placeholder.svg"}
-            referrerPolicy="no-referrer"
-            draggable="false"
-            className="absolute top-0 left-0 w-full h-full object-cover"
-          />
+          <a href={winnerPlace.googleMapsUri}>
+            <img
+              src={winnerImageUrl || "/placeholder.svg"}
+              referrerPolicy="no-referrer"
+              draggable="false"
+              className="absolute top-0 left-0 w-full h-full object-cover hover:opacity-80"
+            />
+          </a>
         </div>
 
         <div className="flex-1">
@@ -126,12 +128,14 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
                   <span className="font-medium text-xs text-gray-700">{index + 2}</span>
                 </div>
                 <div className="relative h-10 w-10 rounded-md overflow-hidden flex-shrink-0">
-                  <img
-                    src={imageUrl || "/placeholder.svg"}
-                    referrerPolicy="no-referrer"
-                    draggable="false"
-                    className="absolute top-0 left-0 w-full h-full object-cover"
-                  />
+                  <a href={place.googleMapsUri}>
+                    <img
+                      src={imageUrl || "/placeholder.svg"}
+                      referrerPolicy="no-referrer"
+                      draggable="false"
+                      className="absolute top-0 left-0 w-full h-full object-cover hover:opacity-80"
+                    />
+                  </a>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{name}</h4>
