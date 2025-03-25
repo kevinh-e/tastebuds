@@ -26,43 +26,49 @@ export default function FeedCard({ place }) {
   const openNow = place?.regularOpeningHours.openNow;
   const mapsLink = place?.googleMapsUri;
 
+  const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
   
+
+  const [imageUrls, setImageUrls] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  const imageUrls = ['/dummy-images/one.jpg', '/dummy-images/two.jpg', '/dummy-images/three.jpg', '/dummy-images/four.jpg'];
-  // TODO: Fetch images from API
-  // const imageUrls = place?.photos.map(obj => obj.name).slice(0, 4);
-  // useEffect(() => {
-  //   const placeName = imageUrls[3];
-    
-  //   const fetchData = async () => {
-  //     const image = await fetchRestaurantImage(placeName);
-  //     console.log(image);
-  //   };
-
-  //   fetchData();
-  // }, []);
-
-
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex === imageUrls.length - 1 ? 0 : prevIndex + 1))
-  }
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? imageUrls.length - 1 : prevIndex - 1))
+    setCurrentImageIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1))
   }
 
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev === imageUrls.length - 1 ? 0 : prev + 1))
+  }
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      if (!photoNames || photoNames.length === 0) return;
+
+      try {
+        const imageUrls = await Promise.all(
+          photoNames.map(async (photoName) => {
+            return await fetchRestaurantImage(photoName);
+          })
+        );
+
+        console.log(imageUrls); // Logs array of image URLs
+        setImageUrls(imageUrls); // Store images in order
+      } catch (error) {
+        console.error("Failed to fetch images:", error);
+      }
+    };
+
+    fetchImages();
+  }, []);
+
   return (
-    <Card className="w-full max-w-lg overflow-hidden pt-0">
-      {/* Image section */}
-      <div className="relative h-84 w-full bg-muted">
-        <Image
+    <Card className="w-full max-w-lg pt-0 overflow-hidden">
+      <div className="overflow-hidden relative h-128 w-full bg-muted aspect-[3/2]">
+        <img
           src={imageUrls[currentImageIndex] || "/placeholder.svg"}
-          alt={`Paddy Chans restaurant image ${currentImageIndex + 1}`}
-          fill
-          sizes="(max-width: 768px) 100vw, 400px"
-          priority={currentImageIndex === 0}
-          className="object-cover"
+          alt={`${name} - image ${currentImageIndex + 1}`}
+          referrerPolicy="no-referrer"
+          className="absolute top-0 left-0 w-full h-full object-cover"
         />
         {imageUrls.length > 1 && (
           <>
@@ -71,23 +77,37 @@ export default function FeedCard({ place }) {
               size="icon"
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full h-8 w-8 z-10"
               onClick={prevImage}
+              aria-label="Previous image"
             >
               <ChevronLeft className="h-5 w-5" />
+              <span className="sr-only">Previous image</span>
             </Button>
             <Button
               variant="ghost"
               size="icon"
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full h-8 w-8 z-10"
               onClick={nextImage}
+              aria-label="Next image"
             >
               <ChevronRight className="h-5 w-5" />
+              <span className="sr-only">Next image</span>
             </Button>
 
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+            <div
+              className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10"
+              role="tablist"
+              aria-label="Image navigation"
+            >
               {imageUrls.map((_, index) => (
-                <div
+                <button
                   key={index}
-                  className={`h-1.5 w-1.5 rounded-full ${index === currentImageIndex ? "bg-white" : "bg-white/50"}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                    index === currentImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/70"
+                  }`}
+                  role="tab"
+                  aria-selected={index === currentImageIndex}
+                  aria-label={`View image ${index + 1}`}
                 />
               ))}
             </div>
@@ -95,13 +115,19 @@ export default function FeedCard({ place }) {
         )}
       </div>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-5">
         <div className="flex justify-between items-start">
-          <div className="text-xl font-bold">{name}</div>
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <h3 className="text-xl font-bold">{name}</h3>
+          <Badge
+            variant="outline"
+            className={
+              openNow ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"
+            }
+          >
             {openNow ? "Open" : "Closed"}
           </Badge>
         </div>
+
         <div className="flex items-center text-sm text-muted-foreground">
           <Badge variant="secondary" className="mr-2">
             {primaryType}
@@ -120,16 +146,23 @@ export default function FeedCard({ place }) {
           </div>
           <div className="flex items-center">
             <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-            <span className="text-sm">{phone}</span>
+            <a href={`tel:${phone.replace(/[^\d]/g, "")}`} className="text-sm hover:underline">
+              {phone}
+            </a>
           </div>
         </div>
 
         <div className="pt-2 border-t">
           <span className="text-sm font-medium">Price Range: </span>
-          <span className="text-sm text-muted-foreground">${minPrice}-${maxPrice}</span>
+          <span className="text-sm text-muted-foreground">
+            ${minPrice}-${maxPrice}
+          </span>
         </div>
-        <Button variant="secondary" asChild>
-          <a href={mapsLink} target="_blank" rel="noopener noreferrer">View on Maps</a>
+
+        <Button variant="secondary" className="w-full" asChild>
+          <a href={mapsLink} target="_blank" rel="noopener noreferrer" aria-label={`View ${name} on Maps`}>
+            View on Maps
+          </a>
         </Button>
       </CardContent>
     </Card>
