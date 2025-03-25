@@ -12,6 +12,7 @@ import { Users, UserPlus } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useAppContext } from "@/context/AppContext.jsx";
 import { socket } from "@/socket.js";
+import FloatingBubbles from "@/components/floating-bubbles";
 
 export default function PreLobbyPage() {
   const { id, setRoomCode, setRoomData } = useAppContext();
@@ -55,17 +56,8 @@ export default function PreLobbyPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-white to-orange-300 p-4 overflow-hidden">
-      {/* Scrolling Food Emoji Marquee using Framer Motion */}
-      <motion.div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        initial={{ x: "100%" }}
-        animate={{ x: "-100%" }}
-        transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
-      >
-        <div className="whitespace-nowrap text-6xl opacity-20">
-          🍕 🍔 🍟 🌭 🍿 🥗 🍣 🍩 🍪 🍉 🍇 🥑 🌮 🍗 🍜 🍞 🥞 🍔 🍕
-        </div>
-      </motion.div>
+      
+      <FloatingBubbles />
 
       <Card className="w-full max-w-md relative z-10 bg-white shadow-lg">
         <CardHeader className="text-center">
