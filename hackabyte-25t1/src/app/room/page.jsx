@@ -13,6 +13,9 @@ export default function RoomPage() {
       setResponse(JSON.parse(msg));
       setRoomData(JSON.parse(msg));
     });
+    return () => {
+      socket.off("syncData");
+    }
   }, [roomData]);
 
   const [roundTime, setRoundTime] = useState(60);
