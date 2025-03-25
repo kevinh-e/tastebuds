@@ -72,7 +72,7 @@ export default function LobbyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50/50 to-white">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50/50 to-white">
       <main className="container max-w-md mx-auto px-4 py-8">
         <div className="mb-6 flex justify-between items-center">
           <Button asChild variant="ronaldo" size="sm" className="flex items-center text-sm">
