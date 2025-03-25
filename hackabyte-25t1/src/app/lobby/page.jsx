@@ -15,16 +15,14 @@ import { socket } from "@/socket"
 
 export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext();
-
-  const router = useRouter()
+  
   const searchParams = useSearchParams()
-
-  useEffect(() => {
-    socket.on("reccomendationsRecieved", (data) => {
-      setRoomData(JSON.parse(data));
-      router.push("/feed");
-    });
-  }, [roomData]);
+  const router = useRouter()
+  
+  socket.on("reccomendationsRecieved", (data) => {
+    setRoomData(JSON.parse(data));
+    router.push("/feed");
+  });
 
   const handleSubmit = async (e) => {
     // Prevent the page from refreshing

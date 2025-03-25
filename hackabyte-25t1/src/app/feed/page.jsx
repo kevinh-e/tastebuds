@@ -1,22 +1,19 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAppContext } from "@/context/AppContext"
 import { FeedCard } from "./feed-card"
-import { EXAMPLE_PLACE } from "./example-place"
 
 import { socket } from "@/socket.js";
 
+// socket.on('syncData', (msg) => {
+//   // setResponse(JSON.parse(msg));
+//   setRoomData(JSON.parse(msg));
+// });
+
 export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
-  const { setRoomData, roomData, roomCode, restIndex, setRestIndex } = useAppContext();
-
-  useEffect(() => {
-    socket.on('syncData', (msg) => {
-      // setResponse(JSON.parse(msg));
-      setRoomData(JSON.parse(msg));
-    });
-  }, [roomData]);
+  const { id, setRoomData, roomData, roomCode, restIndex, setRestIndex } = useAppContext();
 
   const handleVoteChange = (vote) => {
     setCurrentVote(vote)
@@ -28,6 +25,11 @@ export default function FeedPage() {
     }
   }
 
+  useEffect(() => {
+    console.log(`currentVote: ${currentVote}`)
+  }, [currentVote]);
+
+
   return (
     <div className="bg-gray-100 min-h-screen p-8 flex flex-col items-center justify-center">
       <div className="mb-8 text-center">
@@ -35,7 +37,10 @@ export default function FeedPage() {
         <p className="text-gray-600">Swipe right for Yes, left for No. You can change your vote anytime.</p>
       </div>
 
-      <FeedCard place={roomData.restaurants[restIndex].place} onVoteChange={handleVoteChange} />
+      <FeedCard
+        place={roomData.restaurants[restIndex]}
+        onVoteChange={handleVoteChange}
+      />
       {
         currentVote && (
           <div
