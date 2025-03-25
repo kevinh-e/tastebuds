@@ -28,7 +28,7 @@ export default function CopyButton({
     <Button
       onClick={handleCopy}
       variant={variant}
-      className={cn("flex items-center gap-2", className)}
+      className={cn("flex items-center gap-2 bg-card", className)}
       {...buttonProps}
     >
       {copied ? (
