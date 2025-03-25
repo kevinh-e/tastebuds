@@ -72,7 +72,8 @@ export default function LobbyPage() {
         yes: [],
         no: []
       };
-      obj["reactions"] = {}
+      obj["reactions"] = {};
+      obj["thumbnail"] = "";
       restaurantArrayFinal.push(obj);
     })
 

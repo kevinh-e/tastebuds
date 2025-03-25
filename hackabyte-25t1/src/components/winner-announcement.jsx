@@ -42,7 +42,7 @@ export default function WinnerAnnouncement({ restaurant, users, currentUser, onC
                 src={restaurant.image || "/placeholder.svg?height=80&width=80"}
                 alt={restaurant.name}
                 fill
-                className="object-cover"
+                className="absolute top-0 left-0 w-full h-full object-cover"
               />
             </div>
             <div className="flex-1">
@@ -84,7 +84,17 @@ export default function WinnerAnnouncement({ restaurant, users, currentUser, onC
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Button className="flex-1 bg-orange-500 hover:bg-orange-600">Get Directions</Button>
+            <Button className="flex-1 bg-orange-500 hover:bg-orange-600">
+              <a
+                href={restaurant.place.googleMapsUri}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`View on Maps`}
+                draggable="false"
+              >
+                Get Directions
+              </a>
+            </Button>
             <Button variant="outline" className="flex-1">
               Make Reservation
             </Button>

@@ -17,13 +17,30 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
   const winnerCuisine = winnerPlace.primaryTypeDisplayName?.text || winnerPlace.primaryType || "Restaurant"
   const winnerLocation = winnerPlace.shortFormattedAddress || winnerPlace.formattedAddress
   const winnerRating = winnerPlace.rating || 0
-  const winnerPrice = winnerPlace.priceLevel || "$$"
+  let winnerPrice;
+  switch (winner.place.priceLevel) {
+    case "PRICE_LEVEL_UNSPECIFIED":
+      winnerPrice = "$$"
+      break;
+    case "PRICE_LEVEL_FREE":
+      winnerPrice = "$"
+      break;
+    case "PRICE_LEVEL_INEXPENSIVE":
+      winnerPrice = "$"
+      break;
+    case "PRICE_LEVEL_MODERATE":
+      winnerPrice = "$$"
+      break;
+    case "PRICE_LEVEL_EXPENSIVE":
+      winnerPrice = "$$$"
+      break;
+    case "PRICE_LEVEL_VERY_EXPENSIVE":
+      winnerPrice = "$$$$"
+      break;
+  }
 
   // Get winner image URL
-  const winnerImageUrl =
-    winnerPlace.photos && winnerPlace.photos.length > 0
-      ? winnerPlace.photos[0].googleMapsUri
-      : "/placeholder.svg?height=80&width=80"
+  const winnerImageUrl = winner.thumbnail;
 
   return (
     <div className="bg-gradient-to-br from-orange-50 to-white rounded-xl p-4 border border-orange-100 shadow-sm mb-6">
@@ -32,19 +49,28 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
           <div className="absolute top-0 left-0 bg-orange-500 text-white z-10 px-1.5 py-0.5 rounded-br-lg">
             <Trophy className="h-3.5 w-3.5" />
           </div>
-          <Image src={winnerImageUrl || "/placeholder.svg"} alt={winnerName} fill className="object-cover" />
+          <img
+            src={winnerImageUrl || "/placeholder.svg"}
+            referrerPolicy="no-referrer"
+            draggable="false"
+            className="absolute top-0 left-0 w-full h-full object-cover"
+          />
         </div>
 
         <div className="flex-1">
-          <h3 className="font-bold text-lg">{winnerName}</h3>
+          <h3 className="font-bold text-lg hover:underline">
+            <a href={winnerPlace.googleMapsUri} target="_blank" rel="noreferrer">
+              {winnerName}
+            </a>
+          </h3>
           <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
             <Badge variant="outline" className="bg-orange-50 text-orange-600 hover:bg-orange-50">
               {winnerCuisine}
             </Badge>
-            <span>•</span>
             <div className="flex items-center">
-              <MapPin className="h-3 w-3 mr-1" />
-              {winnerLocation}
+              <p className="overflow-hidden text-ellipsis max-w-30 line-clamp-3 text-right">
+                {winnerLocation}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2 mb-2">
@@ -55,13 +81,13 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
             <span className="text-muted-foreground">•</span>
             <div className="text-sm text-muted-foreground">{winnerPrice}</div>
           </div>
-          <Button
-            size="sm"
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-            onClick={() => window.open(winnerPlace.googleMapsUri, "_blank")}
-          >
-            View on Maps
-          </Button>
+          {/* <Button */}
+          {/*   size="sm" */}
+          {/*   className="bg-orange-500 hover:bg-orange-600 text-white" */}
+          {/*   onClick={() => window.open(winnerPlace.googleMapsUri, "_blank")} */}
+          {/* > */}
+          {/*   View on Maps */}
+          {/* </Button> */}
         </div>
       </div>
 
@@ -71,11 +97,28 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
             const place = restaurant.place
             const name = place.displayName?.text || place.name
             const rating = place.rating || 0
-            const price = place.priceLevel || "$$"
-            const imageUrl =
-              place.photos && place.photos.length > 0
-                ? place.photos[0].googleMapsUri
-                : "/placeholder.svg?height=80&width=80"
+            let price;
+            switch (place.priceLevel) {
+              case "PRICE_LEVEL_UNSPECIFIED":
+                price = "$$"
+                break;
+              case "PRICE_LEVEL_FREE":
+                price = "$"
+                break;
+              case "PRICE_LEVEL_INEXPENSIVE":
+                price = "$"
+                break;
+              case "PRICE_LEVEL_MODERATE":
+                price = "$$"
+                break;
+              case "PRICE_LEVEL_EXPENSIVE":
+                price = "$$$"
+                break;
+              case "PRICE_LEVEL_VERY_EXPENSIVE":
+                price = "$$$$"
+                break;
+            }
+            const imageUrl = restaurant.thumbnail;
 
             return (
               <div key={place.id} className="flex items-center gap-2">
@@ -83,7 +126,12 @@ export default function TopThreeRestaurants({ restaurants, users, currentUser })
                   <span className="font-medium text-xs text-gray-700">{index + 2}</span>
                 </div>
                 <div className="relative h-10 w-10 rounded-md overflow-hidden flex-shrink-0">
-                  <Image src={imageUrl || "/placeholder.svg"} alt={name} fill className="object-cover" />
+                  <img
+                    src={imageUrl || "/placeholder.svg"}
+                    referrerPolicy="no-referrer"
+                    draggable="false"
+                    className="absolute top-0 left-0 w-full h-full object-cover"
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{name}</h4>

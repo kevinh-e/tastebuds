@@ -23,12 +23,10 @@ data: {
                 yes: string[] (string of user Ids),
                 no: string[] (string of user Ids),
             },
-            reactions: [
-                { 
-                    emoji: string (emoji), 
-                    users: string[] (string of user Ids)
-                }
-            ]
+            reactions: {
+              id: string,
+            },
+            thumbnail: string,
         } ],
         roomSettings: {
           restIndex: number,

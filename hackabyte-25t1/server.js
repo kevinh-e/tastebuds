@@ -86,6 +86,10 @@ app.prepare().then(() => {
     }
   }
 
+  function setThumbnail(roomCode, restIndex, url) {
+    data[roomCode].restaurants[restIndex].thumbnail = url;
+  }
+
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, hostname, cb) => {
       const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -158,6 +162,14 @@ app.prepare().then(() => {
 
       // Send back any updated data if needed
       cb(data[roomCode].restaurants[restIndex].reactions);
+
+      // Then sync your updated room data with everyone
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
+    });
+
+    socket.on("setThumbnail", (roomCode, restIndex, url, cb) => {
+      // Store or remove the user's reaction in `data`
+      setThumbnail(roomCode, restIndex, url);
 
       // Then sync your updated room data with everyone
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
