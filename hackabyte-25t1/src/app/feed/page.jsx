@@ -7,9 +7,24 @@ import { socket } from "@/socket.js";
 
 export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
-  const { id, setRoomData, roomData, roomCode } = useAppContext();
+  const [isHost, setIsHost] = useState(false);
+  const { id, roomData, roomCode, restIndex, setRoomData } = useAppContext();
+
+  useEffect(() => {
+    if (roomData) {
+      setIsHost(roomData.roomMembers[id].isHost)
+    }
+    console.log(isHost);
+  }, [roomData]);
   const [msLeft, setMsLeft] = useState(0);
   const [hasEmitted, setHasEmitted] = useState(false);
+
+  const skipRestaurant = () => {
+    if (socket.connected && roomCode !== "") {
+      console.log("SKIPPING")
+      socket.emit("nextRestaurant", roomCode);
+    }
+  }
 
   // Handle synchronization when new restaurant starts
   useEffect(() => {
@@ -94,6 +109,8 @@ export default function FeedPage() {
       <FeedCard
         place={roomData.restaurants[roomData.roomSettings.restIndex].place}
         onVoteChange={handleVoteChange}
+        onSkip={skipRestaurant}
+        isHost={isHost}
       />
 
       {currentVote && (

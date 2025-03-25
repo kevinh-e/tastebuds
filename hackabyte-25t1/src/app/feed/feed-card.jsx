@@ -1,14 +1,15 @@
 "use client"
 
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
-import { MapPin, Star, X, Check, ChevronLeft, ChevronRight, Phone } from "lucide-react"
+import { MapPin, Star, X, Check, ChevronLeft, ChevronRight, Phone, ChevronsRight } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useAppContext } from "@/context/AppContext"
 
-export function FeedCard({ place, onVoteChange }) {
+export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -85,20 +86,22 @@ export function FeedCard({ place, onVoteChange }) {
     ["rgba(239, 68, 68, 0.8)", "rgba(255, 255, 255, 0)", "rgba(34, 197, 94, 0.8)"] // Red → Transparent → Green
   );
 
-  const name = place?.displayName?.text || "Unnamed Place";
-  const address = place?.shortFormattedAddress || "No address available";
+  const name = place.displayName?.text || "Unnamed Place";
+  const address = place.shortFormattedAddress || "No address available";
   const phone = place?.nationalPhoneNumber || "No phone number available";
   const rating = place?.rating || 0;
   const totalRatings = place?.userRatingCount || 0;
-  const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type";
-  const minPrice = place?.priceRange?.startPrice?.units || "10";
-  const maxPrice = place?.priceRange?.endPrice?.units || "40";
-  const openNow = place?.regularOpeningHours?.openNow || false;
+  const primaryType = place?.primaryTypeDisplayName.text || "Unknown Type";
+  const minPrice = place?.priceRange?.startPrice.units;
+  const maxPrice = place?.priceRange?.endPrice.units;
+  const openNow = place?.regularOpeningHours.openNow;
   const mapsLink = place?.googleMapsUri;
-  const photoNames = place?.photos?.map(obj => obj.name).slice(0, 4);
+  const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
 
   const [imageUrls, setImageUrls] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const { restIndex } = useAppContext();
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1))
@@ -126,8 +129,7 @@ export function FeedCard({ place, onVoteChange }) {
     };
 
     fetchImages();
-  }, []);
-
+  }, [restIndex]);
 
   return (
     <div className="relative w-full max-w-md mx-auto">
@@ -148,12 +150,12 @@ export function FeedCard({ place, onVoteChange }) {
       </motion.div>
 
       {/* Current vote indicator */}
-      {vote && !isDragging && (
+      {!isDragging && (
         <div
-          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white ${vote === "yes" ? "bg-green-500" : "bg-red-500"
-            }`}
+          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white
+          ${!vote ? "bg-black/50" : vote === "yes" ? "bg-green-500/75" : "bg-red-500/75"}`}
         >
-          {vote === "yes" ? "YES" : "NO"}
+          {!vote ? "Swipe to vote" : vote === "yes" ? "YES" : "NO"}
         </div>
       )}
 
@@ -300,17 +302,25 @@ export function FeedCard({ place, onVoteChange }) {
             </span>
           </div>
 
-          <Button className="w-full" asChild>
-            <a
-              href={mapsLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`View ${name} on Maps`}
-              draggable="false"
-            >
-              View on Maps
-            </a>
-          </Button>
+          <div className="w-full flex flex-row gap-2">
+            <Button className="grow-3" asChild>
+              <a
+                href={mapsLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`View ${name} on Maps`}
+                draggable="false"
+              >
+                View on Maps
+              </a>
+            </Button>
+            {isHost ?
+              <Button variant="secondary" className="grow-1" onClick={onSkip}>
+                Skip
+                <ChevronsRight />
+              </Button> : <></>
+            }
+          </div>
         </div>
       </motion.div>
     </div>

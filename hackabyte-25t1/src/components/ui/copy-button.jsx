@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils"
 
 export default function CopyButton({
   textToCopy,
-  displayText,
   variant = "outline",
   className,
   buttonProps,
 }) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = async () => {
+  const handleCopy = async (e) => {
+    e.preventDefault();
     await navigator.clipboard.writeText(textToCopy)
     setCopied(true)
 
@@ -28,7 +28,7 @@ export default function CopyButton({
     <Button
       onClick={handleCopy}
       variant={variant}
-      className={cn("flex items-center gap-2", className)}
+      className={cn("flex items-center gap-2 bg-card", className)}
       {...buttonProps}
     >
       {copied ? (
