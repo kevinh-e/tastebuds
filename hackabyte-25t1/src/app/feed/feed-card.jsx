@@ -29,19 +29,20 @@ export default function FeedCard({ place }) {
   
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  const imageUrls = ['/dummy-images/one.jpg', '/dummy-images/two.jpg', '/dummy-images/three.jpg', '/dummy-images/four.jpg'];
+  // const imageUrls = ['/dummy-images/one.jpg', '/dummy-images/two.jpg', '/dummy-images/three.jpg', '/dummy-images/four.jpg'];
   // TODO: Fetch images from API
-  // const imageUrls = place?.photos.map(obj => obj.name).slice(0, 4);
-  // useEffect(() => {
-  //   const placeName = imageUrls[3];
-    
-  //   const fetchData = async () => {
-  //     const image = await fetchRestaurantImage(placeName);
-  //     console.log(image);
-  //   };
+  const imageUrls = place?.photos.map(obj => obj.name).slice(0, 4);
 
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const placeName = imageUrls[0];
+    
+    const fetchData = async () => {
+      const image = await fetchRestaurantImage(placeName);
+      console.log(image);
+    };
+
+    fetchData();
+  }, []);
 
 
   const nextImage = () => {
@@ -55,7 +56,7 @@ export default function FeedCard({ place }) {
   return (
     <Card className="w-full max-w-lg overflow-hidden pt-0">
       {/* Image section */}
-      <div className="relative h-84 w-full bg-muted">
+      {/* <div className="relative h-84 w-full bg-muted">
         <Image
           src={imageUrls[currentImageIndex] || "/placeholder.svg"}
           alt={`Paddy Chans restaurant image ${currentImageIndex + 1}`}
@@ -93,7 +94,7 @@ export default function FeedCard({ place }) {
             </div>
           </>
         )}
-      </div>
+      </div> */}
 
       <CardContent className="space-y-4">
         <div className="flex justify-between items-start">
