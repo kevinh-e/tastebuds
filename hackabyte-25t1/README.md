@@ -2,36 +2,38 @@
 
 ### Main Data Object
 ```
-data : {
-    roomMembers: {
-        id: {
-            name: string,
-            isHost: boolean,
-            preferences: {
-              cuisineTags: string[],
-              locationTags: string[],
-              prices: string[] (eg. [$, $$, $$$, $$$$], or [$, $$, $$$$]),
-              rating: string,
+data: {
+    roomCode: {
+        roomMembers: {
+            id: {
+                name: string,
+                isHost: boolean,
+                preferences: {
+                  cuisineTags: string[],
+                  locationTags: string[],
+                  prices: string[] (eg. [$, $$, $$$, $$$$], or [$, $$, $$$$]),
+                  rating: string,
+                }
             }
-        }
-    },
-    restaurants: [ {
-        place: PLACE (refer to PLACE OBJECT heading),
-        countDownStart: datetime.datetime,
-        votes: {
-            yes: string[] (string of user Ids),
-            no: string[] (string of user Ids),
         },
-        reactions: [
-            { 
-                emoji: string (emoji), 
-                users: string[] (string of user Ids)
-            }
-        ]
-    } ],
-    roomSettings: {
-      roomCode: string,
-      roundTime: number,
+        restaurants: [ {
+            place: PLACE (refer to PLACE OBJECT heading),
+            countDownStart: datetime.datetime,
+            votes: {
+                yes: string[] (string of user Ids),
+                no: string[] (string of user Ids),
+            },
+            reactions: [
+                { 
+                    emoji: string (emoji), 
+                    users: string[] (string of user Ids)
+                }
+            ]
+        } ],
+        roomSettings: {
+          roomCode: string,
+          roundTime: number,
+        }
     }
 }
 

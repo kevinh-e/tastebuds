@@ -52,35 +52,50 @@ app.prepare().then(() => {
    *    },
    *  }
    */
+
   const data = {};
-  data.roomMembers = data.roomMembers || {};
+
+  function addRoom(roomCode, roundTime) {
+    data[roomCode] = {
+      roomMembers: {},
+      restaurants: [],
+      roomSettings: {
+        roomCode: roomCode,
+        roundTime: roundTime,
+      }
+    }
+  }
+
+  function joinRoom(roomCode, id) {
+    data[roomCode].roomMembers[id] = {
+      isHost: false,
+      preferences: {},
+    };
+  }
 
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, cb) => {
-      // create room code
-      // set round time
-      // add user as host
-      data.roomMembers[id] = data.roomMembers[id] || {
+      const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      addRoom(roomCode, roundTime);
+
+      const member = {
         isHost: true,         // default value, adjust if necessary
         preferences: {},
-        currentView: null      // or another default value
       };
-      data.roomSettings = data.roomSettings || {
-        roomCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
-        roundTime: roundTime,
-      };
+      data[roomCode].roomMembers[id] = member;
+
       // send back data
-      cb(JSON.stringify(data));
+      cb(roomCode);
+      socket.join(roomCode);
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
-    socket.on("joinRoom", (id, cb) => {
-      data.roomMembers[id] = data.roomMembers[id] || {
-        isHost: false,
-        preferences: {},
-        currentView: null      // or another default value
-      };
-      // cb(JSON.stringify(data));
-      io.emit("syncData", JSON.stringify(data));
+    socket.on("joinRoom", (roomCode, id, cb) => {
+      socket.join(roomCode);
+      joinRoom(roomCode, id);
+      cb(roomCode);
+      // io.emit("syncData", JSON.stringify(data));
+      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
     socket.on("sendPreferences", (preferences, id, cb) => {
