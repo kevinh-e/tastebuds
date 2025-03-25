@@ -38,7 +38,7 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
     if (onVoteChange) {
       onVoteChange(vote)
     }
-  }, [vote])
+  }, [vote, onVoteChange])
 
   // Reset x position after vote
   useEffect(() => {
@@ -100,7 +100,6 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
 
   const [imageUrls, setImageUrls] = useState([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  )
 
   const { restIndex } = useAppContext();
 
@@ -130,9 +129,6 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
 
     fetchImages();
   }, [restIndex]);
-
-    fetchImages()
-  }, [])
 
   return (
     <div className="relative w-full max-w-md mx-auto">
