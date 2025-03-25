@@ -21,6 +21,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("roomData", roomData);
+    console.log(roomData);
   }, [roomData]);
 
   return (
