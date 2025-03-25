@@ -12,23 +12,22 @@ import { ReactionSummary } from "./utils/reaction-summary"
 
 import { socket } from "@/socket"
 
-export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null }) {
-const toRadians = (degrees) => degrees * Math.PI / 180;
-
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of the earth in km
-  const dLat = toRadians(lat2 - lat1);
-  const dLon = toRadians(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distance in km
-}
-
 export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null, location }) {
+  const toRadians = (degrees) => degrees * Math.PI / 180;
+
+  function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  }
+
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
