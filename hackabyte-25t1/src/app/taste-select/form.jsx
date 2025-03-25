@@ -12,7 +12,6 @@ import TagInput from "./tag-input.jsx"
 import { useAppContext } from "@/context/AppContext.jsx";
 
 import { socket } from "@/socket.js";
-import CopyButton from "@/components/ui/copy-button.jsx";
 
 // Define the form schema with zod
 const formSchema = z.object({
@@ -61,13 +60,6 @@ export default function TasteSelectForm() {
   return (
     <div className="w-full max-w-md space-y-4">
       <div className="p-6 bg-white border rounded-lg w-full max-w-md">
-        <div className="flex justify-end">
-          <CopyButton
-            className="text-lg text-muted-foreground mb-4"
-            textToCopy={roomCode}
-            displayText={roomCode}
-          />
-        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Price Section */}
@@ -76,7 +68,7 @@ export default function TasteSelectForm() {
               name="prices"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xl font-semibold">Price</FormLabel>
+                  <FormLabel className="text-lg font-semibold">Price</FormLabel>
                   <FormDescription>How much do you want to spend?</FormDescription>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {priceOptions.map((price) => (
@@ -108,7 +100,7 @@ export default function TasteSelectForm() {
               name="cuisineTags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xl font-semibold">Cuisine</FormLabel>
+                  <FormLabel className="text-lg font-semibold">Cuisine</FormLabel>
                   <FormDescription>What type of food are you looking for?</FormDescription>
                   <FormControl>
                     <TagInput
@@ -128,7 +120,7 @@ export default function TasteSelectForm() {
               name="locationTags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xl font-semibold">Location</FormLabel>
+                  <FormLabel className="text-lg font-semibold">Location</FormLabel>
                   <FormDescription>Where would you like to eat?</FormDescription>
                   <FormControl>
                     <TagInput
@@ -148,7 +140,7 @@ export default function TasteSelectForm() {
               name="rating"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xl font-semibold">Rating</FormLabel>
+                  <FormLabel className="text-lg font-semibold">Rating</FormLabel>
                   <FormDescription>Minimum rating you're looking for</FormDescription>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {ratingOptions.map((rating) => (
