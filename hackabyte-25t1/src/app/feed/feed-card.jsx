@@ -10,7 +10,22 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useAppContext } from "@/context/AppContext"
 import { ReactionSummary } from "./utils/reaction-summary"
 
-export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null }) {
+const toRadians = (degrees) => degrees * Math.PI / 180;
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+}
+
+export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null, location }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -97,6 +112,16 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   const openNow = place?.regularOpeningHours?.openNow || false
   const mapsLink = place?.googleMapsUri || ""
   const photoNames = place?.photos.map((obj) => obj.name).slice(0, 4)
+
+  const placeCoordinates = place?.location;
+  const distance = location && placeCoordinates
+    ? getDistanceFromLatLonInKm(
+      location.latitude,
+      location.longitude,
+      placeCoordinates.latitude,
+      placeCoordinates.longitude
+    )
+    : null;
 
   const [imageUrls, setImageUrls] = useState([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -323,12 +348,27 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
             </div>
           </div>
 
-          <div className="pt-2 border-t">
-            <span className="text-sm font-medium">Price Range: </span>
-            <span className="text-sm text-muted-foreground">
-              ${minPrice}-${maxPrice}
-            </span>
+          <div className="pt-2 border-t flex justify-between">
+            <div>
+              <span className="text-sm font-medium">Price Range: </span>
+              <span className="text-sm text-muted-foreground">
+                ${minPrice}-${maxPrice}
+              </span>
+            </div>
+
+            <div>
+              {distance != null && (
+                <>
+                  {/* <span className="mx-2">•</span> */}
+                  <span className="text-sm font-medium">Distance: </span>
+                  <span className="text-sm text-muted-foreground">
+                    {distance.toFixed(2)} km
+                  </span>
+                </>
+              )}
+            </div>
           </div>
+
 
           <ReactionSummary reactions={reactions} />
           <div className="w-full flex flex-row gap-2">

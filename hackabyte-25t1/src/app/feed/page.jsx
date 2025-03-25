@@ -12,6 +12,27 @@ export default function FeedPage() {
   const [userReaction, setUserReaction] = useState(null);
   const [isHost, setIsHost] = useState(false);
   const { id, roomData, roomCode, restIndex, setRoomData } = useAppContext();
+  const [userLocation, setUserLocation] = useState(null)
+
+  useEffect(() => {
+    const getUserLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserLocation({ latitude, longitude });
+          },
+          (error) => {
+            console.error("Error getting user location:", error);
+          }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+
+    getUserLocation();
+  }, []);
 
   useEffect(() => {
     socket.on("reactionToast", ({ userName, reaction }) => {
@@ -144,6 +165,7 @@ export default function FeedPage() {
         onVoteChange={handleVoteChange}
         onSkip={skipRestaurant}
         isHost={isHost}
+        location={userLocation}
       />
       <div className="mt-6 w-full max-w-md">
         <RestaurantReactions onReactionChange={handleReactionChange} currentReaction={userReaction} />
