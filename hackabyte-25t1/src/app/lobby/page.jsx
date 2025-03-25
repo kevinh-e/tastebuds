@@ -53,14 +53,11 @@ export default function LobbyPage() {
     router.push("/feed");
   });
 
-  const { id, roomCode, roomData, setRoomCode } = useAppContext();
-
-  roomData.roomMembers = mockUsers; // Remove this later cuh
+  const { id, roomCode, roomData } = useAppContext();
 
   const router = useRouter()
   const searchParams = useSearchParams()
   const userName = searchParams.get("name") || "Guest"
-  const groupId = searchParams.get("groupId") || "UNKNOWN"
 
   const [users, setUsers] = useState(mockUsers)
   const [currentUser, setCurrentUser] = useState({
@@ -125,12 +122,12 @@ export default function LobbyPage() {
     if (navigator.share) {
       navigator.share({
         title: "Join my FoodMates group!",
-        text: `Join my group with code: ${groupId}`,
+        text: `Join my group with code: ${roomCode}`,
         url: window.location.href,
       })
     } else {
       // Fallback for browsers that don't support the Web Share API
-      navigator.clipboard.writeText(`Join my FoodMates group with code: ${groupId}`)
+      navigator.clipboard.writeText(`Join my FoodMates group with code: ${roomCode}`)
       alert("Group code copied to clipboard!")
     }
   }
@@ -151,7 +148,7 @@ export default function LobbyPage() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Group Lobby</CardTitle>
-            <CardDescription>Group Code: {groupId}</CardDescription>
+            <CardDescription>Group Code: {roomCode}</CardDescription>
           </CardHeader>
           <CardContent>
             <UsersList users={roomData.roomMembers} currentUserId={id} />

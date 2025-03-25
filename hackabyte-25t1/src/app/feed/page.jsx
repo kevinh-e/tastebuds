@@ -5,7 +5,7 @@ import FeedCard from "./feed-card"
 import { useAppContext } from "@/context/AppContext.jsx";
 
 export default function FeedPage({ query }) {
-    const { id, roomCode, roomData, setRoomCode } = useAppContext();
+    const { id, roomCode, roomData } = useAppContext();
 
     // console.log("Feed page");
     // console.log(roomData);
