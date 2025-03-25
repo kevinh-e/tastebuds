@@ -30,7 +30,7 @@ app.prepare().then(() => {
       roomSettings: {
         roomCode: roomCode,
         roundTime: roundTime,
-        restIndex: -1,
+        restIndex: 0,
       }
     }
   }

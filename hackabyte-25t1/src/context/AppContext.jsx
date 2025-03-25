@@ -9,7 +9,7 @@ export const AppProvider = ({ children }) => {
   const [id, setId] = useState(uid);
   const [roomCode, setRoomCode] = useState("");
   const [roomData, setRoomData] = useState(null);
-  const [restIndex, setRestIndex] = useState(-1);
+  const [restIndex, setRestIndex] = useState(0);
 
   useEffect(() => {
     localStorage.setItem("id", id);

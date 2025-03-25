@@ -11,6 +11,8 @@ export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
   const { id, roomData, roomCode, restIndex } = useAppContext();
 
+  const isHost = roomData ? roomData.roomMembers[id].isHost : false;
+
   const handleVoteChange = (vote) => {
     setCurrentVote(vote)
     if (socket.connected && roomCode !== "") {
@@ -33,18 +35,12 @@ export default function FeedPage() {
   }, [currentVote]);
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8 flex flex-col items-center justify-center">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold mb-2">Swipe to Vote</h1>
-        <Button onClick={skipRestaurant}>
-          Skip
-        </Button>
-        <p className="text-gray-600">Swipe right for Yes, left for No. You can change your vote anytime.</p>
-      </div>
-
+    <div className="bg-gray-100 min-h-screen px-4 py-0 flex flex-col justify-center items-center">
       <FeedCard
         place={roomData.restaurants[restIndex].place}
         onVoteChange={handleVoteChange}
+        onSkip={skipRestaurant}
+        isHost={isHost}
       />
     </div>
   );

@@ -1,14 +1,15 @@
 "use client"
 
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
-import { MapPin, Star, X, Check, ChevronLeft, ChevronRight, Phone } from "lucide-react"
+import { MapPin, Star, X, Check, ChevronLeft, ChevronRight, Phone, ChevronsRight } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { fetchRestaurantImage } from "./utils/fetchRestaurantImage"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useAppContext } from "@/context/AppContext"
 
-export function FeedCard({ place, onVoteChange }) {
+export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
   const [vote, setVote] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -100,6 +101,8 @@ export function FeedCard({ place, onVoteChange }) {
   const [imageUrls, setImageUrls] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const { restIndex } = useAppContext();
+
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1))
   }
@@ -126,7 +129,7 @@ export function FeedCard({ place, onVoteChange }) {
     };
 
     fetchImages();
-  }, []);
+  }, [restIndex]);
 
 
   return (
@@ -300,17 +303,24 @@ export function FeedCard({ place, onVoteChange }) {
             </span>
           </div>
 
-          <Button className="w-full" asChild>
-            <a
-              href={mapsLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`View ${name} on Maps`}
-              draggable="false"
-            >
-              View on Maps
-            </a>
-          </Button>
+          <div className="w-full flex flex-row gap-2">
+            <Button className="grow-3" asChild>
+              <a
+                href={mapsLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`View ${name} on Maps`}
+                draggable="false"
+              >
+                View on Maps
+              </a>
+            </Button>
+            {}
+            <Button variant="secondary" className="grow-1" onClick={onSkip}>
+              Skip
+              <ChevronsRight />
+            </Button>
+          </div>
         </div>
       </motion.div>
     </div>
