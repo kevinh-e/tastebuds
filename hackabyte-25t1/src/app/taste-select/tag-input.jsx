@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 
-export default function TagInput({ onTagsChange, placeholder = "Add a tag...", initialTags = [] }) {
+export default function TagInput({ onTagsChange, placeholder = "Add a tag...", initialTags = [], className }) {
   const [inputValue, setInputValue] = useState("")
   const [tags, setTags] = useState(initialTags)
 
@@ -45,7 +45,7 @@ export default function TagInput({ onTagsChange, placeholder = "Add a tag...", i
   }
 
   return (
-    <div className="border rounded-md p-2 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+    <div className={`border rounded-md p-2 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ${className}`}>
       <div className={`flex flex-wrap gap-2 ${tags.length > 0 && 'mb-2'}`}>
         {tags.map((tag, index) => (
           <div

@@ -1,48 +1,46 @@
-"use client";
+"use client"
 
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ChevronLeft, MapPin, Utensils } from "lucide-react"
-import { useAppContext } from "@/context/AppContext.jsx";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import { ChevronLeft, MapPin, Utensils, Users } from "lucide-react"
+import { useAppContext } from "@/context/AppContext.jsx"
 import Link from "next/link"
 import PreferencesList from "@/components/lobby/preferences-list"
 import UsersList from "@/components/lobby/users-list"
 import { socket } from "@/socket"
 import CopyButton from "@/components/ui/copy-button"
 
-
 export default function LobbyPage() {
-  const { id, roomCode, roomData, setRoomData } = useAppContext();
-
+  const { id, roomCode, roomData, setRoomData } = useAppContext()
   const router = useRouter()
 
   socket.on("reccomendationsRecieved", (data) => {
-    setRoomData(JSON.parse(data));
-    router.push("/feed");
-  });
+    setRoomData(JSON.parse(data))
+    router.push("/feed")
+  })
 
   const handleSubmit = async (e) => {
     // Prevent the page from refreshing
-    e.preventDefault();
+    e.preventDefault()
 
     // Combine the strings of cuisines and locations into a single string
-    let searchQuery = "";
-    let locationsProvided = false;
+    let searchQuery = ""
+    let locationsProvided = false
     Object.values(roomData.roomMembers).forEach((user) => {
       user.preferences.cuisineTags.forEach((cuisine) => {
-        searchQuery += cuisine + " ";
-      });
+        searchQuery += cuisine + " "
+      })
       if (user.preferences.locationTags.length > 0) {
-        locationsProvided = true;
+        locationsProvided = true
       }
     })
     if (locationsProvided === true) {
-      searchQuery += "located in ";
+      searchQuery += "located in "
       Object.values(roomData.roomMembers).forEach((user) => {
         user.preferences.locationTags.forEach((location) => {
-          searchQuery += location + " ";
-        });
+          searchQuery += location + " "
+        })
       })
     }
 
@@ -55,87 +53,88 @@ export default function LobbyPage() {
     })
 
     const searchApiResponse = await response.json()
-
-    const maskedApiResponse = searchApiResponse.places;
-
-    const restaurantArrayFinal = [];
+    const maskedApiResponse = searchApiResponse.places
+    const restaurantArrayFinal = []
 
     maskedApiResponse.forEach((placeObj) => {
       const obj = {}
       obj["place"] = { ...placeObj }
-      obj["countDownStart"] = 0;
+      obj["countDownStart"] = 0
       obj["votes"] = {
         yes: [],
-        no: []
-      };
+        no: [],
+      }
       obj["reactions"] = []
-      restaurantArrayFinal.push(obj);
+      restaurantArrayFinal.push(obj)
     })
 
-    socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify(restaurantArrayFinal));
+    socket.emit("reccomendationsBroadcast", roomCode, JSON.stringify(restaurantArrayFinal))
   }
 
   return (
-    <form onSubmit={handleSubmit} className="container max-w-md mx-auto px-4 py-8 h-screen">
-      <div className="container max-w-md mx-auto px-4 h-full flex flex-col justify-between">
-        <div className="flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <Button
-              asChild
-              className="bg-card text-muted-foreground border"
-              onClick={(e) => e.preventDefault()}
-            >
-              <Link href="/start" className="flex items-center text-sm">
-                <ChevronLeft className="h-4 w-4 mr-1" /> Exit
-              </Link>
+    <div className="min-h-screen bg-gradient-to-b from-orange-50/50 to-white">
+      <main className="container max-w-md mx-auto px-4 py-8">
+        <div className="mb-6 flex justify-between items-center">
+          <Button asChild variant="ronaldo" size="sm" className="flex items-center text-sm">
+            <Link href="/start">
+              <ChevronLeft className="h-4 w-4 mr-1" /> Exit
+            </Link>
+          </Button>
+          <CopyButton className="text-muted-foreground font-medium" textToCopy={roomCode} displayText={roomCode} />
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-orange-500" />
+                <CardTitle>Buddies</CardTitle>
+              </div>
+              <CardDescription>Everyone who has joined this room</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UsersList users={roomData.roomMembers} currentUserId={id} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Utensils className="h-5 w-5 text-orange-500" />
+                <CardTitle>Cuisines</CardTitle>
+              </div>
+              <CardDescription>Food preferences from all participants</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-orange-500" />
+                <CardTitle>Locations</CardTitle>
+              </div>
+              <CardDescription>Preferred areas to find restaurants</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
+            </CardContent>
+          </Card>
+
+          {id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true ? (
+            <Button type="submit" size="lg" className="w-full bg-orange-500 hover:bg-orange-600">
+              Start Matching!
             </Button>
-            <CopyButton
-              className="text-muted-foreground"
-              textToCopy={roomCode}
-              displayText={roomCode}
-            />
-          </div>
-
-          <div className="flex flex-col space-y-3">
-            <Card>
-              <CardContent className="space-y-3">
-                <h3 className="text-xl font-semibold">Buddies:</h3>
-                <UsersList users={roomData.roomMembers} currentUserId={id} />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="space-y-3">
-                <Utensils className="h-6 w-6" />
-                <h3 className="text-xl font-semibold">Cusines:</h3>
-                <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="space-y-3">
-                <MapPin className="h-6 w-6" />
-                <h3 className="text-xl font-semibold">Locations:</h3>
-                <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        <div className="justify-self-end">
-          {
-            (id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true) ? (
-              <Button type="submit" size="lg" className="w-full">
-                Start Matching!
-              </Button>
-            ) : (
-              <Button type="submit" className="w-full" disabled>
-                Waiting for host to start matching...
-              </Button>
-            )
-          }
-        </div>
-      </div>
-    </form>
+          ) : (
+            <Button type="submit" size="lg" className="w-full" disabled>
+              Waiting for host to start matching...
+            </Button>
+          )}
+        </form>
+      </main>
+    </div>
   )
 }
+
+
