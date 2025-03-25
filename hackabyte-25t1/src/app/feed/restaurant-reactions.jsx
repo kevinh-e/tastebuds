@@ -13,8 +13,6 @@ const quickReactions = [
   { id: "👍", label: "Like" },
   { id: "❤️", label: "Love" },
   { id: "🔥", label: "Hot" },
-  { id: "☕", label: "Coffee" },
-  { id: "🍽️", label: "Food" },
   { id: "💰", label: "Pricey" },
   { id: "👎", label: "Dislike" },
 ]
@@ -73,8 +71,6 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-medium mb-3">How do you feel about this place?</h3>
-
       <div className="flex flex-wrap gap-2 justify-center mb-2">
         {quickReactions.map((reaction) => {
           const isSelected = selectedReaction === reaction.id

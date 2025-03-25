@@ -135,17 +135,12 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   // Calculate progress indicator dimensions
   const cardWidth = 100 // 100%
   const cardHeight = 100 // 100%
-  const strokeWidth = 4 // Border width in pixels
 
   // Calculate the perimeter of the card
   const perimeter = 2 * (cardWidth + cardHeight)
 
   // Calculate the length of the progress line based on the progress value
   const progressLength = progress !== null ? perimeter * progress : 0
-
-  // Calculate the dash array and offset for the SVG stroke
-  const dashArray = `${perimeter}`
-  const dashOffset = perimeter - progressLength
 
   return (
     <div className="relative w-full max-w-md mx-auto">
