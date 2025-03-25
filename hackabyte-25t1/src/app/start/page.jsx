@@ -1,27 +1,43 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation"
 import { Users, UserPlus } from "lucide-react"
+import { Slider } from "@/components/ui/slider"
+import { useAppContext } from "@/context/AppContext.jsx";
+import { socket } from "@/socket.js";
 
 export default function PreLobbyPage() {
-  const router = useRouter()
-  const [lobbyName, setLobbyName] = useState("")
+  const { id, roomCode, setRoomCode, roomData, setRoomData } = useAppContext();
+
+  useEffect(() => {
+    socket.on('syncData', (msg) => {
+      // setResponse(JSON.parse(msg));
+      setRoomData(JSON.parse(msg));
+    });
+  }, [roomData]);
+
   const [lobbyCode, setLobbyCode] = useState("")
   const [hostName, setHostName] = useState("")
+  const [roundTime, setRoundTime] = useState(10);
+
   const [joinName, setJoinName] = useState("")
   const [error, setError] = useState("")
 
   const handleCreateLobby = async () => {
-    if (!lobbyName.trim() || !hostName.trim()) {
+    if (!hostName.trim() || !roundTime) {
       setError("Please fill in all required fields")
       return
     }
+    socket.emit("createRoom", roundTime, id, hostName, (data) => {
+      console.log(roomData);
+    });
+
   }
 
   const handleJoinLobby = async () => {
@@ -29,6 +45,9 @@ export default function PreLobbyPage() {
       setError("Please fill in all required fields")
       return
     }
+    socket.emit("joinRoom", lobbyCode, id, joinName, (data) => {
+      console.log(roomData);
+    });
   }
 
   return (
@@ -59,6 +78,25 @@ export default function PreLobbyPage() {
                   value={hostName}
                   onChange={(e) => setHostName(e.target.value)}
                 />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="roundTime">Round Time</Label>
+                  <span className="text-sm font-medium">{roundTime} seconds</span>
+                </div>
+                <Slider
+                  id="roundTime"
+                  min={5}
+                  max={60}
+                  step={1}
+                  value={[roundTime]}
+                  onValueChange={(value) => setRoundTime(value[0])}
+                  className="py-4"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>5s</span>
+                  <span>60s</span>
+                </div>
               </div>
               <Button onClick={handleCreateLobby} className="w-full">
                 Create a New Lobby

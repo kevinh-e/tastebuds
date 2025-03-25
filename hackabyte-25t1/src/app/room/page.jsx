@@ -34,7 +34,7 @@ export default function RoomPage() {
       return;
     }
 
-    socket.emit("joinRoom", joinCode, id, (data) => {
+    socket.emit("joinRoom", joinCode, id,, (data) => {
       console.log(data)
       // const parsed = JSON.parse(data);
       // if (parsed.roomSettings?.roomCode === joinCode.toUpperCase()) {
