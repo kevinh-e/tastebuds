@@ -114,8 +114,8 @@ app.prepare().then(() => {
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
-    socket.on("nextRestaurant", (roomCode) => {
-      if (data[roomCode].roomSettings.restIndex >= length(data[roomCode].restaurants)) {
+    socket.on("nextRestaurant", (roomCode, hostStartTime) => {
+      if (data[roomCode].roomSettings.restIndex >= data[roomCode].restaurants.length) {
         // podium time
         io.in(roomCode).emit("gotoResults");
       } else {

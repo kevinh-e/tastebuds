@@ -86,14 +86,14 @@ export function FeedCard({ place, onVoteChange, onSkip, isHost }) {
     ["rgba(239, 68, 68, 0.8)", "rgba(255, 255, 255, 0)", "rgba(34, 197, 94, 0.8)"] // Red → Transparent → Green
   );
 
-  const name = place.displayName?.text || "Unnamed Place";
-  const address = place.shortFormattedAddress || "No address available";
+  const name = place?.displayName?.text || "Unnamed Place";
+  const address = place?.shortFormattedAddress || "No address available";
   const phone = place?.nationalPhoneNumber || "No phone number available";
   const rating = place?.rating || 0;
   const totalRatings = place?.userRatingCount || 0;
-  const primaryType = place?.primaryTypeDisplayName.text || "Unknown Type";
-  const minPrice = place?.priceRange?.startPrice.units || 0; 
-  const maxPrice = place?.priceRange?.endPrice.units || 0;
+  const primaryType = place?.primaryTypeDisplayName?.text || "Unknown Type";
+  const minPrice = place?.priceRange?.startPrice?.units || 0;
+  const maxPrice = place?.priceRange?.endPrice?.units || 0;
   const openNow = place?.regularOpeningHours?.openNow || false;
   const mapsLink = place?.googleMapsUri || "";
   const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);

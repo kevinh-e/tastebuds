@@ -24,24 +24,13 @@ export default function PreLobbyPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const handleSyncData = (msg) => {
-      const data = JSON.parse(msg);
-      setRoomData(data);
-    };
-
-    socket.on('syncData', handleSyncData);
-
-    return () => {
-      socket.off('syncData', handleSyncData);
-    };
+    socket.on("syncData", (msg) => {
+      setRoomData(JSON.parse(msg));
+    });
+    socket.on("gotoResults", () => {
+      router.push("/results");
+    });
   }, []);
-
-  const [lobbyCode, setLobbyCode] = useState("")
-  const [hostName, setHostName] = useState("")
-  const [roundTime, setRoundTime] = useState(10);
-
-  const [joinName, setJoinName] = useState("")
-  const [error, setError] = useState("")
 
   const handleCreateLobby = () => {
     if (!hostName.trim() || !roundTime) {
