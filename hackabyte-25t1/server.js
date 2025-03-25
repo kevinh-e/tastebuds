@@ -79,7 +79,8 @@ app.prepare().then(() => {
         preferences: {},
         currentView: null      // or another default value
       };
-      cb(JSON.stringify(data));
+      // cb(JSON.stringify(data));
+      io.emit("syncData", JSON.stringify(data));
     });
 
     socket.on("sendPreferences", (preferences, id, cb) => {
@@ -88,6 +89,15 @@ app.prepare().then(() => {
 
       // call back to confirm the data was sent
       // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+      cb(JSON.stringify(data));
+    });
+
+    socket.on("senderUserVote", (vote, id, cb) => {
+      // add/replace vote to data
+      data.roomMembers[id].vote = vote;
+
+      // call back to confirm the data was sent
+      // cb("sent data: \n" + vote + "\n\nwith id:\n" + id);
       cb(JSON.stringify(data));
     });
   });

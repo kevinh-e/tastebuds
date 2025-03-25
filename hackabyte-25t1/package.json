@@ -19,6 +19,7 @@
     "@socket.io/admin-ui": "^0.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "express": "^4.21.2",
     "lucide-react": "^0.483.0",
     "motion": "^12.5.0",
     "next": "15.2.3",
