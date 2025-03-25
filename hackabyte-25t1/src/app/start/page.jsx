@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -24,6 +25,7 @@ export default function PreLobbyPage() {
   const [lobbyCode, setLobbyCode] = useState("")
   const [hostName, setHostName] = useState("")
   const [roundTime, setRoundTime] = useState(10);
+
   const [joinName, setJoinName] = useState("")
   const [error, setError] = useState("")
 
@@ -35,6 +37,7 @@ export default function PreLobbyPage() {
     socket.emit("createRoom", roundTime, id, hostName, (data) => {
       console.log(roomData);
     });
+
   }
 
   const handleJoinLobby = async () => {
