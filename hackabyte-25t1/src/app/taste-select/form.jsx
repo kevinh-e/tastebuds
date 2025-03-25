@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
+import { useRouter } from 'next/navigation';
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
@@ -21,24 +22,14 @@ const formSchema = z.object({
 })
 
 export default function TasteSelectForm() {
-  const [isConnected, setIsConnected] = useState(false);
-  const { id, roomCode } = useAppContext();
+  const { id, roomData, setRoomData, roomCode } = useAppContext();
 
   useEffect(() => {
-    socket.on('connect', () => {
-      // socket.emit('preferences', id);
-      setIsConnected(true);
+    socket.on('syncData', (msg) => {
+      // setResponse(JSON.parse(msg));
+      setRoomData(JSON.parse(msg));
     });
-
-    socket.on('disconnect', () => {
-      setIsConnected(false);
-    });
-
-    return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-    };
-  }, []);
+  }, [roomData]);
 
   // Initialize the form with default values
   const form = useForm({
@@ -54,8 +45,8 @@ export default function TasteSelectForm() {
   const onSubmit = (data) => {
     if (socket.connected && roomCode !== "") {
       // sent the preferences to the server with that room code
-      socket.to(roomCode).emit('sendPreferences', JSON.stringify(data), id, message => {
-        console.log(message);
+      socket.emit("sendPreferences", roomCode, JSON.stringify(data), id, res => {
+        console.log(res);
       });
     }
   }

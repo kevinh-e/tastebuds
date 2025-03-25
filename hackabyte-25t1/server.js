@@ -74,6 +74,10 @@ app.prepare().then(() => {
     };
   }
 
+  function setPreferences(roomCode, id, preferences) {
+    data[roomCode].roomMembers[id].preferences = preferences;
+  }
+
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, hostname, cb) => {
       const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -100,12 +104,9 @@ app.prepare().then(() => {
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
     });
 
-    socket.on("sendPreferences", (preferences, id, cb) => {
+    socket.on("sendPreferences", (roomCode, preferences, id, cb) => {
       // add/replace preferences to data
-      data.roomMembers[id].preferences = preferences;
-
-      // call back to confirm the data was sent
-      // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+      setPreferences(roomCode, id, JSON.parse(preferences));
       cb(JSON.stringify(data));
     });
 
