@@ -89,6 +89,7 @@ app.prepare().then(() => {
       joinRoom(roomCode, id, name);
       cb(roomCode);
       io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
+      io.in(roomCode).emit("newUser", JSON.stringify({id, name}));
     });
 
     socket.on("reccomendationsBroadcast", (roomCode, recommendations) => {

@@ -95,7 +95,6 @@ export function FeedCard({ place, onVoteChange }) {
   const maxPrice = place?.priceRange.endPrice.units;
   const openNow = place?.regularOpeningHours.openNow;
   const mapsLink = place?.googleMapsUri;
-
   const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
   
   const [imageUrls, setImageUrls] = useState([]);
