@@ -81,29 +81,27 @@ app.prepare().then(() => {
       };
       cb(JSON.stringify(data));
     });
-    // send data to the clients to sync them
+
+    socket.on("sendPreferences", (preferences, id, cb) => {
+      // add/replace preferences to data
+      data.roomMembers[id].preferences = preferences;
+
+      // call back to confirm the data was sent
+      // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
+      cb(JSON.stringify(data));
+    });
   });
 
-  socket.on("sendPreferences", (preferences, id, cb) => {
-    // add/replace preferences to data
-    data.roomMembers[id].preferences = preferences;
+  httpServer
+    .once("error", (err) => {
+      console.error(err);
+      process.exit(1);
+    })
+    .listen(port, () => {
+      console.log(`> Ready on http://${hostname}:${port}`);
+    });
 
-    // call back to confirm the data was sent
-    // cb("sent data: \n" + preferences + "\n\nwith id:\n" + id);
-    cb(JSON.stringify(data));
+  instrument(io, {
+    auth: false,
   });
-});
-
-httpServer
-  .once("error", (err) => {
-    console.error(err);
-    process.exit(1);
-  })
-  .listen(port, () => {
-    console.log(`> Ready on http://${hostname}:${port}`);
-  });
-
-instrument(io, {
-  auth: false,
-});
 });
