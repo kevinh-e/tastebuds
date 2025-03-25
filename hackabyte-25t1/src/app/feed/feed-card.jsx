@@ -96,7 +96,7 @@ export function FeedCard({ place, onVoteChange }) {
   const openNow = place?.regularOpeningHours.openNow;
   const mapsLink = place?.googleMapsUri;
   const photoNames = place?.photos.map(obj => obj.name).slice(0, 4);
-  
+
   const [imageUrls, setImageUrls] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -119,7 +119,6 @@ export function FeedCard({ place, onVoteChange }) {
           })
         );
 
-        console.log(imageUrls); // Logs array of image URLs
         setImageUrls(imageUrls); // Store images in order
       } catch (error) {
         console.error("Failed to fetch images:", error);
@@ -151,9 +150,8 @@ export function FeedCard({ place, onVoteChange }) {
       {/* Current vote indicator */}
       {vote && !isDragging && (
         <div
-          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white ${
-            vote === "yes" ? "bg-green-500" : "bg-red-500"
-          }`}
+          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white ${vote === "yes" ? "bg-green-500" : "bg-red-500"
+            }`}
         >
           {vote === "yes" ? "YES" : "NO"}
         </div>
@@ -209,7 +207,7 @@ export function FeedCard({ place, onVoteChange }) {
                       <ChevronRight className="h-5 w-5" />
                       <span className="sr-only">Next image</span>
                     </Button>
-    
+
                     <div
                       className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10"
                       role="tablist"
@@ -219,9 +217,8 @@ export function FeedCard({ place, onVoteChange }) {
                         <button
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
-                          className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                            index === currentImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/70"
-                          }`}
+                          className={`h-1.5 w-1.5 rounded-full transition-colors ${index === currentImageIndex ? "bg-white" : "bg-white/50 hover:bg-white/70"
+                            }`}
                           role="tab"
                           aria-selected={index === currentImageIndex}
                           aria-label={`View image ${index + 1}`}

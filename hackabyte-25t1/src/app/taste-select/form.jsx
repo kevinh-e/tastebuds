@@ -47,9 +47,7 @@ export default function TasteSelectForm() {
   const onSubmit = (data) => {
     if (socket.connected && roomCode !== "") {
       // sent the preferences to the server with that room code
-      socket.emit("sendPreferences", roomCode, JSON.stringify(data), id, res => {
-        // console.log(res);
-      });
+      socket.emit("sendPreferences", roomCode, JSON.stringify(data), id);
     }
     router.push('/lobby');
   }
