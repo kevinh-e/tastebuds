@@ -10,6 +10,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Toggle } from "@/components/ui/toggle"
 import TagInput from "./tag-input.jsx"
 import { useAppContext } from "@/context/AppContext.jsx";
+import { ChefHat, Coins, MapPin, Star } from "lucide-react";
 
 import { socket } from "@/socket.js";
 
@@ -68,7 +69,10 @@ export default function TasteSelectForm() {
               name="prices"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg font-semibold">Price</FormLabel>
+                  <FormLabel className="text-lg font-semibold">
+                    <Coins className="h-5 w-5"/>
+                    Price
+                  </FormLabel>
                   <FormDescription>How much do you want to spend?</FormDescription>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {priceOptions.map((price) => (
@@ -100,7 +104,10 @@ export default function TasteSelectForm() {
               name="cuisineTags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg font-semibold">Cuisine</FormLabel>
+                  <FormLabel className="text-lg font-semibold">
+                    <ChefHat className="h-5 w-5"/>
+                    Cuisine
+                  </FormLabel>
                   <FormDescription>What type of food are you looking for?</FormDescription>
                   <FormControl>
                     <TagInput
@@ -120,7 +127,10 @@ export default function TasteSelectForm() {
               name="locationTags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg font-semibold">Location</FormLabel>
+                  <FormLabel className="text-lg font-semibold">
+                    <MapPin className="h-5 w-5"/>
+                    Location
+                  </FormLabel>
                   <FormDescription>Where would you like to eat?</FormDescription>
                   <FormControl>
                     <TagInput
@@ -140,7 +150,10 @@ export default function TasteSelectForm() {
               name="rating"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg font-semibold">Rating</FormLabel>
+                  <FormLabel className="text-lg font-semibold">
+                    <Star className="h-5 w-5"/>
+                    Rating
+                  </FormLabel>
                   <FormDescription>Minimum rating you're looking for</FormDescription>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {ratingOptions.map((rating) => (
