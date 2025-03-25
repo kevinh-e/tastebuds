@@ -66,7 +66,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
     setIsDragging(true)
   }
 
-  const handleDragEnd = (info) => {
+  const handleDragEnd = (event, info) => {
     setIsDragging(false)
 
     if (info.offset.x > THRESHOLD) {
@@ -151,16 +151,17 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
 
         socket.emit("setThumbnail", roomCode, restIndex, imageUrls[0]);
 
-        setImageUrls(imageUrls); // Store images in order
+        setImageUrls(imageUrls) // Store images in order
       } catch (error) {
-        console.error("Failed to fetch images:", error);
+        console.error("Failed to fetch images:", error)
       }
     }
 
-    fetchImages();
-    setVote(null);
-    setCurrentImageIndex(0);
+    fetchImages()
+    setVote(null)
+    setCurrentImageIndex(0)
   }, [restIndex])
+
 
   return (
     <div className="relative w-full max-w-md mx-auto">
