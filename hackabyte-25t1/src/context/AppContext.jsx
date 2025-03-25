@@ -36,10 +36,9 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{ id, setId, roomCode, setRoomCode, roomData, setRoomData }}>
-      <AppContext.Provider value={{ id, setId, roomCode, setRoomCode, roomData, setRoomData }}>
-        {children}
-      </AppContext.Provider>
-      );
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 export const useAppContext = () => useContext(AppContext);
