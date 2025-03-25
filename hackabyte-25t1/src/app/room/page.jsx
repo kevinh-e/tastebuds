@@ -9,14 +9,18 @@ export default function RoomPage() {
   const { id, roomCode, setRoomCode, roomData, setRoomData } = useAppContext();
 
   useEffect(() => {
-    socket.on('syncData', (msg) => {
-      setResponse(JSON.parse(msg));
-      setRoomData(JSON.parse(msg));
-    });
+    const handleSyncData = (msg) => {
+      const data = JSON.parse(msg);
+      setResponse(data);
+      setRoomData(data);
+    };
+
+    socket.on('syncData', handleSyncData);
+
     return () => {
-      socket.off("syncData");
-    }
-  }, [roomData]);
+      socket.off('syncData', handleSyncData);
+    };
+  }, []);
 
   const [roundTime, setRoundTime] = useState(60);
   const [joinCode, setJoinCode] = useState("");

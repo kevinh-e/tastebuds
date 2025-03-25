@@ -56,7 +56,7 @@ export default function PreLobbyPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-white to-orange-300 p-4 overflow-hidden">
-      
+
       <FloatingBubbles />
 
       <Card className="w-full max-w-md relative z-10 bg-white shadow-lg">
