@@ -43,6 +43,9 @@ export default function LobbyPage() {
         })
       })
     }
+    if (searchQuery.length === 0) {
+      searchQuery = "restaurants"
+    }
 
     const response = await fetch("/api/places", {
       method: "POST",
