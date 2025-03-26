@@ -24,11 +24,11 @@ export default function FeedPage() {
             setUserLocation({ latitude, longitude });
           },
           (error) => {
-            console.error("Error getting user location:", error);
+            // console.error("Error getting user location:", error);
           }
         );
       } else {
-        console.error("Geolocation is not supported by this browser.");
+        // console.error("Geolocation is not supported by this browser.");
       }
     };
 
@@ -40,14 +40,14 @@ export default function FeedPage() {
       if (vote !== null) {
         const noToast = () => {
           toast(`${userName}`,
-          {
-            icon: <XCircle className="text-red-500" />, 
-            style: { backgroundColor: "#ffe2e2", color: "black", width: "128px" }
-          })
+            {
+              icon: <XCircle className="text-red-500" />,
+              style: { backgroundColor: "#ffe2e2", color: "black", width: "128px" }
+            })
         }
         const yesToast = () => {
           toast(`${userName}`, {
-            icon: <CheckCircle className="text-green-500" />, 
+            icon: <CheckCircle className="text-green-500" />,
             style: { backgroundColor: "#dcfce7", color: "black", width: "128px" }
           })
         }
@@ -127,7 +127,7 @@ export default function FeedPage() {
   }, [roomData, id, roomCode, hasEmitted]);
 
   // Timer progress for UI (all users)
-  const progress = Math.max(0, msLeft / (roomData.roomSettings.roundTime * 1000));
+  const progress = Math.max(0, msLeft / (roomData?.roomSettings?.roundTime * 1000));
 
   const handleVoteChange = (vote) => {
     setCurrentVote(vote)
