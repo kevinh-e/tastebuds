@@ -107,7 +107,7 @@ export default function FeedPage() {
     if (currentRestIndex === -1) return;
 
     const interval = setInterval(() => {
-      const restaurant = roomData.restaurants[currentRestIndex];
+      const restaurant = roomData?.restaurants?.[currentRestIndex];
       if (!restaurant) return;
 
       const elapsed = Date.now() - restaurant.countDownStart;
@@ -147,7 +147,7 @@ export default function FeedPage() {
     }
   }
   // Prevent rendering invalid restaurant index
-  if (!roomData.restaurants ||
+  if (!roomData?.restaurants ||
     roomData.roomSettings.restIndex === -1 ||
     roomData.roomSettings.restIndex >= roomData.restaurants.length) {
     return (
