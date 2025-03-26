@@ -30,22 +30,26 @@ export default function LobbyPage() {
     // Combine the strings of cuisines and locations into a single string
     let searchQuery = "";
     let locationsProvided = false;
-    Object.values(roomData.roomMembers).forEach((user) => {
-      user.preferences.cuisineTags.forEach((cuisine) => {
-        searchQuery += cuisine + " ";
-      })
-      if (user.preferences.locationTags.length > 0) {
-        locationsProvided = true;
-      }
-    })
-    if (locationsProvided === true) {
-      searchQuery += "located in ";
+
+    if (roomData && roomData.roomMembers) {
       Object.values(roomData.roomMembers).forEach((user) => {
-        user.preferences.locationTags.forEach((location) => {
-          searchQuery += location + " ";
+        user.preferences.cuisineTags.forEach((cuisine) => {
+          searchQuery += cuisine + " ";
         })
+        if (user.preferences.locationTags.length > 0) {
+          locationsProvided = true;
+        }
       })
+      if (locationsProvided === true) {
+        searchQuery += "located in ";
+        Object.values(roomData.roomMembers).forEach((user) => {
+          user.preferences.locationTags.forEach((location) => {
+            searchQuery += location + " ";
+          })
+        })
+      }
     }
+
     setLoading(true);
     if (searchQuery.length === 0) {
       searchQuery = "restaurants"
@@ -101,7 +105,11 @@ export default function LobbyPage() {
               <CardDescription>Everyone who has joined this room</CardDescription>
             </CardHeader>
             <CardContent>
-              <UsersList users={roomData.roomMembers} currentUserId={id} />
+              {roomData && roomData.roomMembers ? (
+                <UsersList users={roomData.roomMembers} currentUserId={id} />
+              ) : (
+                <p>No users available</p>
+              )}
             </CardContent>
           </Card>
 
@@ -114,7 +122,11 @@ export default function LobbyPage() {
               <CardDescription>Food preferences from all participants</CardDescription>
             </CardHeader>
             <CardContent>
-              <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
+              {roomData && roomData.roomMembers ? (
+                <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
+              ) : (
+                <p>No preferences available</p>
+              )}
             </CardContent>
           </Card>
 
@@ -127,11 +139,15 @@ export default function LobbyPage() {
               <CardDescription>Preferred areas to find restaurants</CardDescription>
             </CardHeader>
             <CardContent>
-              <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
+              {roomData && roomData.roomMembers ? (
+                <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
+              ) : (
+                <p>No locations available</p>
+              )}
             </CardContent>
           </Card>
 
-          {id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true ? (
+          {roomData && id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true ? (
             <Button
               type="submit"
               size="lg"
