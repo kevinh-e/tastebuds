@@ -58,12 +58,12 @@ export default function LobbyPage() {
       },
       body: JSON.stringify({ textQuery: searchQuery, pageSize: 10 }),
     })
-    
+
     const searchApiResponse = await response.json()
     const maskedApiResponse = searchApiResponse.places
     const restaurantArrayFinal = []
     setLoading(false);
-    
+
     maskedApiResponse.forEach((placeObj) => {
       const obj = {}
       obj["place"] = { ...placeObj }
@@ -132,10 +132,10 @@ export default function LobbyPage() {
           </Card>
 
           {id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true ? (
-            <Button 
-              type="submit" 
-              size="lg" 
-              className={`w-full ${loading ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'}`} 
+            <Button
+              type="submit"
+              size="lg"
+              className={`w-full ${loading ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'}`}
               disabled={loading}
             >
               {loading ? "Loading..." : "Start Matching!"}
