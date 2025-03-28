@@ -46,15 +46,16 @@ export default function TasteSelectForm() {
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
             )
             const data = await response.json()
+            console.log("Position:")
+            console.log(position);
+            console.log("Reverse Geocode:")
+            console.log(data);
 
             // Extract suburb or city name
-            const locationName =
-              data.address.suburb ||
-              data.address.city ||
-              data.address.town ||
-              data.address.village ||
-              "Current location"
-            console.log(locationName);
+            const locationName = [
+              data.address.suburb || data.address.town || data.address.village,
+              data.address.city
+            ].filter(Boolean).join(', ');
 
             // Add the location to the form's locationTags
             const currentTags = form.getValues("locationTags")
