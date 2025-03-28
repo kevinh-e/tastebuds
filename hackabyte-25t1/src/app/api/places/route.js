@@ -6,8 +6,6 @@ export async function POST(request) {
 
     // Get API key from environment variable
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-    console.log('SHUNGITE')
-    console.log(apiKey)
     if (!apiKey) {
       return NextResponse.json({ error: "Google Maps API key is not configured" }, { status: 500 })
     }

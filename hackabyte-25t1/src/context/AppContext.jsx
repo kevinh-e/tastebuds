@@ -22,7 +22,6 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("roomData", roomData);
     if (roomData && roomData.roomSettings != null && roomData.roomSettings.restIndex != restIndex) {
-      console.log("UPDATING RESTINDEX");
       setRestIndex(roomData.roomSettings.restIndex);
       localStorage.setItem("restIndex", roomData.roomSettings.restIndex);
     }
