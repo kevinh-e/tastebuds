@@ -1,12 +1,14 @@
 steps:
   # 1. install npm modules
-  - name: 'gcr.io/cloud-builders/npm'
+  - name: 'node:22'
+    entrypoint: 'npm'
     args: ['install']
     id: Install Dependencies
     dir: 'tastebuds'
 
   # 2. build next app
-  - name: 'gcr.io/cloud-builders/npm'
+  - name: 'node:22'
+    entrypoint: 'npm'
     args: ['run', 'build']
     id: Build Next.js App
     secretEnv:

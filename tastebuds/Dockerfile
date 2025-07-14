@@ -1,4 +1,4 @@
-FROM node:20 AS builder
+FROM node:22 AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
@@ -6,7 +6,7 @@ COPY . .
 # build step is done in google cloud build
 # RUN npm run build
 
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 # Copy production dependencies and built application from the builder stage
 COPY --from=builder /app/node_modules ./node_modules
