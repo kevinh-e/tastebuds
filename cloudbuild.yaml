@@ -10,7 +10,7 @@ steps:
     args: ['run', 'build']
     id: Build Next.js App
     secretEnv:
-      - 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}'
+      - 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'
     dir: 'tastebuds'
 
   # 3. build docker image
@@ -55,7 +55,7 @@ availableSecrets:
   secretManager:
     # The 'env' key here defines a substitution variable for Cloud Build.
     - versionName: projects/${PROJECT_ID}/secrets/Tastebuds-maps-api-key/versions/latest
-      env: '_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'
+      env: 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'
 
 images:
   - >-
