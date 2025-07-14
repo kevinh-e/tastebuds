@@ -9,7 +9,7 @@ steps:
   - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'build']
     id: Build Next.js App
-    env:
+    secretEnv:
       - 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}'
     dir: 'tastebuds'
 
