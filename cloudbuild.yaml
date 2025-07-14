@@ -1,0 +1,79 @@
+steps:
+  # 1. install npm modules
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install']
+    id: Install Dependencies
+    dir: 'tastebuds'
+
+  # 2. build next app
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
+    id: Build Next.js App
+    env:
+      - 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}'
+    dir: 'tastebuds'
+
+  # 3. build docker image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '--no-cache'
+      - '-t'
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - tastebuds
+      - '-f'
+      - tastebuds/Dockerfile
+    id: Build Docker image
+
+  # 4. push the docker image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+    id: Push
+
+  # 5. deploy to google cloud run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    args:
+      - run
+      - services
+      - update
+      - $_SERVICE_NAME
+      - '--platform=managed'
+      - >-
+        --image=$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - >-
+        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID
+      - '--region=$_DEPLOY_REGION'
+      - '--quiet'
+    id: Deploy
+    entrypoint: gcloud
+
+availableSecrets:
+  secretManager:
+    # The 'env' key here defines a substitution variable for Cloud Build.
+    - versionName: projects/${PROJECT_ID}/secrets/Tastebuds-maps-api-key/versions/latest
+      env: '_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'
+
+images:
+  - >-
+    $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+
+options:
+  substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _AR_REPOSITORY: cloud-run-source-deploy
+  _AR_PROJECT_ID: wired-sign-454712-j7
+  _PLATFORM: managed
+  _TRIGGER_ID: 7305007a-48f7-42d5-bc22-550cef03ca87
+  _SERVICE_NAME: tastebuds
+  _DEPLOY_REGION: us-west1
+  _AR_HOSTNAME: us-west1-docker.pkg.dev
+tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
+  - tastebuds
