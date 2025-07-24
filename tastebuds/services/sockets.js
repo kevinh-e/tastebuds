@@ -37,6 +37,13 @@ export const handleSockets = (io) => {
 
     socket.on("reccomendationsBroadcast", (roomCode, recommendations) => {
       rs.data[roomCode].restaurants = JSON.parse(recommendations);
+
+      // Start the first restaurant immediately
+      if (rs.data[roomCode].restaurants.length > 0) {
+        rs.data[roomCode].roomSettings.restIndex = 0;
+        rs.data[roomCode].restaurants[0].countDownStart = Date.now();
+      }
+
       io.in(roomCode).emit("reccomendationsRecieved", JSON.stringify(rs.data[roomCode]));
     });
 
