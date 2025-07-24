@@ -88,8 +88,8 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
                     relative h-14 w-14 rounded-full border-2 transition-all duration-200
                     ${
                       isSelected
-                        ? "bg-primary border-primary text-primary-foreground shadow-lg"
-                        : "hover:bg-muted hover:border-muted-foreground/20 hover:shadow-md"
+                        ? "bg-muted border-primary text-primary-foreground shadow-lg"
+                        : "hover:border-primary/50 hover:shadow-md"
                     }
                   `}
                   onClick={() => handleReactionClick(reaction.id)}
@@ -180,47 +180,6 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Selected Reaction Display
-      <AnimatePresence>
-        {selectedReaction && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="text-center"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-full">
-              <span className="text-lg">{selectedReaction}</span>
-              <span className="text-sm text-muted-foreground">Your reaction</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence> */}
-
-      {/* Recent Emojis
-      {recentEmojis.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="mt-4 pt-4 border-t border-border"
-        >
-          <p className="text-xs text-muted-foreground text-center mb-2">Recently used</p>
-          <div className="flex justify-center gap-1 flex-wrap">
-            {recentEmojis.slice(0, 6).map((emoji, index) => (
-              <Button
-                key={`${emoji}-${index}`}
-                variant="ghost"
-                size="sm"
-                className={`h-8 w-8 p-0 rounded-md ${selectedReaction === emoji ? "bg-primary/20" : "hover:bg-muted"}`}
-                onClick={() => handleReactionClick(emoji)}
-              >
-                <span className="text-sm">{emoji}</span>
-              </Button>
-            ))}
-          </div>
-        </motion.div>
-      )} */}
     </div>
   )
 }
