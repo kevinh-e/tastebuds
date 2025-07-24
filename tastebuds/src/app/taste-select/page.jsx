@@ -8,8 +8,6 @@ import { useRouter } from "next/navigation"
 import { socket } from "@/socket";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useCallback } from "react";
 import { Button } from "@/components/ui/button"
 import CopyButton from "@/components/ui/copy-button";
 import { ChevronLeft, Users } from "lucide-react";
@@ -22,6 +20,7 @@ import ErrorAccessDenied from "@/components/ui/error-access-denied";
 export default function TasteSelect() {
   const { id, roomData, roomCode, setRoomData } = useAppContext();
   const router = useRouter();
+  const [users, setUsers] = useState([]);
 
   // Error page if not in a lobby
   if (!roomCode || !roomData) {
