@@ -124,11 +124,7 @@ export default function LobbyPage() {
             <ChevronLeft className="h-4 w-4 mr-1" />
             Exit Room
           </Button>
-          <CopyButton
-            className="text-muted-foreground font-medium"
-            textToCopy={roomCode}
-            displayText={`Room: ${roomCode}`}
-          />
+          <CopyButton className="text-muted-foreground font-medium cursor-pointer" textToCopy={roomCode} displayText={roomCode} />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
