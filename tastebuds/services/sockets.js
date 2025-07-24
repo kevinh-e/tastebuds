@@ -47,7 +47,7 @@ export const handleSockets = (io) => {
       } else {
         // go to the next restuarant for everyone
         rs.data[roomCode].roomSettings.restIndex += 1;
-        rs.data[roomCode].restaurants[data[roomCode].roomSettings.restIndex].countDownStart = hostStartTime;
+        rs.data[roomCode].restaurants[rs.data[roomCode].roomSettings.restIndex].countDownStart = hostStartTime;
         io.in(roomCode).emit("startNextCard", JSON.stringify(rs.data[roomCode]));
       }
     });
