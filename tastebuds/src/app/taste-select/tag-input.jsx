@@ -122,10 +122,11 @@ export default function TagInput({
     }
   }
 
-  const handleSuggestionClick = (suggestion) => {
-    addTag(suggestion)
-    inputRef.current?.focus()
-  }
+  // Fix: always pass suggestion.value to handleSuggestionClick
+  const handleSuggestionClick = (suggestionObj) => {
+    addTag(typeof suggestionObj === 'string' ? suggestionObj : suggestionObj.value);
+    inputRef.current?.focus();
+  };
 
   return (
     <div className={cn("relative", className)}>
@@ -166,23 +167,23 @@ export default function TagInput({
       {showSuggestions && filteredSuggestions.length > 0 && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md animate-in fade-in-0 zoom-in-95">
           <div className="max-h-[200px] overflow-y-auto p-1">
-            {filteredSuggestions.map((suggestion, index) => (
+            {filteredSuggestions.map((suggestionObj, index) => (
               <div
-                key={suggestion.value}
+                key={suggestionObj.value}
                 className={cn(
                   "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
                   index === highlightedIndex
                     ? "bg-accent text-accent-foreground"
                     : "hover:bg-accent hover:text-accent-foreground",
                 )}
-                onMouseDown={() => handleSuggestionClick(suggestion)}
+                onMouseDown={() => handleSuggestionClick(suggestionObj.value)}
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 <Tag className="mr-2 h-4 w-4 text-muted-foreground" />
-                {suggestion.isCustom ? (
-                  <span className="font-bold">Add "{suggestion.value}"</span>
+                {suggestionObj.isCustom ? (
+                  <span className="font-bold">Add "{suggestionObj.value}"</span>
                 ) : (
-                  suggestion.value
+                  suggestionObj.value
                 )}
               </div>
             ))}
