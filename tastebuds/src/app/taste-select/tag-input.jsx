@@ -23,9 +23,24 @@ export default function TagInput({
     setTags(initialTags)
   }, [initialTags])
 
+  // Build suggestions list with current input as first option if appropriate
+  let customInputOption = null;
+  const inputValueLower = inputValue.trim().toLowerCase();
+  const tagsLower = tags.map(t => t.toLowerCase());
+  const suggestionsLower = suggestions.map(s => s.toLowerCase());
+  if (
+    inputValueLower !== "" &&
+    !tagsLower.includes(inputValueLower) &&
+    !suggestionsLower.includes(inputValueLower)
+  ) {
+    customInputOption = inputValue.trim();
+  }
   const filteredSuggestions = suggestions
     .filter((s) => s.toLowerCase().includes(inputValue.trim().toLowerCase()) && !tags.includes(s))
-    .slice(0, 8)
+    .slice(0, 8);
+  const displaySuggestions = customInputOption
+    ? [customInputOption, ...filteredSuggestions]
+    : filteredSuggestions;
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value)
@@ -34,21 +49,21 @@ export default function TagInput({
   }
 
   const handleInputKeyDown = (event) => {
-    if (showSuggestions && filteredSuggestions.length > 0) {
+    if (showSuggestions && displaySuggestions.length > 0) {
       if (event.key === "ArrowDown") {
-        event.preventDefault()
-        setHighlightedIndex((prev) => (prev + 1) % filteredSuggestions.length)
-        return
+        event.preventDefault();
+        setHighlightedIndex((prev) => (prev + 1) % displaySuggestions.length);
+        return;
       } else if (event.key === "ArrowUp") {
-        event.preventDefault()
-        setHighlightedIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length)
-        return
+        event.preventDefault();
+        setHighlightedIndex((prev) => (prev - 1 + displaySuggestions.length) % displaySuggestions.length);
+        return;
       } else if (event.key === "Enter" && highlightedIndex >= 0) {
-        event.preventDefault()
-        addTag(filteredSuggestions[highlightedIndex])
-        setShowSuggestions(false)
-        setHighlightedIndex(-1)
-        return
+        event.preventDefault();
+        addTag(displaySuggestions[highlightedIndex]);
+        setShowSuggestions(false);
+        setHighlightedIndex(-1);
+        return;
       }
     }
 
@@ -135,10 +150,10 @@ export default function TagInput({
         </div>
       </div>
 
-      {showSuggestions && filteredSuggestions.length > 0 && (
+      {showSuggestions && displaySuggestions.length > 0 && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md animate-in fade-in-0 zoom-in-95">
           <div className="max-h-[200px] overflow-y-auto p-1">
-            {filteredSuggestions.map((suggestion, index) => (
+            {displaySuggestions.map((suggestion, index) => (
               <div
                 key={suggestion}
                 className={cn(
@@ -151,7 +166,11 @@ export default function TagInput({
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 <Tag className="mr-2 h-4 w-4 text-muted-foreground" />
-                {suggestion}
+                {suggestion === customInputOption ? (
+                  <span><b>Add "{suggestion}"</b></span>
+                ) : (
+                  suggestion
+                )}
               </div>
             ))}
           </div>

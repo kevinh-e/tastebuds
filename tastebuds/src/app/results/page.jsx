@@ -11,12 +11,18 @@ import TopThreeRestaurants from "@/components/top-three-restaurants"
 import Confetti from "@/components/confetti"
 import { useAppContext } from "@/context/AppContext"
 import Link from "next/link"
+import ErrorAccessDenied from "@/components/ui/error-access-denied";
 
 export default function ResultsPage() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("all")
   const [showConfetti, setShowConfetti] = useState(true)
   const { id, roomCode, roomData, restIndex } = useAppContext()
+
+  // Error page if not in a lobby
+  if (!roomCode || !roomData) {
+    return <ErrorAccessDenied />;
+  }
 
   // Early return if roomData is not loaded yet
   if (!roomData) {
