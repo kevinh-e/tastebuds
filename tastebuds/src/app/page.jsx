@@ -13,6 +13,7 @@ import { Slider } from "@/components/ui/slider"
 import { useAppContext } from "@/context/AppContext.jsx"
 import { socket } from "@/socket.js"
 import FloatingBubbles from "@/components/floating-bubbles"
+import Onboarding from "@/components/Onboarding"
 
 export default function PreLobbyPage() {
   const { id, setRoomCode, setRoomData } = useAppContext()
@@ -71,40 +72,6 @@ export default function PreLobbyPage() {
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-white to-orange-300 p-4 overflow-hidden">
       <FloatingBubbles />
-      {/* Tutorial Modal */}
-      {showTutorial && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={() => setShowTutorial(false)}
-          aria-label="Close tutorial overlay"
-        >
-          <Card
-            className="w-full max-w-md mx-auto relative"
-            onClick={e => e.stopPropagation()}
-          >
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-orange-500 cursor-pointer p-2 rounded-full"
-              onClick={() => setShowTutorial(false)}
-              aria-label="Close tutorial"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl font-bold text-orange-500">TasteBuds: How to Play</CardTitle>
-              <CardDescription>Quick guide to get started</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ol className="list-decimal list-inside space-y-2 text-left">
-                <li><b>Host or Join:</b> Start a new room as host, or join a friend's room with their code.</li>
-                <li><b>Set Preferences:</b> Choose your favorite cuisines, locations, and price range.</li>
-                <li><b>Vote:</b> Swipe or tap Yes/No on restaurants as they appear. React and discuss with friends!</li>
-                <li><b>Results:</b> When all restaurants are reviewed, see the top picks and make plans!</li>
-              </ol>
-              <div className="text-sm text-muted-foreground">You can revisit this tutorial anytime from the main page.</div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
       {/* Main Card */}
       <Card className="w-full max-w-md relative z-10 bg-white shadow-lg">
         <CardHeader className="text-center">
@@ -114,15 +81,8 @@ export default function PreLobbyPage() {
           </CardTitle>
           <CardDescription>Find the best taste for your buds.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button
-            variant="outline"
-            className="mb-4 w-full border-orange-300 text-orange-500 hover:bg-orange-50 cursor-pointer"
-            onClick={() => setShowTutorial(true)}
-          >
-            <HelpCircle className="inline-block mr-2 h-5 w-5" />
-            How to Play
-          </Button>
+        <CardContent className="space-y-3">
+          <Onboarding />
           <Tabs defaultValue="host" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="host" className="flex items-center gap-2 cursor-pointer">
