@@ -12,9 +12,6 @@ export async function POST(request) {
 
     const apiUrl = "https://places.googleapis.com/v1/places:searchText"
 
-    console.log("Making request to Google Places API:", apiUrl)
-    console.log("Request body:", body)
-
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -25,12 +22,8 @@ export async function POST(request) {
       body: JSON.stringify(body),
     })
 
-    // Log response status for debugging
-    console.log("Google API response status:", response.status, response.statusText)
-
     // Check content type to handle non-JSON responses
     const contentType = response.headers.get("content-type")
-    console.log("Response content type:", contentType)
 
     if (!response.ok) {
       // Handle non-JSON error responses
@@ -57,6 +50,7 @@ export async function POST(request) {
     // Parse successful JSON response
     if (contentType && contentType.includes("application/json")) {
       const data = await response.json()
+
       return NextResponse.json(data)
     } else {
       const textResponse = await response.text()

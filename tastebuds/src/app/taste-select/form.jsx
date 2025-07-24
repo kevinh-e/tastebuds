@@ -32,7 +32,34 @@ export default function TasteSelectForm() {
     socket.on("syncData", (msg) => {
       setRoomData(JSON.parse(msg))
     })
-  }, [roomData])
+  }, [setRoomData, roomData])
+
+  // Initialize the form with default values
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      prices: [],
+      cuisineTags: [],
+      locationTags: [],
+      rating: "",
+    },
+  })
+
+  const { reset } = form
+
+  // update the form with user's existing prefs
+  useEffect(() => {
+    const member = roomData?.roomMembers?.[id]
+    if (member?.preferences) {
+      const prefs = member.preferences
+      reset({
+        prices: prefs.prices ?? [],
+        cuisineTags: prefs.cuisineTags ?? [],
+        locationTags: prefs.locationTags ?? [],
+        rating: prefs.rating ?? "",
+      })
+    }
+  }, [roomData, id, reset])
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -84,17 +111,6 @@ export default function TasteSelectForm() {
     }
   }
 
-  // Initialize the form with default values
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      prices: [],
-      cuisineTags: [],
-      locationTags: [],
-      rating: "",
-    },
-  })
-
   const onSubmit = (data) => {
     if (socket.connected && roomCode !== "") {
       // sent the preferences to the server with that room code
@@ -129,8 +145,8 @@ export default function TasteSelectForm() {
   }
 
   return (
-    <div className="w-full max-w-md space-y-4">
-      <div className="p-6 bg-white border rounded-lg w-full max-w-md">
+    <div className="h-full space-y-4 col-span-4">
+      <div className="h-full p-6 bg-white border rounded-lg w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Price Section */}
