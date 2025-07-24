@@ -9,7 +9,7 @@ export default function UsersList({ users, currentUserId }) {
         const isHost = userData.isHost === true
 
         return (
-          <div key={userId} className="w-16 flex flex-col items-center space-y-2">
+          <div key={userId} className="pt-1 w-16 flex flex-col items-center space-y-2">
             <div className="relative">
               <Avatar
                 className={`size-14 transition-all duration-200 ${

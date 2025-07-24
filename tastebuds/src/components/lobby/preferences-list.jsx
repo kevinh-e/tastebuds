@@ -27,7 +27,7 @@ export default function PreferencesList({ users, preferenceType }) {
   return (
     <div className="flex flex-wrap gap-2">
       {preferenceCounts.map(({ preference, count }) => (
-        <Badge key={preference} variant="outline" className="flex items-center gap-1">
+        <Badge key={preference} variant="outline" className="flex items-center gap-1 border-none bg-secondary px-3 py-2 rounded-full">
           {preference}
           <span className="ml-1 bg-muted text-muted-foreground rounded-full text-xs px-1.5">
             {count}
