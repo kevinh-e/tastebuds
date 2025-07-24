@@ -4,15 +4,35 @@ import { useAppContext } from "@/context/AppContext"
 import TasteSelectForm from "./form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import UsersList from "@/components/lobby/users-list"
-import CopyButton from "@/components/ui/copy-button"
-import { Users } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { socket } from "@/socket";
+import { useCallback } from "react";
+import { Button } from "@/components/ui/button"
+import CopyButton from "@/components/ui/copy-button";
+import { ChevronLeft, Users } from "lucide-react";
 
 // socket.on('newUser', (msg) => {
 //   toast(`👋   ${JSON.parse(msg).name} has joined the room`);
 // });
 
 export default function TasteSelect() {
-  const { id, roomData, roomCode } = useAppContext()
+  const { id, roomData, roomCode, setRoomData } = useAppContext();
+  const router = useRouter();
+
+
+  const handleLeaveRoom = useCallback(() => {
+    if (!roomCode || !id) {
+      router.push("/")
+      return
+    }
+
+    // emit leaveRoom, clear local state, then navigate home
+    socket.emit("leaveRoom", roomCode, id, () => {
+      // optional callback from server
+      setRoomData(null)
+      router.push("/")
+    })
+  }, [roomCode, id, router, setRoomData])
 
   return (
     <div className="min-h-screen flex flex-col p-4 md:p-6">
@@ -26,12 +46,15 @@ export default function TasteSelect() {
                   <Users className="h-5 w-5 text-orange-500" />
                   <CardTitle className="text-lg">Buddies</CardTitle>
                 </div>
+                <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleLeaveRoom}>
+                  <ChevronLeft className="h-4 w-4 mr-1" /> Exit
+                </Button>
                 <CopyButton className="text-muted-foreground text-sm" textToCopy={roomCode} displayText={roomCode} />
               </div>
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden p-0 px-6 pb-2">
               <div className="h-full overflow-y-auto pt-1">
-                <UsersList users={roomData.roomMembers} currentUserId={id} />
+                {roomData && (<UsersList users={roomData.roomMembers} currentUserId={id} />)}
               </div>
             </CardContent>
           </Card>

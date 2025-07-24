@@ -5,23 +5,39 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ChevronLeft, MapPin, Utensils, Users } from "lucide-react"
 import { useAppContext } from "@/context/AppContext.jsx"
-import Link from "next/link"
 import PreferencesList from "@/components/lobby/preferences-list"
 import UsersList from "@/components/lobby/users-list"
 import { socket } from "@/socket"
 import CopyButton from "@/components/ui/copy-button"
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
+
 
 export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext();
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
-  socket.on("reccomendationsRecieved", (data) => {
-    setRoomData(JSON.parse(data))
-    router.push("/feed")
-  })
+  useEffect(() => {
+    const onRecommendations = (data) => {
+      setRoomData(JSON.parse(data))
+      router.push("/feed")
+    }
+
+    socket.on("reccomendationsRecieved", onRecommendations)
+  }, [router, setRoomData])
+
+  const handleLeaveRoom = useCallback(() => {
+    if (!roomCode || !id) {
+      router.push("/")
+      return
+    }
+    // emit leaveRoom, clear local state, then navigate home
+    socket.emit("leaveRoom", roomCode, id, () => {
+      // optional callback from server
+      setRoomData(null)
+      router.push("/")
+    })
+  }, [roomCode, id, router, setRoomData]);
 
   const handleSubmit = async (e) => {
     // Prevent the page from refreshing
@@ -89,10 +105,8 @@ export default function LobbyPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50/50 to-white">
       <main className="container max-w-md mx-auto px-4 py-8">
         <div className="mb-6 flex justify-between items-center">
-          <Button asChild variant="ronaldo" size="sm" className="flex items-center text-sm">
-            <Link href="/">
-              <ChevronLeft className="h-4 w-4 mr-1" /> Exit
-            </Link>
+          <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleLeaveRoom}>
+            <ChevronLeft className="h-4 w-4 mr-1" /> Exit
           </Button>
           <CopyButton className="text-muted-foreground font-medium" textToCopy={roomCode} displayText={roomCode} />
         </div>
