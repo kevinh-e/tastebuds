@@ -21,7 +21,6 @@ export default function TasteSelect() {
   const { id, roomData, roomCode, setRoomData } = useAppContext();
   const [users, setUsers] = useState([]);
   const router = useRouter();
-  console.log(id);
 
   // Listen for the list of other users when the component mounts
   useEffect(() => {

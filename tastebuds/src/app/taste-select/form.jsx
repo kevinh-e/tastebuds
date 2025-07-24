@@ -32,7 +32,34 @@ export default function TasteSelectForm() {
     socket.on("syncData", (msg) => {
       setRoomData(JSON.parse(msg))
     })
-  }, [roomData])
+  }, [setRoomData, roomData])
+
+  // Initialize the form with default values
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      prices: [],
+      cuisineTags: [],
+      locationTags: [],
+      rating: "",
+    },
+  })
+
+  const { reset } = form
+
+  // update the form with user's existing prefs
+  useEffect(() => {
+    const member = roomData?.roomMembers?.[id]
+    if (member?.preferences) {
+      const prefs = member.preferences
+      reset({
+        prices: prefs.prices ?? [],
+        cuisineTags: prefs.cuisineTags ?? [],
+        locationTags: prefs.locationTags ?? [],
+        rating: prefs.rating ?? "",
+      })
+    }
+  }, [roomData, id, reset])
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -83,17 +110,6 @@ export default function TasteSelectForm() {
       console.error("Geolocation is not supported by this browser.")
     }
   }
-
-  // Initialize the form with default values
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      prices: [],
-      cuisineTags: [],
-      locationTags: [],
-      rating: "",
-    },
-  })
 
   const onSubmit = (data) => {
     if (socket.connected && roomCode !== "") {

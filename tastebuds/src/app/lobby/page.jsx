@@ -28,16 +28,20 @@ export default function LobbyPage() {
 
   const handleLeaveRoom = useCallback(() => {
     if (!roomCode || !id) {
-      router.push("/")
-      return
+      router.push("/");
+      return;
     }
     // emit leaveRoom, clear local state, then navigate home
     socket.emit("leaveRoom", roomCode, id, () => {
       // optional callback from server
-      setRoomData(null)
-      router.push("/")
+      setRoomData(null);
+      router.push("/");
     })
   }, [roomCode, id, router, setRoomData]);
+
+  const handleEditPrefs = useCallback(() => {
+    router.push("/taste-select");
+  })
 
   const handleSubmit = async (e) => {
     // Prevent the page from refreshing
@@ -106,6 +110,9 @@ export default function LobbyPage() {
         <div className="mb-6 flex justify-between items-center">
           <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleLeaveRoom}>
             <ChevronLeft className="h-4 w-4 mr-1" /> Exit
+          </Button>
+          <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleEditPrefs}>
+            <ChevronLeft className="h-4 w-4 mr-1" /> Edit Preferences
           </Button>
           <CopyButton className="text-muted-foreground font-medium" textToCopy={roomCode} displayText={roomCode} />
         </div>
