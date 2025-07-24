@@ -170,6 +170,8 @@ export default function FeedPage() {
         onSkip={skipRestaurant}
         isHost={isHost}
         location={userLocation}
+        currentIndex={roomData.roomSettings.restIndex + 1}
+        totalCount={roomData.restaurants.length}
       />
       <div className="mt-6 w-full max-w-md">
         <RestaurantReactions onReactionChange={handleReactionChange} currentReaction={userReaction} />
