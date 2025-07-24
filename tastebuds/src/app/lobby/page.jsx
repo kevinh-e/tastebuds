@@ -121,13 +121,12 @@ export default function LobbyPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <Button
-            variant="outline"
+            variant="ronaldo"
             size="sm"
-            className="flex items-center text-sm bg-transparent"
+            className="flex items-center text-sm"
             onClick={handleLeaveRoom}
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Exit Room
+            <ChevronLeft className="h-4 w-4 mr-1" /> Exit
           </Button>
           <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleEditPrefs}>
             <ChevronLeft className="h-4 w-4 mr-1" /> Edit Preferences
