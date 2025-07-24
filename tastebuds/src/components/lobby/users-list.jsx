@@ -1,19 +1,52 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Crown } from "lucide-react"
 
 export default function UsersList({ users, currentUserId }) {
   return (
-    <div className="flex flex-wrap gap-3">
-      {Object.entries(users).map(([userId, userData]) => (
-        <div key={userId} className="flex flex-col items-center">
-          <Avatar className="h-12 w-12 mb-1">
-            <AvatarFallback className={userId === currentUserId ? "bg-primary text-primary-foreground" : ""}>
-              {userData.name.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-xs font-medium">{userData.isHost === true ? `${userData.name} (Host)` : userData.name}</span>
-        </div>
-      ))}
+    <div className="flex flex-wrap gap-4 justify-center">
+      {Object.entries(users).map(([userId, userData]) => {
+        const isCurrentUser = userId === currentUserId
+        const isHost = userData.isHost === true
+
+        return (
+          <div key={userId} className="w-16 flex flex-col items-center space-y-2">
+            <div className="relative">
+              <Avatar
+                className={`size-14 transition-all duration-200 ${
+                  isCurrentUser
+                    ? "ring-2 ring-primary ring-offset-2"
+                    : "ring-1 ring-border"
+                }`}
+              >
+                <AvatarFallback
+                  className={`text-sm font-semibold ${
+                    isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"
+                  }`}
+                >
+                  {userData.name.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+
+              {isHost && (
+                <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">
+                  <Crown className="size-3 text-white" />
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col items-center space-y-1 max-w-full">
+              <span
+                className={`text-sm font-medium text-center leading-tight max-w-full truncate ${
+                  isCurrentUser ? "text-primary" : "text-foreground"
+                }`}
+                title={userData.name}
+              >
+                {userData.name}
+              </span>
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
-

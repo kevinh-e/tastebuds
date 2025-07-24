@@ -129,8 +129,8 @@ export default function TasteSelectForm() {
   }
 
   return (
-    <div className="w-full max-w-md space-y-4">
-      <div className="p-6 bg-white border rounded-lg w-full max-w-md">
+    <div className="h-full space-y-4 col-span-4">
+      <div className="h-full p-6 bg-white border rounded-lg w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Price Section */}
