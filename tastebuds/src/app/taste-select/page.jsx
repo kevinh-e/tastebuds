@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation"
 import { socket } from "@/socket";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button"
 import CopyButton from "@/components/ui/copy-button";
 import { ChevronLeft, Users } from "lucide-react";
-import ErrorAccessDenied from "@/components/ui/error-access-denied";
 
 // socket.on('newUser', (msg) => {
 //   toast(`👋   ${JSON.parse(msg).name} has joined the room`);
@@ -22,21 +22,6 @@ export default function TasteSelect() {
   const router = useRouter();
   const [users, setUsers] = useState([]);
 
-  // Error page if not in a lobby
-  if (!roomCode || !roomData) {
-    return <ErrorAccessDenied />;
-  }
-
-  // Listen for the list of other users when the component mounts
-  useEffect(() => {
-    const newUsers = [];
-    if (roomData?.roomMembers === undefined) return;
-    Object.entries(roomData?.roomMembers).forEach(([key, member]) => {
-      member["id"] = key;
-      newUsers.push(member);
-    });
-    setUsers(newUsers);
-  }, [roomData]);
 
   const handleLeaveRoom = useCallback(() => {
     if (!roomCode || !id) {

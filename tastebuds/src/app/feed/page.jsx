@@ -7,23 +7,13 @@ import { socket } from "@/socket.js";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
 import { RestaurantReactions } from "./restaurant-reactions";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import ErrorAccessDenied from "@/components/ui/error-access-denied";
 
 export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
   const [userReaction, setUserReaction] = useState(null);
   const [isHost, setIsHost] = useState(false);
   const { id, roomData, roomCode, restIndex, setRoomData } = useAppContext();
-  const router = useRouter();
   const [userLocation, setUserLocation] = useState(null)
-
-  // Error page if not in a lobby
-  if (!roomCode || !roomData) {
-    return <ErrorAccessDenied />;
-  }
 
   useEffect(() => {
     const getUserLocation = () => {
