@@ -1,6 +1,6 @@
 import roomService from "./roomService.js";
 
-const handleSockets = (io) => {
+export const handleSockets = (io) => {
   const rs = new roomService();
 
   io.on("connection", (socket) => {
