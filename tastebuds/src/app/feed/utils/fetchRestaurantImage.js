@@ -13,14 +13,6 @@ export async function fetchRestaurantImage(placeName) {
     const response = await fetch(url);
 
     return response.url;
-
-    if (!response.ok) {
-      console.error(`Error fetching images: ${response.statusText}`);
-      return "";
-    }
-
-    console.log(response.url);
-    return response.url || "";
   } catch (error) {
     console.error(`Error fetching images for ${placeName}:`, error);
     return "";
