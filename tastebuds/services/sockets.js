@@ -20,6 +20,13 @@ export const handleSockets = (io) => {
       io.in(roomCode).emit("syncData", JSON.stringify(rs.data[roomCode]));
     });
 
+    socket.on("leaveRoom", (roomCode, id, cb) => {
+      socket.leave(roomCode);
+      rs.leaveRoom(roomCode, id);
+      io.in(roomCode).emit("syncData", JSON.stringify(rs.data[roomCode]));
+      if (typeof cb === "function") cb()
+    });
+
     socket.on("joinRoom", (roomCode, id, name, cb) => {
       socket.join(roomCode);
       rs.joinRoom(roomCode, id, name);
@@ -37,7 +44,7 @@ export const handleSockets = (io) => {
       // add/replace preferences to data
       rs.setPreferences(roomCode, id, JSON.parse(preferences));
       io.in(roomCode).emit("syncData", JSON.stringify(rs.data[roomCode]));
-      cb(JSON.stringify(rs.data));
+      if (typeof cb == "function") cb(JSON.stringify(rs.data));
     });
 
     socket.on("nextRestaurant", (roomCode, hostStartTime) => {
