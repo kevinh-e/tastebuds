@@ -7,6 +7,10 @@ import { socket } from "@/socket.js";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
 import { RestaurantReactions } from "./restaurant-reactions";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import GameNotFound from "@/components/ui/game-not-found";
 
 export default function FeedPage() {
   const [currentVote, setCurrentVote] = useState(null)
@@ -14,6 +18,11 @@ export default function FeedPage() {
   const [isHost, setIsHost] = useState(false);
   const { id, roomData, roomCode, restIndex, setRoomData } = useAppContext();
   const [userLocation, setUserLocation] = useState(null)
+  const router = useRouter();
+
+  if (!roomCode || !roomData) {
+    return <GameNotFound />;
+  }
 
   useEffect(() => {
     const getUserLocation = () => {
@@ -136,17 +145,6 @@ export default function FeedPage() {
         console.log(res);
       });
     }
-  }
-  // Prevent rendering invalid restaurant index
-  if (!roomData?.restaurants ||
-    roomData.roomSettings.restIndex === -1 ||
-    roomData.roomSettings.restIndex >= roomData.restaurants.length) {
-    return (
-      <div className="flex justify-center items-center h-screen text-xl font-medium text-gray-600">
-        Loading...
-      </div>
-    );
-
   }
 
   return (

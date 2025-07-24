@@ -11,11 +11,22 @@ import { socket } from "@/socket"
 import CopyButton from "@/components/ui/copy-button"
 import { useState, useEffect, useCallback } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import GameNotFound from "@/components/ui/game-not-found";
 
 export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext()
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    if (!roomCode || !roomData) {
+      // router.push("/game-not-found"); // This line is removed
+    }
+  }, [roomCode, roomData, router]);
+
+  if (!roomCode || !roomData) {
+    return <GameNotFound />;
+  }
 
   useEffect(() => {
     const onRecommendations = (data) => {

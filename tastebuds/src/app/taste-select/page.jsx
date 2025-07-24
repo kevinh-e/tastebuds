@@ -2,14 +2,15 @@
 
 import { useAppContext } from "@/context/AppContext"
 import TasteSelectForm from "./form"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import UsersList from "@/components/lobby/users-list"
 import { useRouter } from "next/navigation"
 import { socket } from "@/socket";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button"
 import CopyButton from "@/components/ui/copy-button";
 import { ChevronLeft, Users } from "lucide-react";
+import GameNotFound from "@/components/ui/game-not-found";
 
 // socket.on('newUser', (msg) => {
 //   toast(`👋   ${JSON.parse(msg).name} has joined the room`);
@@ -19,6 +20,9 @@ export default function TasteSelect() {
   const { id, roomData, roomCode, setRoomData } = useAppContext();
   const router = useRouter();
 
+  if (!roomCode || !roomData) {
+    return <GameNotFound />;
+  }
 
   const handleLeaveRoom = useCallback(() => {
     if (!roomCode || !id) {
