@@ -107,7 +107,7 @@ export default function LobbyPage() {
           <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleLeaveRoom}>
             <ChevronLeft className="h-4 w-4 mr-1" /> Exit
           </Button>
-          <CopyButton className="text-muted-foreground font-medium" textToCopy={roomCode} displayText={roomCode} />
+          <CopyButton className="text-muted-foreground font-medium cursor-pointer" textToCopy={roomCode} displayText={roomCode} />
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
@@ -165,13 +165,13 @@ export default function LobbyPage() {
             <Button
               type="submit"
               size="lg"
-              className={`w-full ${loading ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'}`}
+              className={`w-full ${loading ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 cursor-pointer'}`}
               disabled={loading}
             >
               {loading ? "Loading..." : "Start Matching!"}
             </Button>
           ) : (
-            <Button type="submit" size="lg" className="w-full" disabled>
+            <Button type="submit" size="lg" className="w-full cursor-not-allowed" disabled>
               Waiting for host to start matching...
             </Button>
           )}
