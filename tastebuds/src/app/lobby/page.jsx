@@ -55,7 +55,8 @@ export default function LobbyPage() {
       searchQuery = "restaurants"
     }
 
-    const response = await fetch("/api/places", {
+    
+    const response = await fetch("/api/places/dummy", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
