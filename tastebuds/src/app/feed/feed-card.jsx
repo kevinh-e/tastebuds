@@ -164,7 +164,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
 
 
   return (
-    <div className="relative w-full max-w-sm mx-auto px-4 sm:max-w-md lg:max-w-lg">
+    <div className="relative w-full max-w-sm mx-auto px-4 sm:max-w-md lg:max-w-lg my-auto">
       {/* "Yes" indicator */}
       <motion.div
         className="absolute top-1/2 right-8 transform -translate-y-1/2 bg-green-500 text-white rounded-full p-4 z-10"
@@ -206,7 +206,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
 
       {/* Card */}
       <motion.div
-        className="rounded-xl shadow-md overflow-hidden w-full transition-none p-1 relative h-[85vh]"
+        className="rounded-xl shadow-md overflow-hidden w-full transition-none p-1 relative h-[75vh] md:h-[85vh]"
         style={{
           x,
           rotate,
