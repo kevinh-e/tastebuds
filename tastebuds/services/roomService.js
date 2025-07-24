@@ -49,6 +49,12 @@ class RoomService {
   }
 
   setVote(roomCode, id, vote, restIndex) {
+    // Add defensive check for restaurant existence
+    if (!this.data[roomCode] || !this.data[roomCode].restaurants || !this.data[roomCode].restaurants[restIndex]) {
+      console.error(`Cannot set vote: Invalid room ${roomCode} or restaurant index ${restIndex}`);
+      return;
+    }
+
     const votes = this.data[roomCode].restaurants[restIndex].votes;
 
     if (vote === "yes") {
@@ -69,6 +75,12 @@ class RoomService {
   }
 
   setReaction(roomCode, id, reaction, restIndex) {
+    // Add defensive check for restaurant existence
+    if (!this.data[roomCode] || !this.data[roomCode].restaurants || !this.data[roomCode].restaurants[restIndex]) {
+      console.error(`Cannot set reaction: Invalid room ${roomCode} or restaurant index ${restIndex}`);
+      return;
+    }
+
     // Get the restaurant based on restIndex
     const restaurant = this.data[roomCode].restaurants[restIndex];
     if (!restaurant) return;
@@ -88,6 +100,12 @@ class RoomService {
   }
 
   setThumbnail(roomCode, restIndex, url) {
+    // Add defensive check for restaurant existence
+    if (!this.data[roomCode] || !this.data[roomCode].restaurants || !this.data[roomCode].restaurants[restIndex]) {
+      console.error(`Cannot set thumbnail: Invalid room ${roomCode} or restaurant index ${restIndex}`);
+      return;
+    }
+
     this.data[roomCode].restaurants[restIndex].thumbnail = url;
   }
 

@@ -32,15 +32,20 @@ export default function LobbyPage() {
 
   const handleLeaveRoom = useCallback(() => {
     if (!roomCode || !id) {
-      router.push("/")
-      return
+      router.push("/");
+      return;
     }
 
     socket.emit("leaveRoom", roomCode, id, () => {
-      setRoomData(null)
-      router.push("/")
+      // optional callback from server
+      setRoomData(null);
+      router.push("/");
     })
   }, [roomCode, id, router, setRoomData])
+
+  const handleEditPrefs = useCallback(() => {
+    router.push("/taste-select");
+  })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -116,15 +121,17 @@ export default function LobbyPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <Button
-            variant="outline"
+            variant="ronaldo"
             size="sm"
-            className="flex items-center text-sm bg-transparent"
+            className="flex items-center text-sm"
             onClick={handleLeaveRoom}
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Exit Room
+            <ChevronLeft className="h-4 w-4 mr-1" /> Exit
           </Button>
-          <CopyButton className="text-muted-foreground font-medium cursor-pointer" textToCopy={roomCode} displayText={roomCode} />
+          <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleEditPrefs}>
+            <ChevronLeft className="h-4 w-4 mr-1" /> Edit Preferences
+          </Button>
+          <CopyButton className="text-muted-foreground font-medium" textToCopy={roomCode} displayText={roomCode} />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

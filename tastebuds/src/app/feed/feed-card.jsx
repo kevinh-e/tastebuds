@@ -12,7 +12,7 @@ import { ReactionSummary } from "./utils/reaction-summary"
 
 import { socket } from "@/socket"
 
-export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null, location }) {
+export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progress = null, location, currentIndex, totalCount }) {
   const toRadians = (degrees) => degrees * Math.PI / 180;
 
   function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -188,6 +188,13 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
           ${!vote ? "bg-black/50" : vote === "yes" ? "bg-green-500/75" : "bg-red-500/75"}`}
         >
           {!vote ? "Swipe the card to vote!" : vote === "yes" ? "You voted YES" : "You voted NO"}
+        </div>
+      )}
+
+      {/* Card counter */}
+      {currentIndex && totalCount && (
+        <div className="absolute top-4 right-4 px-3 py-1 bg-black/60 text-white text-sm font-medium rounded-full z-20">
+          {currentIndex} of {totalCount}
         </div>
       )}
 

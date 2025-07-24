@@ -91,15 +91,6 @@ export default function FeedPage() {
     return () => socket.off('startNextCard', handleSyncData);
   }, [setRoomData]);
 
-  // Host initialization for first restaurant
-  useEffect(() => {
-    if (roomData?.roomSettings?.restIndex === -1 &&
-      roomData.roomMembers?.[id]?.isHost) {
-      const now = Date.now();
-      socket.emit("nextRestaurant", roomCode, now);
-    }
-  }, [roomData, id, roomCode]);
-
   // Countdown timer logic for host
   useEffect(() => {
     const currentRestIndex = roomData.roomSettings.restIndex;
@@ -170,6 +161,8 @@ export default function FeedPage() {
         onSkip={skipRestaurant}
         isHost={isHost}
         location={userLocation}
+        currentIndex={roomData.roomSettings.restIndex + 1}
+        totalCount={roomData.restaurants.length}
       />
       <RestaurantReactions onReactionChange={handleReactionChange} currentReaction={userReaction} />
     </div>

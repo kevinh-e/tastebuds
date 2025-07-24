@@ -31,6 +31,7 @@ export default function CopyButton({
       className={cn("flex items-center gap-2 bg-card cursor-pointer", className)}
       {...buttonProps}
     >
+      <span className="text-foreground">Room Code</span>
       {copied ? (
         <>
           <span>Copied!</span>
