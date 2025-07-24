@@ -45,7 +45,7 @@ class RoomService {
     delete this.data[roomCode].roomMembers[id];
   }
 
-  editPreference(roomCode, id) {
+  editPreferences(roomCode, id) {
     const room = this.data[roomCode];
     if (!room) {
       console.warn(`Room ${roomCode} does not exist.`);
