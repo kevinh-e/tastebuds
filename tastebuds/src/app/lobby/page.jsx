@@ -10,12 +10,18 @@ import UsersList from "@/components/lobby/users-list"
 import { socket } from "@/socket"
 import CopyButton from "@/components/ui/copy-button"
 import { useState, useEffect, useCallback } from "react"
+import ErrorAccessDenied from "@/components/ui/error-access-denied";
 
 
 export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Error page if not in a lobby
+  if (!roomCode || !roomData) {
+    return <ErrorAccessDenied />;
+  }
 
   useEffect(() => {
     const onRecommendations = (data) => {

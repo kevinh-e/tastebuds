@@ -6,12 +6,13 @@ import TasteSelectForm from "./form";
 import { socket } from "@/socket";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import UsersList from "@/components/lobby/users-list";
 import CopyButton from "@/components/ui/copy-button";
 import { ChevronLeft, Users } from "lucide-react";
+import ErrorAccessDenied from "@/components/ui/error-access-denied";
 
 // socket.on('newUser', (msg) => {
 //   toast(`👋   ${JSON.parse(msg).name} has joined the room`);
@@ -22,6 +23,11 @@ export default function TasteSelect() {
   const [users, setUsers] = useState([]);
   const router = useRouter();
   console.log(id);
+
+  // Error page if not in a lobby
+  if (!roomCode || !roomData) {
+    return <ErrorAccessDenied />;
+  }
 
   // Listen for the list of other users when the component mounts
   useEffect(() => {
