@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -11,6 +11,7 @@ import TopThreeRestaurants from "@/components/top-three-restaurants"
 import Confetti from "@/components/confetti"
 import { useAppContext } from "@/context/AppContext"
 import Link from "next/link"
+import GameNotFound from "@/components/ui/game-not-found";
 
 export default function ResultsPage() {
   const router = useRouter()
@@ -18,13 +19,10 @@ export default function ResultsPage() {
   const [showConfetti, setShowConfetti] = useState(true)
   const { id, roomCode, roomData, restIndex } = useAppContext()
 
-  // Early return if roomData is not loaded yet
-  if (!roomData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    )
+  // Remove any router.push("/game-not-found") logic and related useEffect.
+
+  if (!roomCode || !roomData) {
+    return <GameNotFound />;
   }
 
   // Extract users from roomMembers
