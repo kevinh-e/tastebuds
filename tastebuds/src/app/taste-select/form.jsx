@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Toggle } from "@/components/ui/toggle"
 import TagInput from "./tag-input.jsx"
+import { cuisineOptions, locationOptions } from "./data.js"
 import { useAppContext } from "@/context/AppContext.jsx"
 import { ChefHat, Coins, Dices, Locate, MapPin, Star } from "lucide-react"
 
@@ -108,53 +109,6 @@ export default function TasteSelectForm() {
   // Rating options
   const ratingOptions = ["3.5+", "4.0+", "4.5+", "5.0"]
 
-  // Cuisine options for random selection
-  const cuisineOptions = [
-    "Italian",
-    "Chinese",
-    "Japanese",
-    "Mexican",
-    "Thai",
-    "Indian",
-    "French",
-    "Greek",
-    "Spanish",
-    "Korean",
-    "Vietnamese",
-    "Turkish",
-    "Lebanese",
-    "American",
-    "Brazilian",
-    "Peruvian",
-    "Moroccan",
-    "Ethiopian",
-    "German",
-    "British",
-    "Russian",
-    "Caribbean",
-    "Mediterranean",
-    "Middle Eastern",
-    "Vegetarian",
-    "Vegan",
-    "Seafood",
-    "BBQ",
-    "Fusion",
-    "Street Food",
-    "Sushi",
-    "Pizza",
-    "Burgers",
-    "Tapas",
-    "Dim Sum",
-    "Curry",
-    "Ramen",
-    "Steakhouse",
-    "Brunch",
-    "Dessert",
-    "Bakery",
-    "Healthy",
-    "Comfort Food",
-  ]
-
   const addRandomCuisine = () => {
     // Get current cuisine tags
     const currentTags = form.getValues("cuisineTags")
@@ -232,6 +186,7 @@ export default function TasteSelectForm() {
                         placeholder="Sushi, Paella, Burgers, Italian..."
                         initialTags={field.value}
                         className="grow-1"
+                        suggestions={cuisineOptions}
                       />
                       <Button
                         variant="ronaldo"
@@ -268,6 +223,7 @@ export default function TasteSelectForm() {
                         placeholder="Chatswood, Haymarket..."
                         initialTags={field.value}
                         className="grow-1"
+                        suggestions={locationOptions}
                       />
                       <Button
                         variant="ronaldo"
