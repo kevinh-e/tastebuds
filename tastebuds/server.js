@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
 import express from 'express';
 
-import handleSockets from "./services/sockets";
+import handleSockets from "./services/sockets.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";

@@ -1,7 +1,7 @@
-import roomService from "./roomService";
+import roomService from "./roomService.js";
 
 const handleSockets = (io) => {
-  rs = new roomService();
+  const rs = new roomService();
 
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, hostname, cb) => {
