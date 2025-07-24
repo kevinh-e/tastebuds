@@ -41,7 +41,7 @@ export default function TasteSelect() {
                   <div className="text-lg font-semibold">Buddies</div>
                 </div>
                 <CopyButton
-                  className="text-muted-foreground"
+                  className="text-muted-foreground cursor-pointer"
                   textToCopy={roomCode}
                   displayText={roomCode}
                 />
