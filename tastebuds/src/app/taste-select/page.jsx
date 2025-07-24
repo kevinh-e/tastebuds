@@ -6,8 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import UsersList from "@/components/lobby/users-list"
 import { useRouter } from "next/navigation"
 import { socket } from "@/socket";
-import { useEffect, useState, useCallback } from "react";
-import { toast } from "sonner";
 import { useCallback } from "react";
 import { Button } from "@/components/ui/button"
 import CopyButton from "@/components/ui/copy-button";
@@ -20,7 +18,6 @@ import { ChevronLeft, Users } from "lucide-react";
 export default function TasteSelect() {
   const { id, roomData, roomCode, setRoomData } = useAppContext();
   const router = useRouter();
-  const [users, setUsers] = useState([]);
 
 
   const handleLeaveRoom = useCallback(() => {
