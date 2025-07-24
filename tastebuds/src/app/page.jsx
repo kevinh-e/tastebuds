@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-import { Users, UserPlus, X } from "lucide-react"
+import { Users, UserPlus, X, HelpCircle } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { useAppContext } from "@/context/AppContext.jsx"
 import { socket } from "@/socket.js"
@@ -80,10 +80,10 @@ export default function PreLobbyPage() {
         >
           <Card
             className="w-full max-w-md mx-auto relative"
-            onClick={e => e.stopPropagation()} // Prevent modal click from closing
+            onClick={e => e.stopPropagation()}
           >
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-orange-500 p-2 rounded-full"
+              className="absolute top-2 right-2 text-gray-500 hover:text-orange-500 cursor-pointer p-2 rounded-full"
               onClick={() => setShowTutorial(false)}
               aria-label="Close tutorial"
             >
@@ -120,6 +120,7 @@ export default function PreLobbyPage() {
             className="mb-4 w-full border-orange-300 text-orange-500 hover:bg-orange-50 cursor-pointer"
             onClick={() => setShowTutorial(true)}
           >
+            <HelpCircle className="inline-block mr-2 h-5 w-5" />
             How to Play
           </Button>
           <Tabs defaultValue="host" className="w-full">
