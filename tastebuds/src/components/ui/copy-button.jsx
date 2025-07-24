@@ -28,9 +28,10 @@ export default function CopyButton({
     <Button
       onClick={handleCopy}
       variant={variant}
-      className={cn("flex items-center gap-2 bg-card", className)}
+      className={cn("flex items-center gap-2 bg-card cursor-pointer", className)}
       {...buttonProps}
     >
+      <span className="text-foreground">Room Code</span>
       {copied ? (
         <>
           <span>Copied!</span>
