@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
+import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } from "framer-motion"
 import { MapPin, Star, X, Check, ChevronLeft, ChevronRight, Phone, ChevronsRight } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -182,18 +182,24 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
       </motion.div>
 
       {/* Current vote indicator */}
-      {!isDragging && (
-        <div
-          className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white
-          ${!vote ? "bg-black/50" : vote === "yes" ? "bg-green-500/75" : "bg-red-500/75"}`}
-        >
-          {!vote ? "Swipe the card to vote!" : vote === "yes" ? "You voted YES" : "You voted NO"}
-        </div>
-      )}
+      <AnimatePresence>
+        {!isDragging && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute top-4 left-7 px-4 py-2 text-white text-sm font-medium rounded-full z-20
+              ${!vote ? "bg-black/60" : vote === "yes" ? "bg-green-500/75" : "bg-red-500/75"}`}
+          >
+            {!vote ? "Swipe the card to vote!" : vote === "yes" ? "You voted YES" : "You voted NO"}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Card counter */}
       {currentIndex && totalCount && (
-        <div className="absolute top-4 right-4 px-3 py-1 bg-black/60 text-white text-sm font-medium rounded-full z-20">
+        <div className="absolute top-4 right-7 px-4 py-2 bg-black/60 text-white text-sm font-medium rounded-full z-20">
           {currentIndex} of {totalCount}
         </div>
       )}
