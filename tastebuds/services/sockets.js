@@ -48,18 +48,38 @@ export const handleSockets = (io) => {
     });
 
     socket.on("nextRestaurant", (roomCode, hostStartTime) => {
+      // Add room validation
+      if (!rs.data[roomCode] || !rs.data[roomCode].restaurants) {
+        console.error(`Room ${roomCode} not found or has no restaurants`);
+        return;
+      }
+
       if (rs.data[roomCode].roomSettings.restIndex >= rs.data[roomCode].restaurants.length) {
         // podium time
         io.in(roomCode).emit("gotoResults");
       } else {
         // go to the next restuarant for everyone
         rs.data[roomCode].roomSettings.restIndex += 1;
-        rs.data[roomCode].restaurants[rs.data[roomCode].roomSettings.restIndex].countDownStart = hostStartTime;
-        io.in(roomCode).emit("startNextCard", JSON.stringify(rs.data[roomCode]));
+
+        // Add bounds checking before setting countDownStart
+        const nextIndex = rs.data[roomCode].roomSettings.restIndex;
+        if (nextIndex < rs.data[roomCode].restaurants.length && rs.data[roomCode].restaurants[nextIndex]) {
+          rs.data[roomCode].restaurants[nextIndex].countDownStart = hostStartTime;
+          io.in(roomCode).emit("startNextCard", JSON.stringify(rs.data[roomCode]));
+        } else {
+          // If we somehow exceeded bounds, go to results
+          io.in(roomCode).emit("gotoResults");
+        }
       }
     });
 
     socket.on("sendUserVote", (vote, id, roomCode, restaurantIndex) => {
+      // Add room and restaurant validation
+      if (!rs.data[roomCode] || !rs.data[roomCode].restaurants || !rs.data[roomCode].restaurants[restaurantIndex]) {
+        console.error(`Invalid room ${roomCode} or restaurant index ${restaurantIndex}`);
+        return;
+      }
+
       // add/replace vote to data
       rs.setVote(roomCode, id, vote, restaurantIndex);
       // call back to confirm the data was sent
@@ -70,6 +90,13 @@ export const handleSockets = (io) => {
     });
 
     socket.on("sendUserReaction", (reaction, id, roomCode, restIndex, cb) => {
+      // Add room and restaurant validation
+      if (!rs.data[roomCode] || !rs.data[roomCode].restaurants || !rs.data[roomCode].restaurants[restIndex]) {
+        console.error(`Invalid room ${roomCode} or restaurant index ${restIndex}`);
+        if (typeof cb === "function") cb({});
+        return;
+      }
+
       // Store or remove the user's reaction in `data`
       rs.setReaction(roomCode, id, reaction, restIndex);
       console.log("EMITTING react TOAST")
@@ -88,6 +115,13 @@ export const handleSockets = (io) => {
     });
 
     socket.on("setThumbnail", (roomCode, restIndex, url, cb) => {
+      // Add room and restaurant validation
+      if (!rs.data[roomCode] || !rs.data[roomCode].restaurants || !rs.data[roomCode].restaurants[restIndex]) {
+        console.error(`Invalid room ${roomCode} or restaurant index ${restIndex}`);
+        if (typeof cb === "function") cb();
+        return;
+      }
+
       // Store or remove the user's reaction in `data`
       rs.setThumbnail(roomCode, restIndex, url);
 
