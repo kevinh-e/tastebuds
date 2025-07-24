@@ -13,12 +13,35 @@ class RoomService {
     }
   }
 
+  removeRoom(roomCode) {
+    delete this.data[roomCode];
+  }
+
   joinRoom(roomCode, id, name) {
+    console.log(`${id} joined the room (${roomCode})`)
     this.data[roomCode].roomMembers[id] = {
       name: name,
       isHost: false,
       preferences: {},
     };
+  }
+
+  leaveRoom(roomCode, id) {
+    console.log(`${id} left the room (${roomCode})`)
+    // set a new host
+    if (this.data[roomCode].roomMembers[id].isHost) {
+      if (Object.entries(this.data[roomCode].roomMembers).length > 1) {
+        delete this.data[roomCode].roomMembers[id];
+        const key = Object.keys(this.data[roomCode].roomMembers)[0];
+        console.log(key);
+        this.data[roomCode].roomMembers[key].isHost = true;
+      } else {
+        // delete the room if it the last user
+        this.removeRoom(roomCode);
+      }
+      return;
+    }
+    delete this.data[roomCode].roomMembers[id];
   }
 
   setPreferences(roomCode, id, preferences) {
