@@ -17,7 +17,7 @@ export const handleSockets = (io) => {
 
       cb(roomCode);
       socket.join(roomCode);
-      io.in(roomCode).emit("syncData", JSON.stringify(data[roomCode]));
+      io.in(roomCode).emit("syncData", JSON.stringify(rs.data[roomCode]));
     });
 
     socket.on("joinRoom", (roomCode, id, name, cb) => {
