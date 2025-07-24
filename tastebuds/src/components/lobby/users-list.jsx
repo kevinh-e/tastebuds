@@ -7,6 +7,7 @@ export default function UsersList({ users, currentUserId }) {
       {Object.entries(users).map(([userId, userData]) => {
         const isCurrentUser = userId === currentUserId
         const isHost = userData.isHost === true
+        const isEditing = userData.
 
         return (
           <div key={userId} className="pt-1 w-16 flex flex-col items-center space-y-2">
@@ -27,6 +28,11 @@ export default function UsersList({ users, currentUserId }) {
                 </AvatarFallback>
               </Avatar>
 
+              {isHost && (
+                <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">
+                  <Crown className="size-3 text-white" />
+                </div>
+              )}
               {isHost && (
                 <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">
                   <Crown className="size-3 text-white" />

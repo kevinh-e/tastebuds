@@ -12,6 +12,7 @@ export const handleSockets = (io) => {
         name: hostname,
         isHost: true,         // default value, adjust if necessary
         preferences: {},
+        
       };
       rs.data[roomCode].roomMembers[id] = member;
 
@@ -33,6 +34,12 @@ export const handleSockets = (io) => {
       cb(roomCode);
       io.in(roomCode).emit("syncData", JSON.stringify(rs.data[roomCode]));
       io.in(roomCode).emit("newUser", JSON.stringify({ id, name }));
+    });
+
+    socket.on("editPreferences", (roomCode, id, cb) => {
+      rs.editPreferences(roomCode, id);
+      cb(roomCode);
+      io.in(roomCode).emit("syncData", JSON.stringify(rs.data[roomCode]));
     });
 
     socket.on("reccomendationsBroadcast", (roomCode, recommendations) => {

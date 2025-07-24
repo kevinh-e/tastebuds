@@ -44,6 +44,7 @@ export default function LobbyPage() {
   }, [roomCode, id, router, setRoomData])
 
   const handleEditPrefs = useCallback(() => {
+
     router.push("/taste-select");
   })
 
