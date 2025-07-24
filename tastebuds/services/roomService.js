@@ -23,6 +23,7 @@ class RoomService {
       name: name,
       isHost: false,
       preferences: {},
+      isChoosingPreferences: true,
     };
   }
 
@@ -44,8 +45,37 @@ class RoomService {
     delete this.data[roomCode].roomMembers[id];
   }
 
+  editPreferences(roomCode, id) {
+    const room = this.data[roomCode];
+    if (!room) {
+      console.warn(`Room ${roomCode} does not exist.`);
+      return;
+    }
+
+    const member = room.roomMembers[id];
+    if (!member) {
+      console.warn(`Member ${id} does not exist in room ${roomCode}.`);
+      return;
+    }
+
+    member.isChoosingPreferences = true;
+  }
+
   setPreferences(roomCode, id, preferences) {
-    this.data[roomCode].roomMembers[id].preferences = preferences;
+    const room = this.data[roomCode];
+    if (!room) {
+      console.warn(`Room ${roomCode} does not exist.`);
+      return;
+    }
+
+    const member = room.roomMembers[id];
+    if (!member) {
+      console.warn(`Member ${id} does not exist in room ${roomCode}.`);
+      return;
+    }
+
+    member.preferences = preferences;
+    member.isChoosingPreferences = false;
   }
 
   setVote(roomCode, id, vote, restIndex) {

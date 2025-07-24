@@ -37,15 +37,22 @@ export default function LobbyPage() {
     }
 
     socket.emit("leaveRoom", roomCode, id, () => {
-      // optional callback from server
       setRoomData(null);
       router.push("/");
     })
   }, [roomCode, id, router, setRoomData])
 
   const handleEditPrefs = useCallback(() => {
-    router.push("/taste-select");
-  })
+    console.log("editting")
+    if (!roomCode || !id) {
+      router.push("/");
+      return;
+    }
+
+    socket.emit("editPreferences", roomCode, id, () => {
+      router.push("/taste-select");
+    })
+  }, [roomCode, id, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
