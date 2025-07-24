@@ -18,51 +18,49 @@ export function ReactionSummary({ reactions = {} }) {
   const totalReactions = Object.values(reactionCounts).reduce((sum, count) => sum + count, 0)
 
   return (
-    <div className="mt-4">
-      <div className="flex flex-wrap gap-2 min-h-[32px] items-center">
-        <TooltipProvider>
-          {totalReactions === 0 ? (
-            <div className="bg-muted rounded-full px-2 py-1 flex items-center gap-1 text-xs opacity-50">
-              <Smile className="w-4 h-4" />
-              <span className="text-xs">No reactions</span>
-            </div>
-          ) : (
-            displayReactions.map(([emoji, count]) => (
-              <Tooltip key={emoji}>
-                <TooltipTrigger asChild>
-                  <div className="bg-muted rounded-full px-2 py-1 flex items-center gap-1 text-xs">
-                    <span className="text-base">{emoji}</span>
-                    <span>{count}</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {count} {count === 1 ? "person reacted" : "people reacted"} with {emoji}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            ))
-          )}
-        </TooltipProvider>
-
-        {sortedReactions.length > 3 && !showAll && (
-          <button
-            onClick={() => setShowAll(true)}
-            className="text-xs text-muted-foreground hover:text-foreground underline"
-          >
-            +{sortedReactions.length - 3} more
-          </button>
+    <div className="flex flex-wrap gap-2 h-8 items-center">
+      <TooltipProvider>
+        {totalReactions === 0 ? (
+          <div className="h-full bg-muted rounded-full px-2 py-1 flex items-center gap-1 text-xs opacity-50">
+            <Smile className="w-4 h-4" />
+            <span className="text-xs">No reactions</span>
+          </div>
+        ) : (
+          displayReactions.map(([emoji, count]) => (
+            <Tooltip key={emoji}>
+              <TooltipTrigger asChild>
+                <div className="h-full bg-muted rounded-full px-2 py-1 flex items-center gap-1 text-xs">
+                  <span className="text-base">{emoji}</span>
+                  <span>{count}</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>
+                  {count} {count === 1 ? "person reacted" : "people reacted"} with {emoji}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          ))
         )}
+      </TooltipProvider>
 
-        {showAll && sortedReactions.length > 3 && (
-          <button
-            onClick={() => setShowAll(false)}
-            className="text-xs text-muted-foreground hover:text-foreground underline"
-          >
-            Show less
-          </button>
-        )}
-      </div>
+      {sortedReactions.length > 3 && !showAll && (
+        <button
+          onClick={() => setShowAll(true)}
+          className="text-xs text-muted-foreground hover:text-foreground underline"
+        >
+          +{sortedReactions.length - 3} more
+        </button>
+      )}
+
+      {showAll && sortedReactions.length > 3 && (
+        <button
+          onClick={() => setShowAll(false)}
+          className="text-xs text-muted-foreground hover:text-foreground underline"
+        >
+          Show less
+        </button>
+      )}
     </div>
   )
 }

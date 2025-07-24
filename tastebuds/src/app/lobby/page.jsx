@@ -87,7 +87,7 @@ export default function LobbyPage() {
     }
 
     try {
-      const response = await fetch("/api/places/dummy", {
+      const response = await fetch("/api/places/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

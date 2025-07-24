@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "../context/AppContext.jsx";
 import { Toaster } from "@/components/ui/sonner";
+import BreakpointIndicator from "@/components/BreakpointIndicator";
 
 
 const geistSans = Geist({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
             src="//unpkg.com/react-scan/dist/auto.global.js"
           />
           <Toaster richColors position="top-right" />
+          <BreakpointIndicator />
         </body>
       </AppProvider>
     </html>
