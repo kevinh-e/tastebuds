@@ -164,7 +164,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
 
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
+    <div className="relative w-full max-w-sm mx-auto px-4 sm:max-w-md lg:max-w-lg">
       {/* "Yes" indicator */}
       <motion.div
         className="absolute top-1/2 right-8 transform -translate-y-1/2 bg-green-500 text-white rounded-full p-4 z-10"
@@ -187,13 +187,13 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
           className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full z-20 font-bold text-white
           ${!vote ? "bg-black/50" : vote === "yes" ? "bg-green-500/75" : "bg-red-500/75"}`}
         >
-          {!vote ? "Swipe to vote" : vote === "yes" ? "YES" : "NO"}
+          {!vote ? "Swipe the card to vote!" : vote === "yes" ? "You voted YES" : "You voted NO"}
         </div>
       )}
 
       {/* Card */}
       <motion.div
-        className="rounded-xl shadow-md overflow-hidden w-full transition-none border-2 relative"
+        className="rounded-xl shadow-md overflow-hidden w-full transition-none p-1 relative h-[85vh]"
         style={{
           x,
           rotate,
@@ -225,9 +225,9 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
           </div>
         )}
 
-        <div className="relative">
+        <div className="h-1/2 relative p-2">
           {/* Image container */}
-          <div className="overflow-hidden relative h-128 w-full bg-muted aspect-[3/2]">
+          <div className="overflow-hidden relative bg-muted w-full h-full rounded-xl shadow-sm">
             {imageUrls[currentImageIndex] ? (
               <>
                 <img
@@ -295,93 +295,97 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
             style={{ opacity: noOpacity }}
           />
         </div>
-        <div className="p-6 space-y-3">
-          {/* Title / Open status */}
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold">{name}</h3>
-            <Badge
-              variant="outline"
-              className={openNow ? "bg-white text-green-700 border-green-200" : "bg-white text-red-700 border-red-200"}
-            >
-              {openNow ? "Open" : "Closed"}
-            </Badge>
-          </div>
+        <div className="h-1/2 p-4 space-y-2">
+          <div className="h-full flex flex-col justify-between">
+            <div className="space-y-2">
+              {/* Title / Open status */}
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold truncate">{name}</h3>
+                <Badge
+                  variant="outline"
+                  className={openNow ? "bg-white text-green-700 border-green-200" : "bg-white text-red-700 border-red-200"}
+                >
+                  {openNow ? "Open" : "Closed"}
+                </Badge>
+              </div>
 
-          {/* Type / Rating */}
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Badge variant="secondary">{primaryType}</Badge>
-            <div className="flex items-center ml-auto">
-              <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
-              <span className="font-medium">{rating}</span>
-              <span className="text-xs ml-1">({totalRatings})</span>
-            </div>
-          </div>
+              {/* Type / Rating */}
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Badge variant="secondary">{primaryType}</Badge>
+                <div className="flex items-center ml-auto">
+                  <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
+                  <span className="font-medium">{rating}</span>
+                  <span className="text-xs ml-1">({totalRatings})</span>
+                </div>
+              </div>
 
-          {/* Address / Phone */}
-          <div className="space-y-2">
-            <div className="flex items-start">
-              <MapPin className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
-              <a
-                href={mapsLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm hover:underline"
-                draggable="false"
-              >
-                {address}
-              </a>
-            </div>
-            <div className="flex items-center">
-              <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-              <a href={`tel:${phone.replace(/[^\d]/g, "")}`} className="text-sm hover:underline" draggable="false">
-                {phone}
-              </a>
-            </div>
-          </div>
+              {/* Address / Phone */}
+              <div className="space-y-2">
+                <div className="flex items-start">
+                  <MapPin className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                  <a
+                    href={mapsLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm hover:underline truncate capitalize"
+                    draggable="false"
+                  >
+                    {address}
+                  </a>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <a href={`tel:${phone.replace(/[^\d]/g, "")}`} className="text-sm hover:underline truncate" draggable="false">
+                    {phone}
+                  </a>
+                </div>
+              </div>
 
-          <div className="pt-2 border-t flex justify-between">
-            <div>
-              <span className="text-sm font-medium">Price Range: </span>
-              <span className="text-sm text-muted-foreground">
-                ${minPrice}-${maxPrice}
-              </span>
-            </div>
-
-            <div>
-              {distance != null && (
-                <>
-                  {/* <span className="mx-2">•</span> */}
-                  <span className="text-sm font-medium">Distance: </span>
+              <div className="pt-2 border-t flex justify-between">
+                <div>
+                  <span className="text-sm font-medium">Price Range: </span>
                   <span className="text-sm text-muted-foreground">
-                    {distance.toFixed(2)} km
+                    ${minPrice}-${maxPrice}
                   </span>
-                </>
+                </div>
+
+                <div>
+                  {distance != null && (
+                    <>
+                      {/* <span className="mx-2">•</span> */}
+                      <span className="text-sm font-medium">Distance: </span>
+                      <span className="text-sm text-muted-foreground">
+                        {distance.toFixed(2)} km
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <ReactionSummary reactions={reactions} />
+            </div>
+
+            <div className="w-full flex flex-row gap-2">
+              <Button className="grow-3" asChild>
+                <a
+                  href={mapsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${name} on Maps`}
+                  draggable="false"
+                >
+                  View on Maps
+                </a>
+              </Button>
+              {isHost ? (
+                <Button variant="secondary" className="grow-1" onClick={onSkip}>
+                  Skip
+                  <ChevronsRight />
+                </Button>
+              ) : (
+                <></>
               )}
             </div>
-          </div>
-
-
-          <ReactionSummary reactions={reactions} />
-          <div className="w-full flex flex-row gap-2">
-            <Button className="grow-3" asChild>
-              <a
-                href={mapsLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`View ${name} on Maps`}
-                draggable="false"
-              >
-                View on Maps
-              </a>
-            </Button>
-            {isHost ? (
-              <Button variant="secondary" className="grow-1" onClick={onSkip}>
-                Skip
-                <ChevronsRight />
-              </Button>
-            ) : (
-              <></>
-            )}
           </div>
         </div>
       </motion.div>

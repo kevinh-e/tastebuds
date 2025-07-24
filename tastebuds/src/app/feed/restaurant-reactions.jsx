@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import EmojiPicker from "emoji-picker-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -19,9 +19,10 @@ const quickReactions = [
 
 export function RestaurantReactions({ onReactionChange, currentReaction }) {
   const [selectedReaction, setSelectedReaction] = useState(currentReaction)
-  const [showTooltip, setShowTooltip] = useState(null)
+  const [hoveredReaction, setHoveredReaction] = useState(null)
   const [recentEmojis, setRecentEmojis] = useState([])
-  const { restIndex } = useAppContext();
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const { restIndex } = useAppContext()
 
   useEffect(() => {
     setSelectedReaction(currentReaction)
@@ -40,8 +41,8 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
   }, [])
 
   useEffect(() => {
-    setSelectedReaction(null);
-  }, [restIndex]);
+    setSelectedReaction(null)
+  }, [restIndex])
 
   const saveRecentEmoji = (emoji) => {
     const updated = [emoji, ...recentEmojis.filter((e) => e !== emoji)].slice(0, 8)
@@ -59,7 +60,6 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
     if (onReactionChange) {
       onReactionChange(newReaction)
     }
-
     if (newReaction) {
       saveRecentEmoji(newReaction)
     }
@@ -67,47 +67,65 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
 
   const handleEmojiSelect = (emojiData) => {
     handleReactionClick(emojiData.emoji)
+    setIsPickerOpen(false)
   }
 
   return (
-    <div className="w-full">
-      <div className="flex flex-wrap gap-2 justify-center mb-2">
+    <div className="flex justify-center items-center max-w-sm mx-auto px-4 sm:max-w-md lg:max-w-lg">
+      {/* Quick Reactions */}
+      <div className="flex items-center justify-center gap-3 mb-4">
         {quickReactions.map((reaction) => {
           const isSelected = selectedReaction === reaction.id
+          const isHovered = hoveredReaction === reaction.id
 
           return (
             <div key={reaction.id} className="relative">
-              <Button
-                variant="outline"
-                size="icon"
-                className={`relative h-12 w-12 rounded-full transition-all duration-200 ${
-                  isSelected ? `bg-primary/40 text-white border-transparent` : "hover:bg-muted"
-                }`}
-                onClick={() => handleReactionClick(reaction.id)}
-                onMouseEnter={() => setShowTooltip(reaction.id)}
-                onMouseLeave={() => setShowTooltip(null)}
-              >
-                <span className="text-xl">{reaction.id}</span>
-                <span className="sr-only">{reaction.label}</span>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={`
+                    relative h-14 w-14 rounded-full border-2 transition-all duration-200
+                    ${
+                      isSelected
+                        ? "bg-primary border-primary text-primary-foreground shadow-lg"
+                        : "hover:bg-muted hover:border-muted-foreground/20 hover:shadow-md"
+                    }
+                  `}
+                  onClick={() => handleReactionClick(reaction.id)}
+                  onMouseEnter={() => setHoveredReaction(reaction.id)}
+                  onMouseLeave={() => setHoveredReaction(null)}
+                >
+                  <span className="text-2xl">{reaction.id}</span>
+                  <span className="sr-only">{reaction.label}</span>
 
-                {isSelected && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full flex items-center justify-center text-[10px] text-white"
-                  />
-                )}
-              </Button>
+                  {/* Selected indicator */}
+                  {isSelected && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute -top-1 -right-1 h-5 w-5 bg-primary border-2 border-background rounded-full flex items-center justify-center"
+                    >
+                      <Check className="h-3 w-3 text-primary-foreground" />
+                    </motion.div>
+                  )}
+                </Button>
+              </motion.div>
 
+              {/* Tooltip */}
               <AnimatePresence>
-                {showTooltip === reaction.id && (
+                {isHovered && (
                   <motion.div
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded whitespace-nowrap z-10"
+                    initial={{ opacity: 0, y: -8, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.9 }}
+                    className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
                   >
-                    {reaction.label}
+                    <div className="relative px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg shadow-lg">
+                      {reaction.label}
+                      {/* Tooltip arrow pointing downward */}
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -115,54 +133,94 @@ export function RestaurantReactions({ onReactionChange, currentReaction }) {
           )
         })}
 
-        {/* Emoji picker button */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-12 w-12 rounded-full hover:bg-muted"
-              onMouseEnter={() => setShowTooltip("picker")}
-              onMouseLeave={() => setShowTooltip(null)}
-            >
-              <Plus className="h-5 w-5" />
-              <span className="sr-only">More emojis</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0 border-none" align="center">
-            <EmojiPicker
-              onEmojiClick={handleEmojiSelect}
-              searchPlaceholder="Search emoji..."
-              width="100%"
-              height="350px"
-              previewConfig={{ showPreview: false }}
-            />
-          </PopoverContent>
-        </Popover>
+        {/* More Emojis Button */}
+        <div className="relative">
+          <Popover open={isPickerOpen} onOpenChange={setIsPickerOpen}>
+            <PopoverTrigger asChild>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-14 w-14 rounded-full border-2 border-dashed hover:bg-muted hover:border-muted-foreground/40 transition-all duration-200 bg-transparent"
+                  onMouseEnter={() => setHoveredReaction("picker")}
+                  onMouseLeave={() => setHoveredReaction(null)}
+                >
+                  <Plus className="h-5 w-5" />
+                  <span className="sr-only">More emojis</span>
+                </Button>
+              </motion.div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 border-none shadow-xl" align="center" sideOffset={8}>
+              <EmojiPicker
+                onEmojiClick={handleEmojiSelect}
+                searchPlaceholder="Search emoji..."
+                width="320px"
+                height="400px"
+                previewConfig={{ showPreview: false }}
+                skinTonesDisabled
+              />
+            </PopoverContent>
+          </Popover>
 
-        <AnimatePresence>
-          {showTooltip === "picker" && (
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              className="absolute mt-14 px-2 py-1 bg-black/80 text-white text-xs rounded whitespace-nowrap z-10"
-            >
-              More emojis
-            </motion.div>
-          )}
-        </AnimatePresence>
+          {/* Tooltip for picker button */}
+          <AnimatePresence>
+            {hoveredReaction === "picker" && !isPickerOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.9 }}
+                className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 z-50"
+              >
+                <div className="px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap">
+                  More emojis
+                  <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
+      {/* Selected Reaction Display
+      <AnimatePresence>
+        {selectedReaction && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="text-center"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-full">
+              <span className="text-lg">{selectedReaction}</span>
+              <span className="text-sm text-muted-foreground">Your reaction</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence> */}
 
-      {selectedReaction && (
+      {/* Recent Emojis
+      {recentEmojis.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 text-center text-sm text-muted-foreground"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="mt-4 pt-4 border-t border-border"
         >
+          <p className="text-xs text-muted-foreground text-center mb-2">Recently used</p>
+          <div className="flex justify-center gap-1 flex-wrap">
+            {recentEmojis.slice(0, 6).map((emoji, index) => (
+              <Button
+                key={`${emoji}-${index}`}
+                variant="ghost"
+                size="sm"
+                className={`h-8 w-8 p-0 rounded-md ${selectedReaction === emoji ? "bg-primary/20" : "hover:bg-muted"}`}
+                onClick={() => handleReactionClick(emoji)}
+              >
+                <span className="text-sm">{emoji}</span>
+              </Button>
+            ))}
+          </div>
         </motion.div>
-      )}
+      )} */}
     </div>
   )
 }
