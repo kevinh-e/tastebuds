@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Crown } from "lucide-react"
+import { Crown, Check } from "lucide-react"
 
 export default function UsersList({ users, currentUserId }) {
   return (
@@ -7,6 +7,7 @@ export default function UsersList({ users, currentUserId }) {
       {Object.entries(users).map(([userId, userData]) => {
         const isCurrentUser = userId === currentUserId
         const isHost = userData.isHost === true
+        const isEditing = userData.isChoosingPreferences;
 
         return (
           <div key={userId} className="pt-1 w-16 flex flex-col items-center space-y-2">
@@ -30,6 +31,12 @@ export default function UsersList({ users, currentUserId }) {
               {isHost && (
                 <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">
                   <Crown className="size-3 text-white" />
+                </div>
+              )}
+
+              {!isEditing && (
+                <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
+                  <Check className="size-3 text-white" />
                 </div>
               )}
             </div>
