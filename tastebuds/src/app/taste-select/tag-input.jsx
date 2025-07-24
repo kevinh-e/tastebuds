@@ -23,32 +23,60 @@ export default function TagInput({
     setTags(initialTags)
   }, [initialTags])
 
-  const filteredSuggestions = suggestions
-    .filter((s) => s.toLowerCase().includes(inputValue.trim().toLowerCase()) && !tags.includes(s))
-    .slice(0, 8)
+  // Filter suggestions to match from the start of the word
+  let filteredSuggestions = suggestions
+    .filter((s) => s.toLowerCase().startsWith(inputValue.trim().toLowerCase()) && !tags.includes(s))
+    .slice(0, 8);
+
+  // If input is not empty, not already a tag, and not in suggestions, add as first suggestion
+  const inputTrimmed = inputValue.trim();
+  if (
+    inputTrimmed &&
+    !tags.includes(inputTrimmed) &&
+    !suggestions.some((s) => s.toLowerCase() === inputTrimmed.toLowerCase())
+  ) {
+    filteredSuggestions = [
+      { value: inputTrimmed, isCustom: true },
+      ...filteredSuggestions.map((s) => ({ value: s, isCustom: false })),
+    ];
+  } else {
+    filteredSuggestions = filteredSuggestions.map((s) => ({ value: s, isCustom: false }));
+  }
+
+  // Always highlight the first suggestion when input changes or suggestions open
+  useEffect(() => {
+    if (showSuggestions && filteredSuggestions.length > 0) {
+      setHighlightedIndex(0);
+    } else {
+      setHighlightedIndex(-1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue, showSuggestions]);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value)
     setShowSuggestions(true)
-    setHighlightedIndex(-1)
+    // setHighlightedIndex(0) will be handled by useEffect
   }
 
   const handleInputKeyDown = (event) => {
     if (showSuggestions && filteredSuggestions.length > 0) {
       if (event.key === "ArrowDown") {
-        event.preventDefault()
-        setHighlightedIndex((prev) => (prev + 1) % filteredSuggestions.length)
-        return
+        event.preventDefault();
+        setHighlightedIndex((prev) => (prev + 1) % filteredSuggestions.length);
+        return;
       } else if (event.key === "ArrowUp") {
-        event.preventDefault()
-        setHighlightedIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length)
-        return
-      } else if (event.key === "Enter" && highlightedIndex >= 0) {
-        event.preventDefault()
-        addTag(filteredSuggestions[highlightedIndex])
-        setShowSuggestions(false)
-        setHighlightedIndex(-1)
-        return
+        event.preventDefault();
+        setHighlightedIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
+        return;
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        // Always add the highlighted suggestion (default to first)
+        const indexToAdd = highlightedIndex >= 0 ? highlightedIndex : 0;
+        addTag(filteredSuggestions[indexToAdd].value);
+        setShowSuggestions(false);
+        setHighlightedIndex(-1);
+        return;
       }
     }
 
@@ -140,7 +168,7 @@ export default function TagInput({
           <div className="max-h-[200px] overflow-y-auto p-1">
             {filteredSuggestions.map((suggestion, index) => (
               <div
-                key={suggestion}
+                key={suggestion.value}
                 className={cn(
                   "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
                   index === highlightedIndex
@@ -151,7 +179,11 @@ export default function TagInput({
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 <Tag className="mr-2 h-4 w-4 text-muted-foreground" />
-                {suggestion}
+                {suggestion.isCustom ? (
+                  <span className="font-bold">Add "{suggestion.value}"</span>
+                ) : (
+                  suggestion.value
+                )}
               </div>
             ))}
           </div>
