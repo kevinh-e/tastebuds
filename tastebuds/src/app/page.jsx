@@ -65,9 +65,9 @@ export default function PreLobbyPage() {
   }
 
   const handleOTPChange = (value) => {
-    // Remove non-alphanumeric characters and convert to uppercase
-    const sanitized = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase()
-    setLobbyCode(sanitized)
+    // Only allow numbers
+    const sanitized = value.replace(/[^0-9]/g, "");
+    setLobbyCode(sanitized);
   }
 
   return (
@@ -149,8 +149,8 @@ export default function PreLobbyPage() {
                     maxLength={6}
                     value={lobbyCode}
                     onChange={handleOTPChange}
-                    inputMode="text"
-                    pattern="[a-zA-Z0-9]*"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                   >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />

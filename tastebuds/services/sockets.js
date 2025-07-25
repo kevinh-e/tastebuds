@@ -5,7 +5,8 @@ export const handleSockets = (io) => {
 
   io.on("connection", (socket) => {
     socket.on("createRoom", (roundTime, id, hostname, cb) => {
-      const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      // Generate a 6-digit numeric room code
+      const roomCode = Math.floor(100000 + Math.random() * 900000).toString();
       rs.addRoom(roomCode, roundTime);
 
       const member = {
