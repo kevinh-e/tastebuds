@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Users, Smile } from "lucide-react"
+import { Smile } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function ReactionSummary({ reactions = {} }) {

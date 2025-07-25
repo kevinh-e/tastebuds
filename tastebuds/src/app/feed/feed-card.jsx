@@ -113,7 +113,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   const maxPrice = place?.priceRange?.endPrice?.units || 40
   const openNow = place?.regularOpeningHours?.openNow || false
   const mapsLink = place?.googleMapsUri || ""
-  const photoNames = place?.photos.map((obj) => obj.name).slice(0, 4)
+  const photoNames = place?.photos?.map((obj) => obj.name).slice(0, 4)
 
   const placeCoordinates = place?.location;
   const distance = location && placeCoordinates
@@ -248,7 +248,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
                   alt={`${name} - image ${currentImageIndex + 1}`}
                   referrerPolicy="no-referrer"
                   draggable="false"
-                  className="absolute top-0 left-0 w-full h-full object-cover"
+                  className="absolute top-0 left-0 w-full h-full object-cover object-center"
                 />
                 {imageUrls.length > 1 && (
                   <>
