@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { ChevronLeft, MapPin, Utensils, Users } from "lucide-react"
+import { ChevronLeft, MapPin, Utensils, Users, Pencil } from "lucide-react"
 import { useAppContext } from "@/context/AppContext.jsx"
 import PreferencesList from "@/components/lobby/preferences-list"
 import UsersList from "@/components/lobby/users-list"
@@ -17,16 +17,6 @@ export default function LobbyPage() {
   const { id, roomCode, roomData, setRoomData } = useAppContext()
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-
-  useEffect(() => {
-    if (!roomCode || !roomData) {
-      // router.push("/game-not-found"); // This line is removed
-    }
-  }, [roomCode, roomData, router]);
-
-  if (!roomCode || !roomData) {
-    return <GameNotFound />;
-  }
 
   useEffect(() => {
     const onRecommendations = (data) => {
@@ -133,10 +123,14 @@ export default function LobbyPage() {
 
   const isHost = roomData && id in roomData.roomMembers && roomData.roomMembers[id]?.isHost === true
 
+  if (!roomCode || !roomData) {
+    return <GameNotFound />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50/50 to-white">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Header */}
+        {/* Header - Related to room and buddies */}
         <div className="flex justify-between items-center mb-6">
           <Button
             variant="ronaldo"
@@ -146,20 +140,18 @@ export default function LobbyPage() {
           >
             <ChevronLeft className="h-4 w-4 mr-1" /> Exit
           </Button>
-          <Button variant="ronaldo" size="sm" className="flex items-center text-sm" onClick={handleEditPrefs}>
-            <ChevronLeft className="h-4 w-4 mr-1" /> Edit Preferences
-          </Button>
           <CopyButton className="text-muted-foreground font-medium" textToCopy={roomCode} displayText={roomCode} />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Mobile Layout */}
-          <div className="block lg:hidden space-y-3">
+          <div className="block lg:hidden space-y-6">
+            {/* Buddies Card - Acts as attachment/header to the preferences section */}
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-orange-500" />
-                  <CardTitle className="text-base">Buddies</CardTitle>
+                  <CardTitle className="text-lg">Buddies</CardTitle>
                 </div>
                 <CardDescription className="text-xs">Everyone in this room</CardDescription>
               </CardHeader>
@@ -174,40 +166,54 @@ export default function LobbyPage() {
               </CardContent>
             </Card>
 
+            {/* Preferences Card - Groups cuisines and locations together, with edit button integrated */}
             <Card>
               <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
-                  <Utensils className="h-4 w-4 text-orange-500" />
-                  <CardTitle className="text-base">Cuisines</CardTitle>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Utensils className="h-4 w-4 text-orange-500" />
+                    <CardTitle className="text-lg">Preferences</CardTitle>
+                  </div>
+                  <Button
+                    variant="ronaldo"
+                    size="sm"
+                    className="flex items-center text-sm"
+                    onClick={handleEditPrefs}
+                  >
+                    <Pencil className="h-4 w-4 mr-1" /> Edit
+                  </Button>
                 </div>
-                <CardDescription className="text-xs">Food preferences</CardDescription>
+                <CardDescription className="text-xs">Combined food and location preferences</CardDescription>
               </CardHeader>
-              <CardContent className="pt-0">
-                <div className="max-h-24 overflow-y-auto">
-                  {roomData && roomData.roomMembers ? (
-                    <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
-                  ) : (
-                    <p className="text-muted-foreground text-center py-2 text-sm">No preferences available</p>
-                  )}
+              <CardContent className="pt-0 space-y-6">
+                {/* Cuisines Subsection */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Utensils className="h-4 w-4 text-orange-500" />
+                    <h3 className="text-sm font-medium">Cuisines</h3>
+                  </div>
+                  <div className="max-h-24 overflow-y-auto">
+                    {roomData && roomData.roomMembers ? (
+                      <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
+                    ) : (
+                      <p className="text-muted-foreground text-center py-2 text-sm">No preferences available</p>
+                    )}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-orange-500" />
-                  <CardTitle className="text-base">Locations</CardTitle>
-                </div>
-                <CardDescription className="text-xs">Preferred areas</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="max-h-24 overflow-y-auto">
-                  {roomData && roomData.roomMembers ? (
-                    <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
-                  ) : (
-                    <p className="text-muted-foreground text-center py-2 text-sm">No locations available</p>
-                  )}
+                {/* Locations Subsection */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <MapPin className="h-4 w-4 text-orange-500" />
+                    <h3 className="text-sm font-medium">Locations</h3>
+                  </div>
+                  <div className="max-h-24 overflow-y-auto">
+                    {roomData && roomData.roomMembers ? (
+                      <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
+                    ) : (
+                      <p className="text-muted-foreground text-center py-2 text-sm">No locations available</p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -215,12 +221,12 @@ export default function LobbyPage() {
 
           {/* Desktop Layout */}
           <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6 lg:h-[calc(100vh-12rem)]">
-            {/* Users Column */}
-            <Card className="flex flex-col">
+            {/* Buddies Column - Acts as attachment to preferences */}
+            <Card className="flex flex-col col-span-1">
               <CardHeader className="flex-shrink-0 pb-3">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-orange-500" />
-                  <CardTitle>Buddies</CardTitle>
+                  <CardTitle className="text-lg">Buddies</CardTitle>
                 </div>
                 <CardDescription>Everyone who has joined this room</CardDescription>
               </CardHeader>
@@ -235,49 +241,63 @@ export default function LobbyPage() {
               </CardContent>
             </Card>
 
-            {/* Preferences Column */}
-            <Card className="flex flex-col">
+            {/* Preferences Column - Groups cuisines and locations together, with edit button integrated */}
+            <Card className="flex flex-col col-span-2">
               <CardHeader className="flex-shrink-0 pb-3">
-                <div className="flex items-center gap-2">
-                  <Utensils className="h-5 w-5 text-orange-500" />
-                  <CardTitle>Cuisines</CardTitle>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Utensils className="h-5 w-5 text-orange-500" />
+                    <CardTitle className="text-lg">Preferences</CardTitle>
+                  </div>
+                  <Button
+                    variant="ronaldo"
+                    size="sm"
+                    className="flex items-center text-sm"
+                    onClick={handleEditPrefs}
+                  >
+                    <Pencil className="h-4 w-4 mr-1" /> Edit Preferences
+                  </Button>
                 </div>
-                <CardDescription>Food preferences from all participants</CardDescription>
+                <CardDescription>Combined food and location preferences from all participants</CardDescription>
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden">
-                <ScrollArea className="h-full">
-                  {roomData && roomData.roomMembers ? (
-                    <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
-                  ) : (
-                    <p className="text-muted-foreground text-center py-8">No preferences available</p>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                <div className="grid grid-cols-2 gap-6 h-full">
+                  {/* Cuisines Subsection */}
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Utensils className="h-5 w-5 text-orange-500" />
+                      <h3 className="text-base font-medium">Cuisines</h3>
+                    </div>
+                    <ScrollArea className="flex-1">
+                      {roomData && roomData.roomMembers ? (
+                        <PreferencesList users={roomData.roomMembers} preferenceType="cuisineTags" />
+                      ) : (
+                        <p className="text-muted-foreground text-center py-8">No preferences available</p>
+                      )}
+                    </ScrollArea>
+                  </div>
 
-            {/* Locations Column */}
-            <Card className="flex flex-col">
-              <CardHeader className="flex-shrink-0 pb-3">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-orange-500" />
-                  <CardTitle>Locations</CardTitle>
+                  {/* Locations Subsection */}
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MapPin className="h-5 w-5 text-orange-500" />
+                      <h3 className="text-base font-medium">Locations</h3>
+                    </div>
+                    <ScrollArea className="flex-1">
+                      {roomData && roomData.roomMembers ? (
+                        <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
+                      ) : (
+                        <p className="text-muted-foreground text-center py-8">No locations available</p>
+                      )}
+                    </ScrollArea>
+                  </div>
                 </div>
-                <CardDescription>Preferred areas to find restaurants</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-hidden">
-                <ScrollArea className="h-full">
-                  {roomData && roomData.roomMembers ? (
-                    <PreferencesList users={roomData.roomMembers} preferenceType="locationTags" />
-                  ) : (
-                    <p className="text-muted-foreground text-center py-8">No locations available</p>
-                  )}
-                </ScrollArea>
               </CardContent>
             </Card>
           </div>
 
           {/* Action Button */}
-          <div className="pt-3">
+          <div className="pt-6">
             {isHost ? (
               <Button
                 type="submit"
