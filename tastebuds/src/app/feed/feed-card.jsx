@@ -113,7 +113,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
   const maxPrice = place?.priceRange?.endPrice?.units || 40
   const openNow = place?.regularOpeningHours?.openNow || false
   const mapsLink = place?.googleMapsUri || ""
-  const photoNames = place?.photos.map((obj) => obj.name).slice(0, 4)
+  const photoNames = place?.photos?.map((obj) => obj.name).slice(0, 4)
 
   const placeCoordinates = place?.location;
   const distance = location && placeCoordinates
