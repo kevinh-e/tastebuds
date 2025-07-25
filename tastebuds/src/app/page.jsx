@@ -15,6 +15,7 @@ import { socket } from "@/socket.js"
 import FloatingBubbles from "@/components/floating-bubbles"
 import Onboarding from "@/components/Onboarding"
 import Branding from "@/components/Branding"
+import { Separator } from "@/components/ui/separator"
 
 export default function PreLobbyPage() {
   const { id, setRoomCode, setRoomData } = useAppContext()
@@ -25,7 +26,6 @@ export default function PreLobbyPage() {
   const [joinName, setJoinName] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const [showTutorial, setShowTutorial] = useState(false)
 
   useEffect(() => {
     socket.on("syncData", (msg) => {
@@ -74,7 +74,7 @@ export default function PreLobbyPage() {
     <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-white to-orange-300 p-4 overflow-hidden">
       <FloatingBubbles />
       {/* Main Card */}
-      <Card className="w-full max-w-md relative z-10 bg-white shadow-lg">
+      <Card className="w-full max-w-md relative z-10 bg-white shadow-lg gap-2">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
             <Branding />
@@ -83,6 +83,7 @@ export default function PreLobbyPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <Onboarding />
+          <Separator className="my-4" />
           <Tabs defaultValue="host" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="host" className="flex items-center gap-2 cursor-pointer">
@@ -125,7 +126,7 @@ export default function PreLobbyPage() {
                 type="submit"
                 onClick={handleCreateLobby}
                 size="lg"
-                className={`w-full ${loading ? "bg-orange-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"}`}
+                className={`w-full transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md ${loading ? "bg-orange-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"}`}
                 disabled={loading}
               >
                 {loading ? "Creating..." : "Create a New Lobby"}
@@ -162,7 +163,7 @@ export default function PreLobbyPage() {
                   </InputOTP>
                 </div>
               </div>
-              <Button onClick={handleJoinLobby} className="w-full cursor-pointer">
+              <Button onClick={handleJoinLobby} className="w-full cursor-pointer transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md">
                 Join Lobby
               </Button>
             </TabsContent>

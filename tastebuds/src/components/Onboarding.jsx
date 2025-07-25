@@ -69,9 +69,11 @@ export default function Onboarding() {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="secondary" className="w-full border">
-          <HelpCircle /> How to Play
-        </Button>
+        <div className="w-full flex">
+          <Button variant="secondary" className="mx-auto border border-primary/50 transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md">
+            <HelpCircle /> How to Play
+          </Button>
+        </div>
       </DialogTrigger>
       <DialogContent className="gap-0 p-0 [&>button:last-child]:text-white bg-white">
         <div className="p-2">
