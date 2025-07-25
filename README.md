@@ -1,58 +1,55 @@
-# TasteBuds
+# Tastebuds - Real-Time Restaurant Discovery
 
-TasteBuds is a restaurant recommendation app for indecisive groups. Inspired by the fast-paced, interactive style of Kahoot, TasteBuds lets groups quickly decide where to eat by hosting a fun voting session. Each lobby gathers users who then vote on their favorite restaurant option, and the winning choice is displayed in real time!
-
-[Visit the Live Site](https://taste-buds-matcher.onrender.com/)
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Built With](#built-with)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-
-## Overview
-
-Deciding where to dine can be a challenge when a group has many opinions. TasteBuds simplifies the process by providing an engaging, interactive voting platform where everyone can participate. Whether you’re planning a casual outing with friends or organizing a team lunch, TasteBuds takes the guesswork out of choosing the perfect restaurant.
+Tastebuds is a web application that helps groups of friends collaboratively find and decide on a place to eat in real-time. It uses a Tinder-like swiping interface to gather preferences and leverages the Google Places API to provide tailored restaurant recommendations.
 
 ## Features
 
-- **Group Voting:** Create a new lobby or join an existing one to gather friends for a vote.
-- **Interactive Interface:** Enjoy a fast-paced, Kahoot-like voting experience.
-- **Real-Time Results:** See votes update instantly as group members make their choices.
-- **Restaurant Recommendations:** The app highlights the winning restaurant option based on collective votes.
-- **User-Friendly:** Simple sign-up and lobby joining process designed for groups on the go.
-- **Design:** Mobile oriented web design
+*   **Real-time collaboration:** See your friends' restaurant picks and preferences as they happen.
+*   **Tinder-style swiping:** A fun and intuitive way to vote on restaurant choices.
+*   **Google Places integration:** Access a vast database of restaurants with up-to-date information.
+*   **Location-based search:** Find restaurants near you or a specified location.
+*   **Preference-based filtering:** Narrow down your options by cuisine, price range, and more.
+*   **Winning restaurant announcement:** Once everyone has voted, the app declares a winner.
 
-## Built With
+## Tech Stack
 
-- **Frontend:** JavaScript, Next.js, shadcn/ui
-- **Backend:** Node.js with sockets.io
+*   **Frontend:** Next.js, React, Tailwind CSS
+*   **Backend:** Node.js, Socket.IO
+*   **API:** Google Places API
 
-## Installation
+## Getting Started
 
-To run TasteBuds locally:
+### Prerequisites
 
-1. **Clone the repository:**
+Make sure you have Node.js and npm installed on your machine.
 
-   ```bash
-   git clone https://github.com/yourusername/tastebuds.git
+### Installation
 
+1.  Clone the repository:
+    ```sh
+    git clone https://github.com/your-username/tastebuds.git
+    ```
+2.  Navigate to the project directory:
+    ```sh
+    cd tastebuds
+    ```
+3.  Install the dependencies:
+    ```sh
+    npm install
+    ```
+4.  Create a `.env.local` file in the `tastebuds` directory and add your Google Places API key:
+    ```
+    GOOGLE_PLACES_API_KEY=your_api_key
+    ```
 
-## Usage
+### Running the Application
+
+1.  Start the development server:
+    ```sh
+    npm run dev
+    ```
+2.  Open your browser and navigate to `http://localhost:3000`.
 
 ## Contributing
 
-Contributions are welcome! If you’d like to help improve TasteBuds, please open an issue or submit a pull request. For major changes, please discuss them first via an issue to ensure alignment with the project goals.
-
-## License
-
-This project is licensed under the Apache 2.0 License. See the LICENSE file for details.
-
-## Contact
-
-For questions, suggestions, or feedback, please reach out to: <contact@kevinh.dev>
+Contributions are welcome! Please feel free to submit a pull request or open an issue.
