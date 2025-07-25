@@ -23,32 +23,60 @@ export default function TagInput({
     setTags(initialTags)
   }, [initialTags])
 
-  const filteredSuggestions = suggestions
-    .filter((s) => s.toLowerCase().includes(inputValue.trim().toLowerCase()) && !tags.includes(s))
-    .slice(0, 8)
+  // Filter suggestions to match from the start of the word
+  let filteredSuggestions = suggestions
+    .filter((s) => s.toLowerCase().startsWith(inputValue.trim().toLowerCase()) && !tags.includes(s))
+    .slice(0, 8);
+
+  // If input is not empty, not already a tag, and not in suggestions, add as first suggestion
+  const inputTrimmed = inputValue.trim();
+  if (
+    inputTrimmed &&
+    !tags.includes(inputTrimmed) &&
+    !suggestions.some((s) => s.toLowerCase() === inputTrimmed.toLowerCase())
+  ) {
+    filteredSuggestions = [
+      { value: inputTrimmed, isCustom: true },
+      ...filteredSuggestions.map((s) => ({ value: s, isCustom: false })),
+    ];
+  } else {
+    filteredSuggestions = filteredSuggestions.map((s) => ({ value: s, isCustom: false }));
+  }
+
+  // Always highlight the first suggestion when input changes or suggestions open
+  useEffect(() => {
+    if (showSuggestions && filteredSuggestions.length > 0) {
+      setHighlightedIndex(0);
+    } else {
+      setHighlightedIndex(-1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue, showSuggestions]);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value)
     setShowSuggestions(true)
-    setHighlightedIndex(-1)
+    // setHighlightedIndex(0) will be handled by useEffect
   }
 
   const handleInputKeyDown = (event) => {
     if (showSuggestions && filteredSuggestions.length > 0) {
       if (event.key === "ArrowDown") {
-        event.preventDefault()
-        setHighlightedIndex((prev) => (prev + 1) % filteredSuggestions.length)
-        return
+        event.preventDefault();
+        setHighlightedIndex((prev) => (prev + 1) % filteredSuggestions.length);
+        return;
       } else if (event.key === "ArrowUp") {
-        event.preventDefault()
-        setHighlightedIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length)
-        return
-      } else if (event.key === "Enter" && highlightedIndex >= 0) {
-        event.preventDefault()
-        addTag(filteredSuggestions[highlightedIndex])
-        setShowSuggestions(false)
-        setHighlightedIndex(-1)
-        return
+        event.preventDefault();
+        setHighlightedIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
+        return;
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        // Always add the highlighted suggestion (default to first)
+        const indexToAdd = highlightedIndex >= 0 ? highlightedIndex : 0;
+        addTag(filteredSuggestions[indexToAdd].value);
+        setShowSuggestions(false);
+        setHighlightedIndex(-1);
+        return;
       }
     }
 
@@ -94,10 +122,11 @@ export default function TagInput({
     }
   }
 
-  const handleSuggestionClick = (suggestion) => {
-    addTag(suggestion)
-    inputRef.current?.focus()
-  }
+  // Fix: always pass suggestion.value to handleSuggestionClick
+  const handleSuggestionClick = (suggestionObj) => {
+    addTag(typeof suggestionObj === 'string' ? suggestionObj : suggestionObj.value);
+    inputRef.current?.focus();
+  };
 
   return (
     <div className={cn("relative", className)}>
@@ -138,20 +167,24 @@ export default function TagInput({
       {showSuggestions && filteredSuggestions.length > 0 && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md animate-in fade-in-0 zoom-in-95">
           <div className="max-h-[200px] overflow-y-auto p-1">
-            {filteredSuggestions.map((suggestion, index) => (
+            {filteredSuggestions.map((suggestionObj, index) => (
               <div
-                key={suggestion}
+                key={suggestionObj.value}
                 className={cn(
                   "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
                   index === highlightedIndex
                     ? "bg-accent text-accent-foreground"
                     : "hover:bg-accent hover:text-accent-foreground",
                 )}
-                onMouseDown={() => handleSuggestionClick(suggestion)}
+                onMouseDown={() => handleSuggestionClick(suggestionObj.value)}
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 <Tag className="mr-2 h-4 w-4 text-muted-foreground" />
-                {suggestion}
+                {suggestionObj.isCustom ? (
+                  <span className="font-bold">Add "{suggestionObj.value}"</span>
+                ) : (
+                  suggestionObj.value
+                )}
               </div>
             ))}
           </div>

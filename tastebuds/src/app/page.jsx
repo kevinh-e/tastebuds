@@ -144,7 +144,13 @@ export default function PreLobbyPage() {
               <div className="space-y-2">
                 <Label htmlFor="lobbyCode">Lobby Code</Label>
                 <div className="flex justify-center">
-                  <InputOTP maxLength={6} value={lobbyCode} onChange={handleOTPChange}>
+                  <InputOTP
+                    maxLength={6}
+                    value={lobbyCode}
+                    onChange={handleOTPChange}
+                    inputMode="text"
+                    pattern="[a-zA-Z0-9]*"
+                  >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />
