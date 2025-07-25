@@ -31,9 +31,7 @@
 </p>
    
 <h4>
-    <a href="https://taste-buds.live/">View Demo</a>
-  <span> · </span>
-    <a href="https://github.com/kevinh-e/tastebuds">Documentation</a>
+    <a href="https://taste-buds.live/">Live Site</a>
   <span> · </span>
     <a href="https://github.com/kevinh-e/tastebuds/issues/">Report Bug</a>
   <span> · </span>
@@ -50,10 +48,8 @@
   * [Tech Stack](#space_invader-tech-stack)
   * [Features](#dart-features)
 - [Getting Started](#toolbox-getting-started)
-  * [Prerequisites](#bangbang-prerequisites)
   * [Installation](#gear-installation)
   * [Run Locally](#running-run-locally)
-- [Usage](#eyes-usage)
 - [Roadmap](#compass-roadmap)
 - [Contributing](#wave-contributing)
 - [License](#warning-license)
@@ -64,8 +60,10 @@
 <!-- About the Project -->
 ## :star2: About the Project
 
+> [!IMPORTANT]  
+> Tastebuds is live right now! Visit the <a href="https://taste-buds.live/">live site</a>.
 <div align="center"> 
-  <img src="https://placehold.co/600x400?text=Your+Screenshot+here" alt="screenshot" />
+  <img src="screenshots/Voting.png" />
 </div>
 
 
@@ -101,15 +99,6 @@
 
 <!-- Getting Started -->
 ## :toolbox: Getting Started
-
-<!-- Prerequisites -->
-### :bangbang: Prerequisites
-
-This project uses npm as package manager
-
-```bash
- npm install --global yarn
-```
 
 <!-- Installation -->
 ### :gear: Installation
@@ -149,17 +138,10 @@ Start the server
 ```
 
 
-<!-- Usage -->
-## :eyes: Usage
-
-Use this space to tell a little more about your project and how it can be used. Show additional screenshots, code samples, demos or link to other resources.
-
-
 <!-- Roadmap -->
 ## :compass: Roadmap
 
-* [ ] Feature 1
-* [ ] Feature 2
+* [ ] Polish for Devsoc Starlight Hackathon
 
 <!-- Contributing -->
 ## :wave: Contributing
@@ -184,3 +166,5 @@ Project Link: [https://github.com/kevinh-e/tastebuds](https://github.com/kevinh-
  - [Awesome README](https://github.com/matiassingers/awesome-readme)
  - [Emoji Cheat Sheet](https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md#travel--places)
  - [Readme Template](https://github.com/othneildrew/Best-README-Template)
+ - Visit our other projects:
+ - [kevinh.dev](https://kevinh.dev/)
