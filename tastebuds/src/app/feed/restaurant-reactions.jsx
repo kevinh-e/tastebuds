@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus, Check } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import EmojiPicker from "emoji-picker-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useAppContext } from "@/context/AppContext"

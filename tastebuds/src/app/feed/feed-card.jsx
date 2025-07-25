@@ -248,7 +248,7 @@ export function FeedCard({ reactions, place, onVoteChange, onSkip, isHost, progr
                   alt={`${name} - image ${currentImageIndex + 1}`}
                   referrerPolicy="no-referrer"
                   draggable="false"
-                  className="absolute top-0 left-0 w-full h-full object-cover"
+                  className="absolute top-0 left-0 w-full h-full object-cover object-center"
                 />
                 {imageUrls.length > 1 && (
                   <>

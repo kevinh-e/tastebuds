@@ -8,12 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-import { Users, UserPlus, X, HelpCircle } from "lucide-react"
+import { Users, UserPlus } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { useAppContext } from "@/context/AppContext.jsx"
 import { socket } from "@/socket.js"
 import FloatingBubbles from "@/components/floating-bubbles"
 import Onboarding from "@/components/Onboarding"
+import Branding from "@/components/Branding"
 
 export default function PreLobbyPage() {
   const { id, setRoomCode, setRoomData } = useAppContext()
@@ -75,9 +76,8 @@ export default function PreLobbyPage() {
       {/* Main Card */}
       <Card className="w-full max-w-md relative z-10 bg-white shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl select-none">
-            <span className="font-light">taste/</span>
-            <span className="font-semibold text-orange-500">buds</span>
+          <CardTitle className="text-2xl">
+            <Branding />
           </CardTitle>
           <CardDescription>Find the best taste for your buds.</CardDescription>
         </CardHeader>
