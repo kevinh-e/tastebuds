@@ -1,40 +1,56 @@
 "use client"
 
 import { useForm } from "react-hook-form"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Toggle } from "@/components/ui/toggle"
 import TagInput from "./tag-input.jsx"
 import { cuisineOptions, locationOptions } from "./data.js"
 import { useAppContext } from "@/context/AppContext.jsx"
 import { ChefHat, Coins, Dices, Locate, MapPin, Star } from "lucide-react"
-
 import { socket } from "@/socket.js"
 
 // Define the form schema with zod
-const formSchema = z.object({
-  prices: z.array(z.string()).default([]),
-  cuisineTags: z.array(z.string()).default([]),
-  locationTags: z.array(z.string()).default([]),
-  rating: z.string().optional(),
-})
+const formSchema = z
+  .object({
+    prices: z.array(z.string()).default([]),
+    cuisineTags: z.array(z.string()).default([]),
+    locationTags: z.array(z.string()).default([]),
+    rating: z.string().optional(),
+  })
 
 export default function TasteSelectForm() {
-  const [userLocation, setUserLocation] = useState(null)
   const { id, roomData, setRoomData, roomCode } = useAppContext()
   const router = useRouter()
+  const [userLocation, setUserLocation] = useState(null)
 
+  // ref to hold last‐seen JSON of this user's prefs
+  const prevPrefsRef = useRef(null)
+
+  // syncData only needs to setRoomData, with cleanup
   useEffect(() => {
-    socket.on("syncData", (msg) => {
+    const handler = (msg) => {
       setRoomData(JSON.parse(msg))
-    })
-  }, [setRoomData, roomData])
+    }
+    socket.on("syncData", handler)
+    return () => {
+      socket.off("syncData", handler)
+    }
+  }, [setRoomData])
 
-  // Initialize the form with default values
+  // initialize the form
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,101 +63,80 @@ export default function TasteSelectForm() {
 
   const { reset } = form
 
-  // update the form with user's existing prefs
+  // only reset *your* form when *your* saved preferences truly change
   useEffect(() => {
     const member = roomData?.roomMembers?.[id]
-    if (member?.preferences) {
-      const prefs = member.preferences
-      reset({
-        prices: prefs.prices ?? [],
-        cuisineTags: prefs.cuisineTags ?? [],
-        locationTags: prefs.locationTags ?? [],
-        rating: prefs.rating ?? "",
-      })
+    if (!member?.preferences) return
+
+    const prefs = {
+      prices: member.preferences.prices ?? [],
+      cuisineTags: member.preferences.cuisineTags ?? [],
+      locationTags: member.preferences.locationTags ?? [],
+      rating: member.preferences.rating ?? "",
+    }
+    const prefsJSON = JSON.stringify(prefs)
+
+    if (prefsJSON !== prevPrefsRef.current) {
+      reset(prefs)
+      prevPrefsRef.current = prefsJSON
     }
   }, [roomData, id, reset])
 
   const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords
-          setUserLocation({ latitude, longitude })
-
-          try {
-            // Use reverse geocoding to get location name
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
-            )
-            const data = await response.json()
-            console.log("Position:")
-            console.log(position);
-            console.log("Reverse Geocode:")
-            console.log(data);
-
-            // Extract suburb or city name
-            const locationName = [
-              data.address.suburb || data.address.town || data.address.village,
-              data.address.city
-            ].filter(Boolean).join(', ');
-
-            // Add the location to the form's locationTags
-            const currentTags = form.getValues("locationTags")
-            if (!currentTags.includes(locationName)) {
-              const updatedTags = [...currentTags, locationName]
-              form.setValue("locationTags", updatedTags)
-            }
-          } catch (error) {
-            console.error("Error getting location name:", error)
-            // Fallback: add coordinates as a tag
-            const locationTag = `${latitude.toFixed(2)},${longitude.toFixed(2)}`
-            const currentTags = form.getValues("locationTags")
-            if (!currentTags.includes(locationTag)) {
-              const updatedTags = [...currentTags, locationTag]
-              form.setValue("locationTags", updatedTags)
-            }
-          }
-        },
-        (error) => {
-          console.error("Error getting user location:", error)
-        },
-      )
-    } else {
+    if (!navigator.geolocation) {
       console.error("Geolocation is not supported by this browser.")
+      return
     }
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        setUserLocation({ latitude, longitude })
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+          )
+          const data = await response.json()
+          const locationName = [
+            data.address.suburb || data.address.town || data.address.village,
+            data.address.city,
+          ]
+            .filter(Boolean)
+            .join(", ")
+          const currentTags = form.getValues("locationTags")
+          if (!currentTags.includes(locationName)) {
+            form.setValue("locationTags", [...currentTags, locationName])
+          }
+        } catch (error) {
+          console.error("Error getting location name:", error)
+          const locationTag = `${latitude.toFixed(2)},${longitude.toFixed(2)}`
+          const currentTags = form.getValues("locationTags")
+          if (!currentTags.includes(locationTag)) {
+            form.setValue("locationTags", [...currentTags, locationTag])
+          }
+        }
+      },
+      (error) => {
+        console.error("Error getting user location:", error)
+      }
+    )
   }
 
   const onSubmit = (data) => {
-    if (socket.connected && roomCode !== "") {
-      // sent the preferences to the server with that room code
+    if (socket.connected && roomCode) {
       socket.emit("sendPreferences", roomCode, JSON.stringify(data), id)
     }
     router.push("/lobby")
   }
 
-  // Price options
   const priceOptions = ["$", "$$", "$$$", "$$$$"]
-
-  // Rating options
   const ratingOptions = ["3.5+", "4.0+", "4.5+", "5.0"]
 
   const addRandomCuisine = () => {
-    // Get current cuisine tags
-    const currentTags = form.getValues("cuisineTags")
-
-    // Get a random cuisine that's not already in the list
-    const availableCuisines = cuisineOptions.filter((cuisine) => !currentTags.includes(cuisine))
-
-    // If all cuisines are already selected, don't add any more
-    if (availableCuisines.length === 0) return
-
-    // Select a random cuisine from available options
-    const randomIndex = Math.floor(Math.random() * availableCuisines.length)
-    const randomCuisine = availableCuisines[randomIndex]
-
-    // Add the random cuisine to the form
-    const updatedTags = [...currentTags, randomCuisine]
-    form.setValue("cuisineTags", updatedTags)
+    const current = form.getValues("cuisineTags")
+    const available = cuisineOptions.filter((c) => !current.includes(c))
+    if (!available.length) return
+    const pick = available[Math.floor(Math.random() * available.length)]
+    form.setValue("cuisineTags", [...current, pick])
   }
 
   return (
@@ -156,8 +151,7 @@ export default function TasteSelectForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <Coins className="h-5 text-orange-500 w-5" />
-                    Price
+                    <Coins className="h-5 text-orange-500 w-5" /> Price
                   </FormLabel>
                   <FormDescription>How much do you want to spend?</FormDescription>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -168,10 +162,10 @@ export default function TasteSelectForm() {
                           className="h-10 px-4 rounded-full hover:cursor-pointer"
                           pressed={field.value?.includes(price)}
                           onPressedChange={(pressed) => {
-                            const updatedPrices = pressed
+                            const updated = pressed
                               ? [...field.value, price]
                               : field.value.filter((p) => p !== price)
-                            field.onChange(updatedPrices)
+                            field.onChange(updated)
                           }}
                         >
                           {price}
@@ -184,75 +178,69 @@ export default function TasteSelectForm() {
               )}
             />
 
-            {/* Cuisine Section with TagInput */}
+            {/* Cuisine Section */}
             <FormField
               control={form.control}
               name="cuisineTags"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <ChefHat className="h-5 text-orange-500 w-5" />
-                    Cuisine
+                    <ChefHat className="h-5 text-orange-500 w-5" /> Cuisine
                   </FormLabel>
                   <FormDescription>What type of food are you looking for?</FormDescription>
-                  <FormControl>
-                    <div className="flex space-x-1 items-center">
-                      <TagInput
-                        onTagsChange={field.onChange}
-                        placeholder="Sushi, Paella, Burgers, Italian..."
-                        initialTags={field.value}
-                        className="grow-1"
-                        suggestions={cuisineOptions}
-                      />
-                      <Button
-                        variant="ronaldo"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          addRandomCuisine()
-                        }}
-                        className="h-full"
-                      >
-                        <Dices className="text-orange-500" />
-                      </Button>
-                    </div>
-                  </FormControl>
+                  <div className="flex space-x-1 items-center">
+                    <TagInput
+                      onTagsChange={field.onChange}
+                      initialTags={field.value}
+                      suggestions={cuisineOptions}
+                      placeholder="Sushi, Paella..."
+                      className="grow-1"
+                    />
+                    <Button
+                      variant="ronaldo"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        addRandomCuisine()
+                      }}
+                      className="h-full"
+                    >
+                      <Dices className="text-orange-500" />
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Location Section with TagInput */}
+            {/* Location Section */}
             <FormField
               control={form.control}
               name="locationTags"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <MapPin className="h-5 text-orange-500 w-5" />
-                    Location
+                    <MapPin className="h-5 text-orange-500 w-5" /> Location
                   </FormLabel>
                   <FormDescription>Where would you like to eat?</FormDescription>
-                  <FormControl>
-                    <div className="flex space-x-1 items-center">
-                      <TagInput
-                        onTagsChange={field.onChange}
-                        placeholder="Chatswood, Haymarket..."
-                        initialTags={field.value}
-                        className="grow-1"
-                        suggestions={locationOptions}
-                      />
-                      <Button
-                        variant="ronaldo"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          getUserLocation()
-                        }}
-                        className="h-full"
-                      >
-                        <Locate className="text-orange-500" />
-                      </Button>
-                    </div>
-                  </FormControl>
+                  <div className="flex space-x-1 items-center">
+                    <TagInput
+                      onTagsChange={field.onChange}
+                      initialTags={field.value}
+                      suggestions={locationOptions}
+                      placeholder="Chatswood, Haymarket..."
+                      className="grow-1"
+                    />
+                    <Button
+                      variant="ronaldo"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        getUserLocation()
+                      }}
+                      className="h-full"
+                    >
+                      <Locate className="text-orange-500" />
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -265,8 +253,7 @@ export default function TasteSelectForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg font-semibold">
-                    <Star className="h-5 text-orange-500 w-5" />
-                    Rating
+                    <Star className="h-5 text-orange-500 w-5" /> Rating
                   </FormLabel>
                   <FormDescription>Minimum rating you're looking for</FormDescription>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -274,15 +261,16 @@ export default function TasteSelectForm() {
                       <FormControl key={rating}>
                         <Toggle
                           variant="outline"
-                          className={`h-10 px-3 rounded-full hover:cursor-pointer ${field.value === rating ? "bg-primary text-primary-foreground" : ""}`}
+                          className={`h-10 px-3 rounded-full hover:cursor-pointer ${
+                            field.value === rating
+                              ? "bg-primary text-primary-foreground"
+                              : ""
+                          }`}
                           pressed={field.value === rating}
                           onPressedChange={(pressed) => {
-                            // If already selected and pressed again, deselect it
                             if (field.value === rating && !pressed) {
                               field.onChange("")
-                            }
-                            // If pressed and not already selected, select it
-                            else if (pressed) {
+                            } else if (pressed) {
                               field.onChange(rating)
                             }
                           }}
@@ -306,5 +294,3 @@ export default function TasteSelectForm() {
     </div>
   )
 }
-
-
